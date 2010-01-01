@@ -1,0 +1,111 @@
+<html>
+<head>
+<title>Creating a tag file</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="Stylesheet" rev="Stylesheet" href="../css/documentation.css"
+    type="text/css" media="All" charset="iso-8859-1">
+</head>
+<body>
+<h1>Creating a tag file</h1>
+<p>Tagfiles are a more powerful version of a standard template. Most
+users will find that tag files contain all the functionality they need.</p>
+<p>To add our tag file to our tag library we need to extend the tag file class
+and specify the path to the tag file's template.</p>
+
+
+<fieldset>
+<legend>SimpleTaglib.php</legend>
+<pre>
+&lt;php
+require_once 'HTML/Template/Nest/Taglib.php';
+<b>require_once 'HTML/Template/Nest/TagFile.php';</b>
+
+class SimpleTaglib extends HTML_Template_Nest_Taglib
+{
+    protected $tags = array(
+        "simpleTagFile" => "SimpleTaglib_SimpleTagFile", 
+        "simpleTag" => "SimpleTaglib_SimpleTag",
+    );
+}
+<b>
+class SimpleTaglib_SimpleTagFile extends HTML_Template_Nest_TagFile
+{
+    public function getTagFilename() 
+    {
+        return dirname(__FILE__) . "/simple_tagfile.tmpl";
+    }
+}
+</b>
+</pre>
+</fieldset>
+<p>Now we'll create the template in the same directory as our SimpleView.php file.</p>
+<fieldset>
+<legend>simple_tagfile.tmpl</legend>
+<pre>
+&lt;div class="welcome"&gt;
+    &lt;h1&gt;Hello &lt;b&gt;${username}&lt;/b&gt;!&lt;/h1&gt;
+&lt;/div&gt;
+</pre>
+</fieldset>
+
+<p>Now we'll edit our original template to use our new tag library:</p>
+<fieldset>
+<legend>simpleview.nst</legend>
+<pre>
+&lt;html <b>xmlns:simple="urn:nsttl:SimpleTaglib</b>"&gt;
+    &lt;head&gt;
+        &lt;title&gt;A Simple View&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;simple:simpleTagFile /&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</fieldset>
+
+<p>Which gives us basically the same output as before, but this time it's wrapped
+in a div. Rather than hard code that information, however we can put the token
+${#processBody#} into our template and then move the actual text back out of
+the tag file. This is where the nesting actually comes into play.</p>
+
+<fieldset>
+<legend>simple_tagfile.tmpl</legend>
+<pre>
+&lt;div class="welcome"&gt;
+    <b>${#processBody#}</b>
+&lt;/div&gt;
+</pre>
+</fieldset>
+
+<fieldset>
+<legend>simpleview.nst</legend>
+<pre>
+&lt;html <b>xmlns:simple="urn:nsttl:SimpleTaglib</b>"&gt;
+    &lt;head&gt;
+        &lt;title&gt;A Simple View&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;simple:simpleTagFile&gt;
+            &lt;h1&gt;Hello &lt;b&gt;${username}&lt;/b&gt;!&lt;/h1&gt;
+        &lt;/simple:simpleTagFile&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</fieldset>
+<p>We get basicaly the same output, but now we can easily change the actual
+text if requirements change without changing the actual document structure. Tags
+can be nested and you can include tag libraries in tag files. If we wanted
+to add the standard tag library in our simple_tagfile.tmpl we'd do so like this:</p>
+
+<fieldset>
+<legend>simple_tagfile.tmpl</legend>
+<pre>
+&lt;div class="welcome" <b>xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard"</b>&gt;
+    ${#processBody#}
+&lt;/div&gt;
+</pre>
+</fieldset>
+
+<p>That's it for tag files. They'll work in pretty much every simple situation.</p>
+</body>
+</html>

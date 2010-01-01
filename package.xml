@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.5.1" version="2.0"
+    xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+http://pear.php.net/dtd/tasks-1.0.xsd
+http://pear.php.net/dtd/package-2.0
+http://pear.php.net/dtd/package-2.0.xsd">
+    <name>HTML_Template_Nest</name>
+    <channel>pear.buyplaytix.com</channel>
+    <summary>Compiled templating solution based upon java server pages.</summary>
+    <description>Nest (Nestable Extensible Server Templates) is a templating language featuring
+* tag libraries
+* tag files
+* a format similar to jsp 2.0
+* well-formed xml views
+* views that compile to native easy to read php code
+
+Nest is compatible with PHP 5.
+
+ </description>
+    <lead>
+        <name>Tim Thomas</name>
+        <user>tthomas48</user>
+        <email>tim@buyplaytix.com</email>
+        <active>yes</active>
+    </lead>
+    <date>2010-01-01</date>
+    <version>
+        <release>0.5.4</release>
+        <api>0.5.1</api>
+    </version>
+    <stability>
+        <release>alpha</release>
+        <api>alpha</api>
+    </stability>
+    <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
+    <notes>
+Documentation fixes.
+ </notes>
+    <contents>
+        <dir name="/">
+            <dir name="HTML">
+                <dir name="Template">
+                    <dir name="Nest">
+                        <file name="NestCompileTask.php" role="php">
+                            <tasks:replace from="@package_version@"
+                                to="version" type="package-info" />
+                        </file>
+
+                        <file name="Compiler.php" role="php">
+                            <tasks:replace from="@package_version@"
+                                to="version" type="package-info" />
+                        </file>
+                        <file name="CompilerException.php" role="php">
+                            <tasks:replace from="@package_version@"
+                                to="version" type="package-info" />
+                        </file>
+                        <file name="Parser.php" role="php">
+                            <tasks:replace from="@package_version@"
+                                to="version" type="package-info" />
+                        </file>
+                        <file name="ParseException.php" role="php">
+                            <tasks:replace from="@package_version@"
+                                to="version" type="package-info" />
+                        </file>
+                        <file name="View.php" role="php">
+                            <tasks:replace from="@package_version@"
+                                to="version" type="package-info" />
+                        </file>
+                        <file name="Tag.php" role="php">
+                            <tasks:replace from="@package_version@"
+                                to="version" type="package-info" />
+                        </file>
+                        <file name="Taglib.php" role="php">
+                            <tasks:replace from="@package_version@"
+                                to="version" type="package-info" />
+                        </file>
+                        <file name="TaglibException.php" role="php">
+                            <tasks:replace from="@package_version@"
+                                to="version" type="package-info" />
+                        </file>
+                        <file name="TagFile.php" role="php">
+                            <tasks:replace from="@package_version@"
+                                to="version" type="package-info" />
+                        </file>
+                        <file name="TagException.php" role="php">
+                            <tasks:replace from="@package_version@"
+                                to="version" type="package-info" />
+                        </file>
+                        <dir name="Taglib">
+                            <file name="Standard.php" role="php">
+                                <tasks:replace from="@package_version@"
+                                    to="version" type="package-info" />
+                            </file>
+                        </dir>
+                    </dir>
+                </dir>
+            </dir> <!-- /Nest -->
+            <dir name="doc">
+                <!-- I've got nothing -->
+            </dir> <!-- /doc -->
+            <dir name="test">
+                <dir name="viewoutput">
+                    <file name="standardtaglib.html" role="test" />
+                    <file name="testtaglib.html" role="test" />
+                </dir>
+                <dir name="templates">
+                    <file name="badxml_tagfile.tmpl" role="test" />
+                    <file name="tagfile.tmpl" role="test" />
+                    <file name="wrappable_tagfile.tmpl" role="test" />
+                </dir>                
+                <dir name="views">
+                    <file name="standardtaglib.nst" role="test" />
+                    <file name="testtaglib.nst" role="test" />                    
+                    <file name="badxml.nst" role="test" />                    
+                    <file name="badtemplate.nst" role="test" />                    
+                </dir>
+                <file name="AllTests.php" role="test" />
+                <file name="ErrorTest.php" role="test" />
+                <file name="TaglibTest.php" role="test" />
+                <file name="TestTaglib.php" role="test" />
+                <file name="ParserTest.php" role="test" />
+                <file name="StandardTaglibTest.php" role="test" />
+            </dir>
+        </dir> <!-- / -->
+    </contents>
+    <dependencies>
+        <required>
+            <php>
+                <min>5.0.0</min>
+            </php>
+            <pearinstaller>
+                <min>1.4.0b1</min>
+            </pearinstaller>
+            <package>
+                <name>PEAR</name>
+                <channel>pear.php.net</channel>
+                <min>1.0b1</min>
+            </package>
+        </required>
+    </dependencies>
+    <phprelease />
+</package>

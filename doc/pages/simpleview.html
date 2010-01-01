@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>Creating a simple view</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="Stylesheet" rev="Stylesheet" href="../css/documentation.css"
+    type="text/css" media="All" charset="iso-8859-1">
+</head>
+<body>
+<h1>Creating a Simple View</h1>
+<p>Let's start with a simple example. First we need to create our view handling class:</p>
+<fieldset>
+<legend>SimpleView.php</legend>
+<pre>
+&lt;?php
+require_once 'HTML/Template/Nest/View.php';
+
+HTML_Template_Nest_View::$ALWAYS_COMPILE = true;
+
+$view = new HTML_Template_Nest_View("simpleview");
+print $view->render();
+</pre>
+</fieldset>
+<p>Go ahead and create a 'views' directory in the same folder as SimpleView.php. In
+the views folder create:</p>
+<fieldset>
+<legend>simpleview.nst</legend>
+<pre>
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;A Simple View&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello World!&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</fieldset>
+<p>That's it. Point your web browser at SimpleView.php and you should see your Hello World page.</p>
+
+<p>Just a quote note about that $ALWAYS_COMPILE flag. By default Nest only compiles
+a file if the corresponding PHP file does not exist. That's great for production
+environments, but in development you probably want to see changes as you make them.
+Setting $ALWAYS_COMPILE to true makes that happen.</p>
+
+<h1>Adding a variable to your view</h1>
+<p>At this point we've just displayed an HTML document, which we could have done
+easily without the need for a specialized library. So let's add a line to our
+SimpleView.php file:</p>
+<fieldset>
+<legend>SimpleView.php</legend>
+<pre>
+&lt;?php
+require_once 'HTML/Template/Nest/View.php';
+
+HTML_Template_Nest_View::$ALWAYS_COMPILE = true;
+
+$view = new HTML_Template_Nest_View("simpleview");
+<b>$view->addAttribute("username", "Tim");</b>
+print $view->render();
+</pre>
+</fieldset>
+
+Now let's change the nest template:
+<fieldset>
+<legend>simpleview.nst</legend>
+<pre>
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;A Simple View&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello <b>${username}</b>!&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</fieldset>
+
+<p>That's it. Values can be displayed in the view by simply adding them as attributes
+and then inserting them as a token into the nest template. If you view SimpleView.php
+in a web browser you should see "Hello Tim!".</p>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<html xmlns:test="urn:nsttl:TestTaglib" xmlns:h="http://www.w3.org/TR/html4/">
+<h:head>
+</h:head>
+<h:body>
+<test:testTagFile />
+
+<test:wrappableTagFile>
+    <b>This is wrapped</b>
+</test:wrappableTagFile>
+
+<test:wrappableTagFile />
+
+<test:wrappableTagFile>
+    <test:wrappableTagFile>
+        This also is wrapped
+    </test:wrappableTagFile>
+</test:wrappableTagFile>
+
+<test:nested id="topTag">
+    <div id="middleStaticDiv">
+        <strong>This is some nested text.</strong>
+    </div>
+</test:nested>
+
+</h:body>
+</html>

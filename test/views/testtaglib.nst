@@ -22,5 +22,9 @@
     </div>
 </test:nested>
 
+<test:body>
+This is the body text.
+</test:body>
+
 </h:body>
 </html>

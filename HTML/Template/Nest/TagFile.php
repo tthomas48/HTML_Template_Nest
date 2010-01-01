@@ -88,10 +88,11 @@ abstract class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
         foreach ($children as $child) {
             $childrenList[] = $child;
         }
-        foreach ($children as $child) {
+        foreach ($childrenList as $child) {
             $node->removeChild($child);
         }
         $node->appendChild($newChild);
+        
         $this->_processBodyToken($node, $childrenList);
 
         
@@ -124,20 +125,24 @@ abstract class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
      *
      * @return null
      */
-    private function _processBodyToken($node, $children)
+    private function _processBodyToken($node, $bodyChildren)
     {
         if ($node->hasChildNodes()) {
+            $currentChildren = array();
             foreach ($node->childNodes as $child) {
+                $currentChildren[] = $child;
+            }
+            foreach ($currentChildren as $child) {
                 if ($child->nodeType == XML_TEXT_NODE) {
                     if (trim($child->nodeValue) == '${#processBody#}') {
-                        $node->removeChild($child);
-                        foreach ($children as $nestedChild) {
-                            $node->appendChild($nestedChild);
+                        foreach ($bodyChildren as $nestedChild) {
+                            $node->insertBefore($nestedChild, $child);
                         }
+                        $node->removeChild($child);                        
                     }
                 }
                 if ($child->hasChildNodes()) {
-                    $this->_processBodyToken($child, $children);
+                    $this->_processBodyToken($child, $bodyChildren);
                 }
             }
         }

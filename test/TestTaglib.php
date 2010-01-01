@@ -47,6 +47,8 @@ class TestTaglib extends HTML_Template_Nest_Taglib
         "wrappableTagFile" => "TestTaglib_WrappableTagFile",
         "badXml" => "TestTaglib_BadXmlTagFile",
         "nested" => "TestTaglib_NestedTagFile",
+        "roundedContainer" => "TestTaglib_RoundedContainer",
+        "body" => "TestTaglib_Body",
     );
 }
 
@@ -156,4 +158,30 @@ class TestTaglib_NestedTagFile extends HTML_Template_Nest_TagFile
     {
         return dirname(__FILE__) . "/templates/nested_tagfile.tmpl";
     }
+}
+
+class TestTaglib_Body extends HTML_Template_Nest_TagFile
+{
+    /**
+     * gets the tag's filename
+     * 
+     * @see HTML_Template_Nest_Tagfile::getTagFilename()
+     * @return string filename
+     */
+    public function getTagFilename() {
+        return dirname(__FILE__) . "/templates/body.tmpl";
+    }    
+}
+class TestTaglib_RoundedContainer extends HTML_Template_Nest_TagFile
+{
+    /**
+     * gets the tag's filename
+     * 
+     * @see HTML_Template_Nest_Tagfile::getTagFilename()
+     * @return string filename
+     */
+    public function getTagFilename() {
+        return dirname(__FILE__) . "/templates/roundedcontainer.tmpl";
+    }
+
 }

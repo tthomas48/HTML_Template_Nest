@@ -130,10 +130,10 @@ class HTML_Template_Nest_Compiler
         if ($tag != null) {
             $output .= $tag->start();
         } elseif (strlen($node->localName) && !$node->hasChildNodes()) {
-            $output .= "<" . $node->nodeName . $this->addAttributes($node) . "/>";
+            $output .= "<" . $node->nodeName . $this->addAttributes($node) . $this->processNamespace($node) . "/>";
             return $output;
         } elseif (strlen($node->localName)) {
-            $output .= "<" . $node->nodeName  . $this->addAttributes($node) . ">";
+            $output .= "<" . $node->nodeName  . $this->addAttributes($node) . $this->processNamespace($node) .  ">";
         }
 
         if ($node->nodeType == XML_TEXT_NODE) {
@@ -185,6 +185,23 @@ class HTML_Template_Nest_Compiler
             $output .= $this->parser->parse($attribute->value) . "\"";
         }
         return $output;
+    }
+    
+    
+    /**
+     * Processes any namespaces that are not nest tag libraries.
+     * 
+     * @param DomNode $node node to process
+     * 
+     * @return string string of xml namespace declarations
+     */
+    protected function processNamespace($node)
+    {
+        if(strlen($node->prefix) == 0) {
+            return "";
+        }
+        $uri = $node->lookupNamespaceURI($node->prefix); 
+        return " xmlns:" . $node->prefix . "=\"" . $uri . "\"";
     }
 
 

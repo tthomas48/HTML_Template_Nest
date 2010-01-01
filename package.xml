@@ -27,7 +27,7 @@ Nest is compatible with PHP 5.
     </lead>
     <date>2010-01-01</date>
     <version>
-        <release>0.5.6</release>
+        <release>0.5.7</release>
         <api>0.5.1</api>
     </version>
     <stability>

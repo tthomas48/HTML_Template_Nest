@@ -112,7 +112,7 @@ class HTML_Template_Nest_Parser
         preg_match_all('/(\$\{[^}]+\})/', $text, $tokens);
         foreach ($tokens as $token) {
             if (count($token) > 0) {
-                $parsedToken = "<?php echo " . $this->parseToken($token[0]) . "?>";
+                $parsedToken = "<?php echo htmlentities(" . $this->parseToken($token[0]) . ")?>";
                 $text = str_replace($token, $parsedToken, $text);
             }
         }

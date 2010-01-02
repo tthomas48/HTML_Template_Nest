@@ -25,7 +25,7 @@ Nest is compatible with PHP 5.
         <email>tim@buyplaytix.com</email>
         <active>yes</active>
     </lead>
-    <date>2010-01-01</date>
+    <date>2010-01-02</date>
     <version>
         <release>0.5.8</release>
         <api>0.5.1</api>

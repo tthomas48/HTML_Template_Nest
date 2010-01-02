@@ -208,6 +208,12 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             "<?php echo htmlentities((\$_o(\$p, 'foo') == \"b\" ? \"black\" : \"red\"))?>", 
             $output
         );        
+        
+        $output = $parser->parseExpression('director->isLoggedIn() &amp;&amp; director->isSiteAdmin()');
+        $this->assertEquals(
+            "\$_o(\$p, 'director')->isLoggedIn() && \$_o(\$p, 'director')->isSiteAdmin()", 
+            $output
+        );        
     }
     
     /**

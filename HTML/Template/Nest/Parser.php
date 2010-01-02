@@ -142,6 +142,7 @@ class HTML_Template_Nest_Parser
      */
     public function parseExpression($expression)
     {
+        $expression = html_entity_decode($expression);
         
         $VAR_PATTERN = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';        
         // If it's only a single php variable, then
@@ -161,33 +162,34 @@ class HTML_Template_Nest_Parser
             '|' . $DOUBLE_QUOTE_PATTERN . 
             ')\s*,?\s*)*)\))?)+))/';
         if (preg_match_all($MEMBER_PATTERN, $expression, $matches, PREG_SET_ORDER)) {
-            
-            $variable = $matches[0]["variable"];
-            $operation = $matches[0]["operation"];
-            if (array_key_exists("params", $matches[0])) {
-                $paramList = array();
-                $params = $matches[0]["params"];
-                if (strlen($params)) {
-                    $paramList = explode(",", $params);
-                    for ($i = 0, $il = count($paramList); $i < $il; $i++) {
-                        $value = trim($paramList[$i]);
-                        if (preg_match("/^$VAR_PATTERN$/", $value)) {
-                            $value = $this->parseVariable($value);
+            for($i = 0; $i < count($matches); $i++) {
+                $variable = $matches[$i]["variable"];
+                $operation = $matches[$i]["operation"];
+                if (array_key_exists("params", $matches[$i])) {
+                    $paramList = array();
+                    $params = $matches[$i]["params"];
+                    if (strlen($params)) {
+                        $paramList = explode(",", $params);
+                        for ($j = 0, $jl = count($paramList); $j < $jl; $j++) {
+                            $value = trim($paramList[$j]);
+                            if (preg_match("/^$VAR_PATTERN$/", $value)) {
+                                $value = $this->parseVariable($value);
+                            }
+                            $paramList[$j] = $value;
                         }
-                        $paramList[$i] = $value;
                     }
+                    $operation = str_replace(
+                        $params, implode(",", $paramList), $operation
+                    );
                 }
-                $operation = str_replace(
-                    $params, implode(",", $paramList), $operation
+
+                $expression = str_replace(
+                    $matches[$i][0], 
+                    $this->parseVariable($variable) . $operation,
+                    $expression
                 );
-            }
-            
-            $expression = str_replace(
-                $expression, 
-                $matches[0][0], 
-                $this->parseVariable($variable) . $operation
-            );
-            $remaining = str_replace($matches[0][0], "", $remaining);
+                $remaining = str_replace($matches[$i][0], "", $remaining);
+            }                
         }
 
         

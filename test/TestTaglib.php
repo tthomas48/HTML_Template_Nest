@@ -45,6 +45,7 @@ class TestTaglib extends HTML_Template_Nest_Taglib
     protected $tags = array(
         "testTagFile" => "TestTaglib_TestTagFile", 
         "wrappableTagFile" => "TestTaglib_WrappableTagFile",
+        "wrappableWithAttributes" => "TestTaglib_WrappableWithAttributesTagFile",
         "badXml" => "TestTaglib_BadXmlTagFile",
         "nested" => "TestTaglib_NestedTagFile",
         "roundedContainer" => "TestTaglib_RoundedContainer",
@@ -184,4 +185,22 @@ class TestTaglib_RoundedContainer extends HTML_Template_Nest_TagFile
         return dirname(__FILE__) . "/templates/roundedcontainer.tmpl";
     }
 
+}
+
+class TestTaglib_WrappableWithAttributesTagFile 
+    extends HTML_Template_Nest_TagFile
+{
+    protected $declaredAttributes = array(
+        "attribute1", "attribute2", "attribute3"
+    );
+    /**
+     * gets the tag's filename
+     * 
+     * @see HTML_Template_Nest_Tagfile::getTagFilename()
+     * @return string filename
+     */
+    public function getTagFilename() 
+    {
+        return dirname(__FILE__) . "/templates/wrappable_tagfile.tmpl";
+    } 
 }

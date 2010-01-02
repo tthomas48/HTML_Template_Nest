@@ -52,6 +52,7 @@ class HTML_Template_Nest_Tag
     protected $node;
     protected $compiler;
     protected $attributes;
+    protected $declaredAttributes = array();
 
     /**
      * Constructor
@@ -68,6 +69,37 @@ class HTML_Template_Nest_Tag
         $this->node = $node;
         $this->attributes = $attributes;
     }
+    
+    public function getAttributeDeclarations() {
+        if(count($this->declaredAttributes) == 0) {
+            return "";
+        }
+        $output = "<?php ";
+        foreach($this->declaredAttributes as $key) {
+            $value = "";
+            if(array_key_exists($key, $this->attributes)) {
+                $value = $this->attributes[$key];
+            }
+            $this->registerVariable($key);
+            $output .= "\$$key = \"" . addslashes($value) . "\";\n";
+        }
+        $output .= "?>";
+        return $output;
+    }
+    
+    public function getAttributeUnsets() {
+        if(count($this->declaredAttributes) == 0) {
+            return "";
+        }
+                
+        $output = "<?php ";
+        foreach($this->declaredAttributes as $key) {
+            $this->unregisterVariable($key);
+            $output .= "unset(\$$key);\n";
+        }
+        $output .= "?>";
+        return $output;
+    }    
 
     /**
      * Registers a local variable. This variable will be used literally

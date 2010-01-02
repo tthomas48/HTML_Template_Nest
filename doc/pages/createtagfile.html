@@ -106,6 +106,21 @@ to add the standard tag library in our simple_tagfile.tmpl we'd do so like this:
 </pre>
 </fieldset>
 
+<h2>Exposing Attributes</h2>
+Attributes can be exposed with the $declaredAttributes array. Any keys
+in that array will be declared as local variables for the current tag and
+can be accessed like any other variable.
+
+<pre>
+class SimpleTaglib_SimpleTagFile extends HTML_Template_Nest_TagFile
+{
+    protected $declaredAttributes = array("param1", "param2");
+    ...
+}
+</pre>
+
+You can then access ${param1} and ${param2} inside the tag. 
+
 <p>That's it for tag files. They'll work in pretty much every simple situation.</p>
 </body>
 </html>

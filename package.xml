@@ -27,7 +27,7 @@ Nest is compatible with PHP 5.
     </lead>
     <date>2010-01-01</date>
     <version>
-        <release>0.5.7</release>
+        <release>0.5.8</release>
         <api>0.5.1</api>
     </version>
     <stability>
@@ -36,8 +36,7 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-XML namespaces that are not used as tag libraries are now passed through
-into the document.
+Added the ability to specify pass through attributes.
  </notes>
     <contents>
         <dir name="/">

@@ -1,4 +1,5 @@
-<html xmlns:test="urn:nsttl:TestTaglib" xmlns:h="http://www.w3.org/TR/html4/">
+<html xmlns:test="urn:nsttl:TestTaglib" xmlns:h="http://www.w3.org/TR/html4/"
+    xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard">
 <h:head>
 </h:head>
 <h:body>
@@ -25,6 +26,18 @@
 <test:body>
 This is the body text.
 </test:body>
+
+<test:wrappableWithAttributes attribute1="true" attribute2="false" attribute3="99">
+    <c:if test="attribute1 == 'true'">
+        Show me.
+    </c:if>
+    <c:if test="attribute2 == 'true'">
+        Don't show me
+    </c:if>
+    <c:if test="attribute3 > 50">
+        Show ${attribute3}
+    </c:if>
+</test:wrappableWithAttributes>
 
 </h:body>
 </html>

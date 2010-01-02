@@ -124,8 +124,8 @@ class HTML_Template_Nest_Compiler
         $tag = null;
         if (strpos($taglib, "urn:nsttl:") !== false) {
             $tag = $this->_loadTag($node);
+            $output .= $tag->getAttributeDeclarations();
         }
-
 
         if ($tag != null) {
             $output .= $tag->start();
@@ -163,6 +163,7 @@ class HTML_Template_Nest_Compiler
 
         if ($tag != null) {
             $output .= $tag->end();
+            $output .= $tag->getAttributeUnsets();
         } elseif (strlen($node->localName)) {
             $output .= "</" . $node->nodeName . ">";
         }

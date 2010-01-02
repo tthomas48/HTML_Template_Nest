@@ -27,8 +27,8 @@ Nest is compatible with PHP 5.
     </lead>
     <date>2010-01-02</date>
     <version>
-        <release>0.5.8</release>
-        <api>0.5.1</api>
+        <release>0.6.0</release>
+        <api>0.6</api>
     </version>
     <stability>
         <release>alpha</release>
@@ -36,7 +36,8 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-Added the ability to specify pass through attributes.
+Added output escaping and returning an empty value if the attribute doesn't
+exits in the $p array.
  </notes>
     <contents>
         <dir name="/">

@@ -113,6 +113,8 @@ class HTML_Template_Nest_View
         
         ob_start();
         $p = $this->_attributes;
+        $_os = create_function('$value', 'return htmlentities($value);');
+        $_o = create_function('$p, $key', '$value = array_key_exists($key, $p) ? $p[$key] : ""; return htmlentities($value);');
         include $compiledFilename;
         $contents = ob_get_contents();
         ob_end_clean();

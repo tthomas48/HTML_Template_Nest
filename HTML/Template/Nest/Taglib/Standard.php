@@ -225,7 +225,9 @@ class HTML_Template_Nest_Taglib_Standard_ForeachTag extends HTML_Template_Nest_T
      */   
     public function start() 
     {
-        $items = $this->getRequiredAttribute("items");
+        $items = $this->compiler->parser->parseExpression(
+            $this->getRequiredAttribute("items")
+        );
         $var = $this->getRequiredAttribute("var");
         $this->registerVariable($var);
         

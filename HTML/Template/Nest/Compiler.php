@@ -183,7 +183,7 @@ class HTML_Template_Nest_Compiler
         $output = "";
         foreach ($node->attributes as $attribute) {
             $output .= " " . $attribute->name . "=\""; 
-            $output .= htmlspecialchars($this->parser->parse($attribute->value), "\"");
+            $output .= htmlspecialchars($this->parser->parse($attribute->value));
             $output .= "\"";
         }
         return $output;

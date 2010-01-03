@@ -310,7 +310,6 @@ class HTML_Template_Nest_Taglib_Standard_SetTag extends HTML_Template_Nest_Tag
         );
         
         $output = "<?php ";
-        print gettype($value);
         if(strpos($value, "lambda") >= 0) {
             $output .= "\$$var = $value;\n";
         } else {

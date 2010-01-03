@@ -54,7 +54,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("<?php echo htmlentities(\$_o(\$p, 'some_var'))?>", $output);
         $parser->registerVariable('my_var');
         $output = $parser->parse('${my_var}');
-        $this->assertEquals("<?php echo htmlentities(\$_os(\$my_var))?>", $output);
+        $this->assertEquals("<?php echo htmlentities(\$my_var)?>", $output);
     }
 
     /**

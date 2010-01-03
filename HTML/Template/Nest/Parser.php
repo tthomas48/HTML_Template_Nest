@@ -270,7 +270,7 @@ class HTML_Template_Nest_Parser
     public function parseVariable($variable)
     {
         if ($this->containsVariable($variable)) {
-            return "\$_os(\$" . $variable . ")";
+            return "\$" . $variable;
         }
         return "\$_o(\$p, '" . $variable . "')";
 

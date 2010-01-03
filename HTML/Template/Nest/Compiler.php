@@ -183,7 +183,8 @@ class HTML_Template_Nest_Compiler
         $output = "";
         foreach ($node->attributes as $attribute) {
             $output .= " " . $attribute->name . "=\""; 
-            $output .= $this->parser->parse($attribute->value) . "\"";
+            $output .= addcslashes($this->parser->parse($attribute->value), "\"");
+            $output .= "\"";
         }
         return $output;
     }
@@ -202,7 +203,7 @@ class HTML_Template_Nest_Compiler
             return "";
         }
         $uri = $node->lookupNamespaceURI($node->prefix); 
-        return " xmlns:" . $node->prefix . "=\"" . $uri . "\"";
+        return " xmlns:" . $node->prefix . "=\"" . addcslashes($uri, "\"") . "\"";
     }
 
 

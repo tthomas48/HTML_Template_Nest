@@ -25,9 +25,9 @@ Nest is compatible with PHP 5.
         <email>tim@buyplaytix.com</email>
         <active>yes</active>
     </lead>
-    <date>2010-01-02</date>
+    <date>2010-01-03</date>
     <version>
-        <release>0.6.2</release>
+        <release>0.6.3</release>
         <api>0.6</api>
     </version>
     <stability>
@@ -36,9 +36,7 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-Do an html_entity_decode on all incoming expressions (mainly to handle &amp;&amp;).
-Fixed a bug in the parser with replacing method calls when more than one is 
-in an expression. 
+Escaped uris and attributes properly. 
  </notes>
     <contents>
         <dir name="/">

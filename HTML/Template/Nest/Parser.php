@@ -109,10 +109,18 @@ class HTML_Template_Nest_Parser
      */
     public function parse($text)
     {
-        preg_match_all('/(\$\{[^}]+\})/', $text, $tokens);
+        preg_match_all('/([$#]\{[^}]+\})/', $text, $tokens);
         foreach ($tokens as $token) {
             if (count($token) > 0) {
-                $parsedToken = "<?php echo htmlentities(" . $this->parseToken($token[0]) . ")?>";
+                $escape = true;
+                if(substr($token[0], 0, 1) == "#") {
+                    $escape = false;
+                }
+                $parsedToken = "<?php echo ";
+                $parsedToken .= ($escape ? "htmlentities(" : "");
+                $parsedToken .= $this->parseToken($token[0]);
+                $parsedToken .= ($escape ? ")" : "");
+                $parsedToken .= "?>";
                 $text = str_replace($token, $parsedToken, $text);
             }
         }

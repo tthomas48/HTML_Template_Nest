@@ -231,7 +231,17 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             "<?php echo htmlentities(str_replace('foo',\"bar\",\$_o(\$p, 'myarray')))?>",
             $output
         );
-        
-        
+    }
+    
+   /**
+     * Test #{} tokens
+     * 
+     * @return null
+     */    
+    public function testUnescaped()
+    {
+        $parser = new HTML_Template_Nest_Parser();
+        $output = $parser->parse('#{myval}');
+        $this->assertEquals("<?php echo \$_o(\$p, 'myval')?>", $output);        
     }
 }

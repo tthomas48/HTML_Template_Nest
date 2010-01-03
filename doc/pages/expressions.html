@@ -13,6 +13,9 @@ __set there didn't seem to be any point to using bean introspection like java.</
 <p>Expressions can be between the token tags ${}, or in tag attributes without
 the tags. The syntax is just like PHP except that attributes are specified
 without the leading $.</p>
+<p>You can specify html text that shouldn't be escaped with #{}. Be aware that
+doing so can potentially leave you exposed to XSS attacks. Be sure you cleanse
+the data you're presenting this way.</p>
 
 <h2>Simple Variables</h2>
 <p>The simplest form of the expression language are simply outputting variables 

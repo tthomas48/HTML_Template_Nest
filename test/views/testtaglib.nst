@@ -18,7 +18,7 @@
 </test:wrappableTagFile>
 
 <test:nested id="topTag">
-    <div id="middleStaticDiv">
+    <div id="middleStaticDiv" v='["required"]'>
         <strong>This is some nested text.</strong>
     </div>
 </test:nested>

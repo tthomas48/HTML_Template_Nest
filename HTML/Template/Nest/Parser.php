@@ -163,11 +163,12 @@ class HTML_Template_Nest_Parser
         // this handles members and methods
         $SINGLE_QUOTE_PATTERN = "(?:\"([^\"]|(?:\\\"))*\")";
         $DOUBLE_QUOTE_PATTERN = "(?:'([^']|(?:\\'))*')";
+        $NULL_PATTERN = '(?:[Nn][Uu][Ll][Ll])';
         $MEMBER_PATTERN = '/((?P<variable>' . $VAR_PATTERN . 
             ')(?P<operation>(?:->' . $VAR_PATTERN . 
             '(?:\((?P<params>(?:\s*(?:(?:' . 
             $VAR_PATTERN. ')|' . $SINGLE_QUOTE_PATTERN . 
-            '|' . $DOUBLE_QUOTE_PATTERN . 
+            '|' . $DOUBLE_QUOTE_PATTERN . '|' . $NULL_PATTERN . 
             ')\s*,?\s*)*)\))?)+))/';
         if (preg_match_all($MEMBER_PATTERN, $expression, $matches, PREG_SET_ORDER)) {
             for($i = 0; $i < count($matches); $i++) {
@@ -199,7 +200,6 @@ class HTML_Template_Nest_Parser
                 $remaining = str_replace($matches[$i][0], "", $remaining);
             }                
         }
-
         
         $FN_PATTERN = '/(fn:' . $VAR_PATTERN . 
             '(?:\((?P<params>(?:\s*(?:(?:' . $VAR_PATTERN . 
@@ -245,14 +245,35 @@ class HTML_Template_Nest_Parser
             }
         }
         
-        // handle any remaining tags
+        $nullMatch = preg_match_all(
+            '/' . $NULL_PATTERN . '/', $remaining, $matches
+        ); 
+        if ($nullMatch) {
+            foreach ($matches[0] as $match) {
+                $remaining = str_replace($match, "", $remaining);
+            }
+        }        
+        
         $REMAINING_VAR_PATTERN = '(?:^(' . $VAR_PATTERN . 
             '))|(?:[^>$](' . $VAR_PATTERN . ')$)';
         if (preg_match_all('/' . $VAR_PATTERN . '/', $remaining, $matches)) {
             foreach ($matches[0] as $match) {
+                
                 $value = $this->parseVariable($match);
-                $expression = str_replace($match, $value, $expression);
-                $remaining = str_replace($match, "", $remaining);
+                $pos = strpos($expression, $match);
+                while($pos !== false && $pos >= 0) {
+                    if($pos > 0 && substr($expression, $pos - 1, 1) != '\'') {
+                        $expression = substr($expression, 0, $pos) . $value . substr($expression, $pos + strlen($match));
+                    }
+                    elseif($pos == 0) {
+                        $expression = $value . substr($expression, strlen($match));
+                    }
+                    if($pos + strlen($value) >= strlen($expression)) {
+                        $pos = -1;
+                    } else {
+                        $pos = strpos($expression, $match, $pos + strlen($value));
+                    }
+                }
             }
         }
 
@@ -269,6 +290,9 @@ class HTML_Template_Nest_Parser
      */
     public function parseVariable($variable)
     {
+        if(strcasecmp($variable, "null") == 0) {
+            return "null";
+        }
         if ($this->containsVariable($variable)) {
             return "\$" . $variable;
         }

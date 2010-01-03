@@ -94,7 +94,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             $output
         );
         
-        // nested methos
+        // nested methods
         $output = $parser->parse(
             '${some_var->foo(bar, "bin")->bar()->bob("bo\"oo\"",bin)}'
         );
@@ -103,6 +103,17 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             "->bar()->bob(\"bo\\\"oo\\\"\",\$_o(\$p, 'bin')))?>", 
             $output
         );
+        
+        // null testing
+        $output = $parser->parseExpression("error != null &amp;&amp; error->getText() != ''");
+        $this->assertEquals(
+            "\$_o(\$p, 'error') != null && \$_o(\$p, 'error')->getText() != ''",
+            $output);
+            
+        $output = $parser->parseExpression("error->getText(null, 'foo') != ''");
+        $this->assertEquals(
+            "\$_o(\$p, 'error')->getText(null,'foo') != ''",
+            $output);            
     }
     
     /**

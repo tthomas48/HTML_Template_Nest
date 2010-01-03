@@ -53,7 +53,9 @@ class HTML_Template_Nest_Taglib_Standard extends HTML_Template_Nest_Taglib
         "if" => "HTML_Template_Nest_Taglib_Standard_IfTag", 
         "elseif" => "HTML_Template_Nest_Taglib_Standard_ElseIfTag", 
         "else" => "HTML_Template_Nest_Taglib_Standard_ElseTag", 
-        "foreach" => "HTML_Template_Nest_Taglib_Standard_ForeachTag"
+        "foreach" => "HTML_Template_Nest_Taglib_Standard_ForeachTag",
+        "set" => "HTML_Template_Nest_Taglib_Standard_SetTag",
+        
     );        
 }
 
@@ -271,5 +273,63 @@ class HTML_Template_Nest_Taglib_Standard_ForeachTag extends HTML_Template_Nest_T
         }
         $output .= "}";
         return $this->wrapOutput($output);
+    }
+}
+
+/**
+ * Set tag.
+ *
+ * Takes two attributes: @var the variable name for the value and @value.
+ * @value can be a nest expression. 
+ *
+ * @category  HTML_Template
+ * @package   Nest
+ * @author    Tim Thomas <tthomas48@php.net>
+ * @copyright 2009 The PHP Group
+ * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License 
+ * @version   Release: @package_version@
+ * @link      http://pear.php.net/package/HTML_Template_Nest
+ * @since     Class available since Release 1.0.0
+ */
+class HTML_Template_Nest_Taglib_Standard_SetTag extends HTML_Template_Nest_Tag
+{
+    /**
+     * Evaluated before the content of the tag.
+     *
+     * @return string content to add to php file
+     * 
+     * @see HTML_Template_Nest_Tag::start()
+     */   
+    public function start() 
+    {
+        $var = $this->getRequiredAttribute("var");
+        $this->registerVariable($var);        
+        
+        $value = $this->compiler->parser->parse(
+            $this->getRequiredAttribute("value"), false
+        );
+        
+        $output = "<?php ";
+        print gettype($value);
+        if(strpos($value, "lambda") >= 0) {
+            $output .= "\$$var = $value;\n";
+        } else {
+            $output .= "\$$var = \"" . addcslashes($value, "\"") . "\";\n";
+        }
+        $output .= "?>";
+        return $output;        
+    }
+    
+    /**
+     * Evaluated after the content of the tag.
+     *
+     * @return string content to add to php file
+     * 
+     * @see HTML_Template_Nest_Tag::end()
+     */   
+    public function end() 
+    {
+        $var = $this->getRequiredAttribute("var");
+        $this->unregisterVariable($var);
     }
 }

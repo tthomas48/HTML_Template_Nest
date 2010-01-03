@@ -107,7 +107,7 @@ class HTML_Template_Nest_Parser
      *
      * @return string parsed text with tokens replaced with php code
      */
-    public function parse($text)
+    public function parse($text, $addPhpBlock = true)
     {
         preg_match_all('/([$#]\{[^}]+\})/', $text, $tokens);
         foreach ($tokens as $token) {
@@ -116,11 +116,15 @@ class HTML_Template_Nest_Parser
                 if(substr($token[0], 0, 1) == "#") {
                     $escape = false;
                 }
-                $parsedToken = "<?php echo ";
-                $parsedToken .= ($escape ? "htmlentities(" : "");
+                if($addPhpBlock) {
+                    $parsedToken = "<?php echo ";
+                    $parsedToken .= ($escape ? "htmlentities(" : "");
+                }
                 $parsedToken .= $this->parseToken($token[0]);
-                $parsedToken .= ($escape ? ")" : "");
-                $parsedToken .= "?>";
+                if($addPhpBlock) {
+                    $parsedToken .= ($escape ? ")" : "");
+                    $parsedToken .= "?>";
+                }
                 $text = str_replace($token, $parsedToken, $text);
             }
         }

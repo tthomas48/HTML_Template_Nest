@@ -81,7 +81,11 @@ class HTML_Template_Nest_Tag
                 $value = $this->attributes[$key];
             }
             $this->registerVariable($key);
-            $output .= "\$$key = \"" . addslashes($value) . "\";\n";
+            if(is_callable($value)) {
+                $output .= "\$$key = $value;\n";
+            } else {
+                $output .= "\$$key = \"" . addcslashes($value, "\"") . "\";\n";
+            }
         }
         $output .= "?>";
         return $output;

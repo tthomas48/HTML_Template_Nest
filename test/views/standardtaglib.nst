@@ -40,4 +40,14 @@
         Make sure the correct variable prints once out of context:
         ${var}
     </body>
+    
+<c:set var="mylocalvar" value="${bulletClass}">
+    ${mylocalvar}
+</c:set>    
+Empty: ${mylocalvar}
+
+<c:set var="mylocalvar" value="bulletClass">
+    ${mylocalvar}
+</c:set>
+Empty: ${mylocalvar}
 </html>

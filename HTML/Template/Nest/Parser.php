@@ -116,8 +116,9 @@ class HTML_Template_Nest_Parser
                 if(substr($token[0], 0, 1) == "#") {
                     $escape = false;
                 }
+                $parsedToken = "";
                 if($addPhpBlock) {
-                    $parsedToken = "<?php echo ";
+                    $parsedToken .= "<?php echo ";
                     $parsedToken .= ($escape ? "htmlentities(" : "");
                 }
                 $parsedToken .= $this->parseToken($token[0]);

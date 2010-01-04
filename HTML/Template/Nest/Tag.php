@@ -81,8 +81,8 @@ class HTML_Template_Nest_Tag
                 $value = $this->attributes[$key];
             }
             $this->registerVariable($key);
-            if(strpos($value, "lambda") >= 0) {
-                $output .= "\$$key = $value;\n";
+            if (strpos($output, '$_o') >= 0) {
+                $output .= "\$$key = $value;\n";                
             } else {
                 $output .= "\$$key = \"" . addcslashes($value, "\"") . "\";\n";
             }

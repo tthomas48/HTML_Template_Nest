@@ -310,7 +310,7 @@ class HTML_Template_Nest_Taglib_Standard_SetTag extends HTML_Template_Nest_Tag
         );
         
         $output = "<?php ";
-        if (strpos($value, '$_o') >= 0) {
+        if (strpos($value, '$_o') !== false) {
             $output .= "\$$var = $value;\n";
         } else {
             $output .= "\$$var = \"" . addcslashes($value, "\"") . "\";\n";

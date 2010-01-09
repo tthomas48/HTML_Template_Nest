@@ -305,12 +305,13 @@ class HTML_Template_Nest_Taglib_Standard_SetTag extends HTML_Template_Nest_Tag
         $var = $this->getRequiredAttribute("var");
         $this->registerVariable($var);        
         
+        $input = $this->getRequiredAttribute("value"); 
         $value = $this->compiler->parser->parse(
-            $this->getRequiredAttribute("value"), false
+            $input, false
         );
         
         $output = "<?php ";
-        if (strpos($value, '$_o') !== false) {
+        if ($input != $value) {
             $output .= "\$$var = $value;\n";
         } else {
             $output .= "\$$var = \"" . addcslashes($value, "\"") . "\";\n";

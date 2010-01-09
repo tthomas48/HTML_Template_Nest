@@ -242,6 +242,14 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             "<?php echo htmlentities(str_replace('foo',\"bar\",\$_o(\$p, 'myarray')))?>",
             $output
         );
+
+        $parser->registerVariable('onsubmit');
+        $output = $parser->parse('${fn:strlen(onsubmit) > 0 ? onsubmit : \'return validate(this);\'}');
+        $parser->unregisterVariable('onsubmit');
+        $this->assertEquals(
+            '<?php echo htmlentities(strlen($onsubmit) > 0 ? $onsubmit : \'return validate(this);\')?>',
+            $output
+        );
     }
     
    /**

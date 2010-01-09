@@ -89,6 +89,7 @@ class HTML_Template_Nest_Compiler
             }
             $output = $this->compileDocument($document);
         } catch(DomException $e) {
+            print $e->getTraceAsString();
             restore_error_handler();
             $message= "Unable to parse: $filename; " . $e->getMessage();
             throw new HTML_Template_Nest_CompilerException($message);

@@ -50,6 +50,7 @@ class TestTaglib extends HTML_Template_Nest_Taglib
         "nested" => "TestTaglib_NestedTagFile",
         "roundedContainer" => "TestTaglib_RoundedContainer",
         "body" => "TestTaglib_Body",
+        "nestedFooter" => "TestTaglib_NestedFooter",
     );
 }
 
@@ -202,5 +203,19 @@ class TestTaglib_WrappableWithAttributesTagFile
     public function getTagFilename() 
     {
         return dirname(__FILE__) . "/templates/wrappable_tagfile.tmpl";
+    } 
+}
+
+class TestTaglib_NestedFooter extends HTML_Template_Nest_TagFile
+{
+    /**
+     * gets the tag's filename
+     * 
+     * @see HTML_Template_Nest_Tagfile::getTagFilename()
+     * @return string filename
+     */
+    public function getTagFilename() 
+    {
+        return dirname(__FILE__) . "/templates/nested_footer.tmpl";
     } 
 }

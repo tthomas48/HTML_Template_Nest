@@ -39,5 +39,16 @@ This is the body text.
     </c:if>
 </test:wrappableWithAttributes>
 
+<test:nestedFooter>
+    Some copywritten text.
+</test:nestedFooter>
+
+<test:nestedFooter>
+    Some copywritten text.
+    <test:roundedContainer>
+        <span class="footer">(c)2010</span>
+    </test:roundedContainer>
+</test:nestedFooter>
+
 </h:body>
 </html>

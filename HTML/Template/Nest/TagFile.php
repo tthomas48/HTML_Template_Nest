@@ -133,6 +133,22 @@ abstract class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
                 $currentChildren[] = $child;
             }
             foreach ($currentChildren as $child) {
+                if ($child->hasAttributes()
+                    && $child->getAttribute("_replace") == "true"
+                ) {
+                    $replacedNodes = false;
+                    for($i = 0; $i < count($bodyChildren); $i++) {
+                        $nestedChild = $bodyChildren[$i];
+                        if($nestedChild->nodeName == $child->nodeName) {
+                            $replacedNodes = true;
+                            $node->insertBefore($nestedChild, $child);    
+                        }
+                        unset($bodyChildren[$i]);
+                    }
+                    if($replacedNodes) {
+                        $node->removeChild($child);
+                    }
+                }
                 if ($child->nodeType == XML_TEXT_NODE) {
                     if (trim($child->nodeValue) == '${#processBody#}') {
                         foreach ($bodyChildren as $nestedChild) {

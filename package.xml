@@ -25,10 +25,10 @@ Nest is compatible with PHP 5.
         <email>tim@buyplaytix.com</email>
         <active>yes</active>
     </lead>
-    <date>2010-01-04</date>
+    <date>2010-01-09</date>
     <version>
-        <release>0.7.8</release>
-        <api>0.7.1</api>
+        <release>0.8</release>
+        <api>0.8</api>
     </version>
     <stability>
         <release>alpha</release>
@@ -36,7 +36,7 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-typo
+added the ability to replace nested tags.
  </notes>
     <contents>
         <dir name="/">

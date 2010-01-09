@@ -109,11 +109,11 @@ class HTML_Template_Nest_Parser
      */
     public function parse($text, $addPhpBlock = true)
     {
-        preg_match_all('/([$#]\{[^}]+\})/', $text, $tokens);
-        foreach ($tokens as $token) {
+        preg_match_all('/[$#]\{[^}]+\}/', $text, $tokens);
+        foreach ($tokens[0] as $token) {
             if (count($token) > 0) {
                 $escape = true;
-                if(substr($token[0], 0, 1) == "#") {
+                if(substr($token, 0, 1) == "#") {
                     $escape = false;
                 }
                 $parsedToken = "";
@@ -121,7 +121,7 @@ class HTML_Template_Nest_Parser
                     $parsedToken .= "<?php echo ";
                     $parsedToken .= ($escape ? "htmlentities(" : "");
                 }
-                $parsedToken .= $this->parseToken($token[0]);
+                $parsedToken .= $this->parseToken($token);
                 if($addPhpBlock) {
                     $parsedToken .= ($escape ? ")" : "");
                     $parsedToken .= "?>";

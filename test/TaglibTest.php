@@ -56,10 +56,19 @@ class HTML_Template_Nest_TaglibTest extends PHPUnit_Framework_TestCase
         $view = new HTML_Template_Nest_View("testtaglib");
         $view->addAttribute("testAttribute", "Testing 1..2..3..");
         $view->addAttribute("foo", "a");
+        $view->addAttribute("director", new Director());
         $filename = dirname(__FILE__) . "/viewoutput/testtaglib.html";
         $this->assertEquals(
             $view->render(), 
             trim(file_get_contents($filename))
         );       
+    }
+}
+class Director {
+    public function getProducerPath() {
+        return "/";
+    }
+    public function getImagePath() {
+        return "/images/";
     }
 }

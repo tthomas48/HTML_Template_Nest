@@ -258,7 +258,7 @@ class HTML_Template_Nest_Parser
                 $remaining = str_replace($match, "", $remaining);
             }
         }        
-        
+
         $REMAINING_VAR_PATTERN = '(?:^(' . $VAR_PATTERN . 
             '))|(?:[^>$](' . $VAR_PATTERN . ')$)';
         if (preg_match_all('/' . $VAR_PATTERN . '/', $remaining, $matches)) {
@@ -267,7 +267,7 @@ class HTML_Template_Nest_Parser
                 $value = $this->parseVariable($match);
                 $pos = strpos($expression, $match);
                 while($pos !== false && $pos >= 0) {
-                    if($pos > 0 && substr($expression, $pos - 1, 1) != '\'') {
+                    if($pos > 0 && substr($expression, $pos - 1, 1) != '\'' && substr($expression, $pos - 1, 1) != '$') {
                         $expression = substr($expression, 0, $pos) . $value . substr($expression, $pos + strlen($match));
                     }
                     elseif($pos == 0) {

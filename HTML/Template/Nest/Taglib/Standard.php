@@ -243,7 +243,7 @@ class HTML_Template_Nest_Taglib_Standard_ForeachTag extends HTML_Template_Nest_T
         $key = $this->getOptionalAttribute("key");
         if (!empty($key)) {
             $this->registerVariable($key);
-            $output .= "foreach($items as \$$var => \$$key) {\n";
+            $output .= "foreach($items as \$$key => \$$var) {\n";
             return $this->wrapOutput($output);
         }
         $output .= "foreach($items as \$$var) {\n";

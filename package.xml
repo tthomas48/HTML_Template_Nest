@@ -7,7 +7,7 @@ http://pear.php.net/dtd/tasks-1.0.xsd
 http://pear.php.net/dtd/package-2.0
 http://pear.php.net/dtd/package-2.0.xsd">
     <name>HTML_Template_Nest</name>
-    <channel>pear.buyplaytix.com</channel>
+    <channel>pearhub.org</channel>
     <summary>Compiled templating solution based upon java server pages.</summary>
     <description>Nest (Nestable Extensible Server Templates) is a templating language featuring
 * tag libraries
@@ -27,7 +27,7 @@ Nest is compatible with PHP 5.
     </lead>
     <date>2010-01-11</date>
     <version>
-        <release>0.8.4</release>
+        <release>0.8.5</release>
         <api>0.8</api>
     </version>
     <stability>
@@ -36,7 +36,7 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-foreach with associate array was backwards
+moving to pearhub
  </notes>
     <contents>
         <dir name="/">

@@ -225,6 +225,9 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             "\$_o(\$p, 'director')->isLoggedIn() && \$_o(\$p, 'director')->isSiteAdmin()", 
             $output
         );        
+        
+        // dual tokens
+        // ${_field->class != '' ? _field->class : ''}${(_field->error != '' ? ' errored' : '')}
     }
     
     /**

@@ -212,29 +212,17 @@ class HTML_Template_Nest_Parser
             }                
         }
         
-        
-        $FN_PATTERN = '/(fn:' . $VAR_PATTERN . 
-            '(?:\((?P<params>(?:\s*(?:(?:' . $VAR_PATTERN . 
+        $METHOD_PATTERN = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff:]*';
+        $FN_PATTERN = '/((fn:' . $METHOD_PATTERN . 
+            ')(?:\((?P<params>(?:\s*(?:(?:\$' . $VAR_PATTERN . 
+            ')|(?:fn:' . $METHOD_PATTERN . 
+            '\(.*?\))|(?:' . $VAR_PATTERN . 
             ')|' . $SINGLE_QUOTE_PATTERN . '|' . 
             $DOUBLE_QUOTE_PATTERN . ')\s*,?\s*)*)\)))/';
-        if (preg_match_all($FN_PATTERN, $remaining, $matches, PREG_SET_ORDER)) {
-            $match = substr($matches[0][0], 3);
-            if (array_key_exists("params", $matches[0])) {
-                $params = $matches[0]["params"];
-                if (strlen($params)) {
-                    $paramList = explode(",", $params);
-                    for ($i = 0, $il = count($paramList); $i < $il; $i++) {
-                        $value = trim($paramList[$i]);
-                        if (preg_match("/^$VAR_PATTERN$/", $value)) {
-                            $value = $this->parseVariable($value);
-                        }
-                        $paramList[$i] = $value;
-                    }
-                }
-                $match = str_replace($params, implode(",", $paramList), $match);
-                $expression = str_replace($matches[0][0], $match, $expression);
-                $remaining = str_replace($matches[0][0], "", $remaining);
-            }
+        while (preg_match_all($FN_PATTERN, $remaining, $matches, PREG_SET_ORDER)) {
+            $match = substr($matches[0][2], 3);
+            $expression = str_replace($matches[0][2], $match, $expression);
+            $remaining = str_replace($matches[0][2], "", $remaining);
         }
                 
         

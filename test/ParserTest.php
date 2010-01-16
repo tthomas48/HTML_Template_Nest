@@ -247,7 +247,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("<?php echo htmlentities(count(\$_o(\$p, 'myarray')))?>", $output);
         $output = $parser->parse('${fn:str_replace(\'foo\', "bar", myarray)}');
         $this->assertEquals(
-            "<?php echo htmlentities(str_replace('foo',\"bar\",\$_o(\$p, 'myarray')))?>",
+            "<?php echo htmlentities(str_replace('foo', \"bar\", \$_o(\$p, 'myarray')))?>",
             $output
         );
 
@@ -258,6 +258,36 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             '<?php echo htmlentities(strlen($onsubmit) > 0 ? $onsubmit : \'return validate(this);\')?>',
             $output
         );
+        
+        $parser->registerVariable('_field');
+        $output = $parser->parse('${fn:implode(\',\',_field->validators)}');
+        $parser->unregisterVariable('_field');
+        
+        $this->assertEquals(
+            '<?php echo htmlentities(implode(\',\',$_field->validators))?>',
+            $output
+        );
+        
+        // can we nest?
+        $parser->registerVariable('_field');
+        $output = $parser->parse('${fn:count(fn:implode(\',\',_field->validators))}');
+        $parser->unregisterVariable('_field');
+        
+        $this->assertEquals(
+            '<?php echo htmlentities(count(implode(\',\',$_field->validators)))?>',
+            $output
+        );
+        
+        // can we handle static?
+        $parser->registerVariable('_field');
+        $output = $parser->parse('${fn:MyClass::parse(_field->validators)}');
+        $parser->unregisterVariable('_field');
+        
+        $this->assertEquals(
+            '<?php echo htmlentities(MyClass::parse($_field->validators))?>',
+            $output
+        );        
+        
     }
     
    /**

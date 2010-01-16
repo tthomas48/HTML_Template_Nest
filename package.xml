@@ -23,10 +23,11 @@ Nest is compatible with PHP 5.
         <name>Tim Thomas</name>
         <user>tthomas48</user>
         <email>tim@buyplaytix.com</email>
+        <active>yes</active>
     </lead>
     <date>2010-01-16</date>
     <version>
-        <release>0.8.7</release>
+        <release>0.8.8</release>
         <api>0.8</api>
     </version>
     <stability>
@@ -35,7 +36,7 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-fixed a problem with the same token being parsed twice
+fixes for nested static functions and static class functions
  </notes>
     <contents>
         <dir name="/">

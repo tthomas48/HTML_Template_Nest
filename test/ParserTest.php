@@ -229,7 +229,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         $parser->registerVariable("_field");
         $output = $parser->parse('${_field->class != \'\' ? _field->class : \'\'}${(_field->error != \'\' ? \' errored\' : \'\')}');
         $this->assertEquals(
-        '<?php echo htmlentities(($_field->class != \'\' ? $_field->class : \'\'))?><?php echo htmlentities(($_field->error != \'\' ? \' errored\' : \'\'))?>',
+        '<?php echo htmlentities($_field->class != \'\' ? $_field->class : \'\')?><?php echo htmlentities(($_field->error != \'\' ? \' errored\' : \'\'))?>',
         $output);
         $parser->unregisterVariable("_field");
         

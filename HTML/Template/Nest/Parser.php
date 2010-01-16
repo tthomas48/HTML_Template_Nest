@@ -165,6 +165,7 @@ class HTML_Template_Nest_Parser
             $remaining = "";
         }
 
+        $processed = Array();
         // this handles members and methods
         $SINGLE_QUOTE_PATTERN = "(?:\"([^\"]|(?:\\\"))*\")";
         $DOUBLE_QUOTE_PATTERN = "(?:'([^']|(?:\\'))*')";
@@ -177,6 +178,11 @@ class HTML_Template_Nest_Parser
             ')\s*,?\s*)*)\))?)+))/';
         if (preg_match_all($MEMBER_PATTERN, $expression, $matches, PREG_SET_ORDER)) {
             for($i = 0; $i < count($matches); $i++) {
+                // this prevents us from processing the same token twice
+                if(in_array($matches[$i][0], $processed)) {
+                    continue;
+                }
+                
                 $variable = $matches[$i]["variable"];
                 $operation = $matches[$i]["operation"];
                 if (array_key_exists("params", $matches[$i])) {
@@ -196,7 +202,7 @@ class HTML_Template_Nest_Parser
                         $params, implode(",", $paramList), $operation
                     );
                 }
-
+                $processed[] = $matches[$i][0];
                 $expression = str_replace(
                     $matches[$i][0], 
                     $this->parseVariable($variable) . $operation,
@@ -205,6 +211,7 @@ class HTML_Template_Nest_Parser
                 $remaining = str_replace($matches[$i][0], "", $remaining);
             }                
         }
+        
         
         $FN_PATTERN = '/(fn:' . $VAR_PATTERN . 
             '(?:\((?P<params>(?:\s*(?:(?:' . $VAR_PATTERN . 
@@ -228,7 +235,8 @@ class HTML_Template_Nest_Parser
                 $expression = str_replace($matches[0][0], $match, $expression);
                 $remaining = str_replace($matches[0][0], "", $remaining);
             }
-        }        
+        }
+                
         
         // handle any string literals, we just remove them from remaining, they
         // get left as is in the expression
@@ -257,7 +265,8 @@ class HTML_Template_Nest_Parser
             foreach ($matches[0] as $match) {
                 $remaining = str_replace($match, "", $remaining);
             }
-        }        
+        }
+                
 
         $REMAINING_VAR_PATTERN = '(?:^(' . $VAR_PATTERN . 
             '))|(?:[^>$](' . $VAR_PATTERN . ')$)';

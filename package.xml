@@ -23,7 +23,6 @@ Nest is compatible with PHP 5.
         <name>Tim Thomas</name>
         <user>tthomas48</user>
         <email>tim@buyplaytix.com</email>
-        <active>yes</active>
     </lead>
     <date>2010-01-16</date>
     <version>

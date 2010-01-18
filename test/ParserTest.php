@@ -286,7 +286,20 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             '<?php echo htmlentities(MyClass::parse($_field->validators))?>',
             $output
-        );        
+        );
+
+        
+        $parser->registerVariable('col');
+        //$output = $parser->parse("\${fn:strpos(col, '&lt;img') &gt;= 0 ? 'centeredImg' : ''}");
+        $output = $parser->parse("\${fn:strpos(col, '&lt;img') &gt;= 0 ? 'centeredImg' : ''}", false);
+        $parser->unregisterVariable('col');
+        $this->assertEquals(
+            'strpos($col, \'<img\') >= 0 ? \'centeredImg\' : \'\'',
+            $output
+        );
+        
+    
+        
         
     }
     
@@ -299,6 +312,16 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
     {
         $parser = new HTML_Template_Nest_Parser();
         $output = $parser->parse('#{myval}');
-        $this->assertEquals("<?php echo \$_o(\$p, 'myval')?>", $output);        
+        $this->assertEquals("<?php echo \$_o(\$p, 'myval')?>", $output);
+
+        
+        $output = $parser->parse(
+            '${some_var->foo(bar, "bin")->bar()->bob("bo\"oo\"",bin)}'
+        );
+        $this->assertEquals(
+            "<?php echo htmlentities(\$_o(\$p, 'some_var')->foo(\$_o(\$p, 'bar'),\"bin\")" .
+            "->bar()->bob(\"bo\\\"oo\\\"\",\$_o(\$p, 'bin')))?>", 
+            $output
+        );
     }
 }

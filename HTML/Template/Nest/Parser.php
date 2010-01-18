@@ -167,21 +167,23 @@ class HTML_Template_Nest_Parser
 
         $processed = Array();
         // this handles members and methods
-        $SINGLE_QUOTE_PATTERN = "(?:\"([^\"]|(?:\\\"))*\")";
-        $DOUBLE_QUOTE_PATTERN = "(?:'([^']|(?:\\'))*')";
+        $DOUBLE_QUOTE_PATTERN = '(?:"(?:[^"]|(?:\\"))*?")';
+        $SINGLE_QUOTE_PATTERN = "(?:'(?:(?:[^'])|(?:\\'))*?')";
         $NULL_PATTERN = '(?:[Nn][Uu][Ll][Ll])';
         $MEMBER_PATTERN = '/((?P<variable>' . $VAR_PATTERN . 
             ')(?P<operation>(?:->' . $VAR_PATTERN . 
             '(?:\((?P<params>(?:\s*(?:(?:' . 
             $VAR_PATTERN. ')|' . $SINGLE_QUOTE_PATTERN . 
             '|' . $DOUBLE_QUOTE_PATTERN . '|' . $NULL_PATTERN . 
-            ')\s*,?\s*)*)\))?)+))/';
-        if (preg_match_all($MEMBER_PATTERN, $expression, $matches, PREG_SET_ORDER)) {
+            ')\s*,?\s*)*?)\))?)))/';
+        while (preg_match_all($MEMBER_PATTERN, $remaining, $matches, PREG_SET_ORDER)) {
+            print_r($matches);
             for($i = 0; $i < count($matches); $i++) {
                 // this prevents us from processing the same token twice
                 if(in_array($matches[$i][0], $processed)) {
                     continue;
                 }
+                print_r($matches);
                 
                 $variable = $matches[$i]["variable"];
                 $operation = $matches[$i]["operation"];
@@ -208,7 +210,9 @@ class HTML_Template_Nest_Parser
                     $this->parseVariable($variable) . $operation,
                     $expression
                 );
+                print $expression . "\n";
                 $remaining = str_replace($matches[$i][0], "", $remaining);
+                print $remaining . "\n";
             }                
         }
         

@@ -162,6 +162,7 @@ class HTML_Template_Nest_Parser
         $remaining = $expression;
 
         $parsedString = "";
+        $buffer = "";
         for($pos = 0, $expressionLength = strlen($expression); $pos < $expressionLength; $pos++) {
             $char = substr($expression, $pos, 1);
 

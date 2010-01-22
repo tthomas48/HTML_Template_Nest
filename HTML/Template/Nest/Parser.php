@@ -153,139 +153,103 @@ class HTML_Template_Nest_Parser
      *
      * @return string php code
      */
+    
     public function parseExpression($expression)
     {
-        $expression = html_entity_decode($expression);
+        $VAR_PATTERN = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
         
-        $VAR_PATTERN = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';        
-        // If it's only a single php variable, then
+        $expression = html_entity_decode($expression);
         $remaining = $expression;
-        if (preg_match("/^$VAR_PATTERN$/", $expression)) {
-            $expression = $this->parseVariable($expression);
-            $remaining = "";
-        }
 
-        $processed = Array();
-        // this handles members and methods
-        $DOUBLE_QUOTE_PATTERN = '(?:"(?:[^"]|(?:\\"))*?")';
-        $SINGLE_QUOTE_PATTERN = "(?:'(?:(?:[^'])|(?:\\'))*?')";
-        $NULL_PATTERN = '(?:[Nn][Uu][Ll][Ll])';
-        $MEMBER_PATTERN = '/((?P<variable>' . $VAR_PATTERN . 
-            ')(?P<operation>(?:->' . $VAR_PATTERN . 
-            '(?:\((?P<params>(?:\s*(?:(?:' . 
-            $VAR_PATTERN. ')|' . $SINGLE_QUOTE_PATTERN . 
-            '|' . $DOUBLE_QUOTE_PATTERN . '|' . $NULL_PATTERN . 
-            ')\s*,?\s*)*?)\))?)))/';
-        while (preg_match_all($MEMBER_PATTERN, $remaining, $matches, PREG_SET_ORDER)) {
-            print_r($matches);
-            for($i = 0; $i < count($matches); $i++) {
-                // this prevents us from processing the same token twice
-                if(in_array($matches[$i][0], $processed)) {
-                    continue;
-                }
-                print_r($matches);
-                
-                $variable = $matches[$i]["variable"];
-                $operation = $matches[$i]["operation"];
-                if (array_key_exists("params", $matches[$i])) {
-                    $paramList = array();
-                    $params = $matches[$i]["params"];
-                    if (strlen($params)) {
-                        $paramList = explode(",", $params);
-                        for ($j = 0, $jl = count($paramList); $j < $jl; $j++) {
-                            $value = trim($paramList[$j]);
-                            if (preg_match("/^$VAR_PATTERN$/", $value)) {
-                                $value = $this->parseVariable($value);
-                            }
-                            $paramList[$j] = $value;
+        $parsedString = "";
+        for($pos = 0, $expressionLength = strlen($expression); $pos < $expressionLength; $pos++) {
+            $char = substr($expression, $pos, 1);
+
+            switch($char) {
+                case "\"":
+                case "'":
+                    $endPos = $this->_jumpLiteral($char, $pos, $expression);
+                    $parsedString .= $buffer . substr($expression, $pos, $endPos - $pos + 1);
+                    $buffer = "";
+                    $pos = $endPos;
+                    break;
+                case ",":
+                    if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
+                        $buffer = $this->parseVariable($buffer);
+                    }
+                    $parsedString .= $buffer . ",";
+                    $buffer = ""; 
+                    break;
+                case "-":
+                    if(substr($expression, $pos + 1, 1) == ">") {
+                        if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
+                            $buffer = $this->parseVariable($buffer);
                         }
                     }
-                    $operation = str_replace(
-                        $params, implode(",", $paramList), $operation
-                    );
-                }
-                $processed[] = $matches[$i][0];
-                $expression = str_replace(
-                    $matches[$i][0], 
-                    $this->parseVariable($variable) . $operation,
-                    $expression
-                );
-                print $expression . "\n";
-                $remaining = str_replace($matches[$i][0], "", $remaining);
-                print $remaining . "\n";
-            }                
-        }
-        
-        $METHOD_PATTERN = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff:]*';
-        $FN_PATTERN = '/((fn:' . $METHOD_PATTERN . 
-            ')(?:\((?P<params>(?:\s*(?:(?:\$' . $VAR_PATTERN . 
-            ')|(?:fn:' . $METHOD_PATTERN . 
-            '\(.*?\))|(?:' . $VAR_PATTERN . 
-            ')|' . $SINGLE_QUOTE_PATTERN . '|' . 
-            $DOUBLE_QUOTE_PATTERN . ')\s*,?\s*)*)\)))/';
-        while (preg_match_all($FN_PATTERN, $remaining, $matches, PREG_SET_ORDER)) {
-            $match = substr($matches[0][2], 3);
-            $expression = str_replace($matches[0][2], $match, $expression);
-            $remaining = str_replace($matches[0][2], "", $remaining);
-        }
-                
-        
-        // handle any string literals, we just remove them from remaining, they
-        // get left as is in the expression
-        $singleQuoteMatch = preg_match_all(
-            '/' . $SINGLE_QUOTE_PATTERN . '/', $remaining, $matches
-        );
-        if ($singleQuoteMatch) {
-            foreach ($matches[0] as $match) {
-                $remaining = str_replace($match, "", $remaining);
-            }
-        }
-        
-        $doubleQuoteMatch = preg_match_all(
-            '/' . $DOUBLE_QUOTE_PATTERN . '/', $remaining, $matches
-        ); 
-        if ($doubleQuoteMatch) {
-            foreach ($matches[0] as $match) {
-                $remaining = str_replace($match, "", $remaining);
-            }
-        }
-        
-        $nullMatch = preg_match_all(
-            '/' . $NULL_PATTERN . '/', $remaining, $matches
-        ); 
-        if ($nullMatch) {
-            foreach ($matches[0] as $match) {
-                $remaining = str_replace($match, "", $remaining);
-            }
-        }
-                
-
-        $REMAINING_VAR_PATTERN = '(?:^(' . $VAR_PATTERN . 
-            '))|(?:[^>$](' . $VAR_PATTERN . ')$)';
-        if (preg_match_all('/' . $VAR_PATTERN . '/', $remaining, $matches)) {
-            foreach ($matches[0] as $match) {
-                
-                $value = $this->parseVariable($match);
-                $pos = strpos($expression, $match);
-                while($pos !== false && $pos >= 0) {
-                    if($pos > 0 && substr($expression, $pos - 1, 1) != '\'' && substr($expression, $pos - 1, 1) != '$') {
-                        $expression = substr($expression, 0, $pos) . $value . substr($expression, $pos + strlen($match));
+                    $parsedString .= $buffer . $char;
+                    $buffer = ""; 
+                    break;
+                case "(":
+                    $parsedString .= $buffer . $char;
+                    $buffer = ""; 
+                    break;
+                case "[":
+                    if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
+                        $buffer = $this->parseVariable($buffer);
                     }
-                    elseif($pos == 0) {
-                        $expression = $value . substr($expression, strlen($match));
+                    $parsedString .= $buffer . $char;
+                    $buffer = ""; 
+                    break;
+                case ")":
+                case "]":
+                    if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
+                        $buffer = $this->parseVariable($buffer);
                     }
-                    if($pos + strlen($value) >= strlen($expression)) {
-                        $pos = -1;
-                    } else {
-                        $pos = strpos($expression, $match, $pos + strlen($value));
+                    $parsedString .= $buffer . $char;
+                    $buffer = ""; 
+                    break;
+                case "f":
+                    if(substr($expression, $pos, 3) == 'fn:') {
+                        // we technically need to make sure that this is followed by an actual method name
+                        $pos = $pos + 2;
+                        break;
                     }
-                }
+                    $buffer .= $char;
+                    break;
+                case " ":
+                    if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
+                        $buffer = $this->parseVariable($buffer);
+                    }
+                    $parsedString .= $buffer . $char;
+                    $buffer = "";
+                    break;
+                default:
+                    $buffer .= $char;
             }
+             
         }
-
-        return $expression;
+        
+        if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
+            $buffer = $this->parseVariable($buffer);
+        }
+        $parsedString .= $buffer;
+        return $parsedString;
     }
+    
+    private function _jumpLiteral($delimiter, $startPos, $expression) {
 
+        for($pos = $startPos + 1, $expressionLength = strlen($expression); $pos < $expressionLength; $pos++) {
+            $char = substr($expression, $pos, 1);
+            switch($char) {
+                case $delimiter:
+                    if(substr($expression, $pos - 1, 1) != '\\') {
+                        return $pos;
+                    }
+            }
+        }
+        throw new Exception("Unable to find end to string literal: " . substr($expression, $startPos));
+    }
+    
     /**
      * Parses a single variable and returns either a reference to the global
      * array or the local variable.

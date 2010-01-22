@@ -72,7 +72,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("<?php echo htmlentities(\$_o(\$p, 'some_var')->FOO)?>", $output);
         $output = $parser->parse('${some_var->foo(bar,bin, baz)}');
         $this->assertEquals(
-            "<?php echo htmlentities(\$_o(\$p, 'some_var')->foo(\$_o(\$p, 'bar'),\$_o(\$p, 'bin'),\$_o(\$p, 'baz')))?>", 
+            "<?php echo htmlentities(\$_o(\$p, 'some_var')->foo(\$_o(\$p, 'bar'),\$_o(\$p, 'bin'), \$_o(\$p, 'baz')))?>", 
             $output
         );
         
@@ -81,7 +81,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
             "<?php echo htmlentities(\$_o(\$p, 'some_var')->foo(\$_o(\$p, 'bar')," .
-            "\"bin\",\$_o(\$p, 'baz'),'boo biscuits'))?>", 
+            "\"bin\", \$_o(\$p, 'baz'),  'boo biscuits'  ))?>", 
             $output
         );
 
@@ -90,7 +90,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
             "<?php echo htmlentities(\$_o(\$p, 'some_var')->foo(\$_o(\$p, 'bar'),\"bin\"" .
-            ",\$_o(\$p, 'baz'),'boo biscuit\'s brother'))?>", 
+            ", \$_o(\$p, 'baz'),  'boo biscuit\'s brother'  ))?>", 
             $output
         );
         
@@ -99,7 +99,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             '${some_var->foo(bar, "bin")->bar()->bob("bo\"oo\"",bin)}'
         );
         $this->assertEquals(
-            "<?php echo htmlentities(\$_o(\$p, 'some_var')->foo(\$_o(\$p, 'bar'),\"bin\")" .
+            "<?php echo htmlentities(\$_o(\$p, 'some_var')->foo(\$_o(\$p, 'bar'), \"bin\")" .
             "->bar()->bob(\"bo\\\"oo\\\"\",\$_o(\$p, 'bin')))?>", 
             $output
         );
@@ -112,7 +112,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             
         $output = $parser->parseExpression("error->getText(null, 'foo') != ''");
         $this->assertEquals(
-            "\$_o(\$p, 'error')->getText(null,'foo') != ''",
+            "\$_o(\$p, 'error')->getText(null, 'foo') != ''",
             $output);            
     }
     
@@ -120,7 +120,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
      * Test arrays
      * 
      * @return null
-     */        
+     */
     public function testArrays()
     {
         $parser = new HTML_Template_Nest_Parser();
@@ -145,7 +145,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
      * Test operators and parenthesis in expresions
      * 
      * @return null
-     */    
+     */
     public function testOperators()
     {
         $parser = new HTML_Template_Nest_Parser();
@@ -219,12 +219,12 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             "<?php echo htmlentities((\$_o(\$p, 'foo') == \"b\" ? \"black\" : \"red\"))?>", 
             $output
         );        
-        
         $output = $parser->parseExpression('director->isLoggedIn() &amp;&amp; director->isSiteAdmin()');
         $this->assertEquals(
             "\$_o(\$p, 'director')->isLoggedIn() && \$_o(\$p, 'director')->isSiteAdmin()", 
             $output
-        );        
+        );
+                
 
         $parser->registerVariable("_field");
         $output = $parser->parse('${_field->class != \'\' ? _field->class : \'\'}${(_field->error != \'\' ? \' errored\' : \'\')}');
@@ -307,7 +307,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
      * Test #{} tokens
      * 
      * @return null
-     */    
+     */
     public function testUnescaped()
     {
         $parser = new HTML_Template_Nest_Parser();
@@ -319,9 +319,43 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             '${some_var->foo(bar, "bin")->bar()->bob("bo\"oo\"",bin)}'
         );
         $this->assertEquals(
-            "<?php echo htmlentities(\$_o(\$p, 'some_var')->foo(\$_o(\$p, 'bar'),\"bin\")" .
+            "<?php echo htmlentities(\$_o(\$p, 'some_var')->foo(\$_o(\$p, 'bar'), \"bin\")" .
             "->bar()->bob(\"bo\\\"oo\\\"\",\$_o(\$p, 'bin')))?>", 
             $output
         );
     }
+    
+    public function testDescending()
+    {
+        $parser = new HTML_Template_Nest_Parser();
+        $output = $parser->parseExpression('"foo"');
+        $this->assertEquals('"foo"', $output);
+        
+        $output = $parser->parseExpression('"foo" . " bar"');
+        $this->assertEquals('"foo" . " bar"', $output);
+        
+        $output = $parser->parseExpression("'foo' . ' bar'");
+        $this->assertEquals("'foo' . ' bar'", $output);
+        
+        $output = $parser->parseExpression("fn:count(foo)");
+        $this->assertEquals("count(\$_o(\$p, 'foo'))", $output);        
+        
+        $output = $parser->parseExpression("fn:count(null)");
+        $this->assertEquals("count(null)", $output);
+
+        $output = $parser->parseExpression("fn:count(foo, bar )");
+        $this->assertEquals("count(\$_o(\$p, 'foo'), \$_o(\$p, 'bar') )", $output);        
+        
+        $output = $parser->parseExpression("foo->bar");
+        $this->assertEquals("\$_o(\$p, 'foo')->bar", $output);        
+        
+        $output = $parser->parseExpression("foo->bar->boo->bin");
+        $this->assertEquals("\$_o(\$p, 'foo')->bar->boo->bin", $output);
+
+        $output = $parser->parseExpression("foo");
+        $this->assertEquals("\$_o(\$p, 'foo')", $output);        
+        
+        
+    }
+    
 }

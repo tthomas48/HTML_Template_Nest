@@ -52,10 +52,10 @@ class HTML_Template_Nest_Taglib_Standard extends HTML_Template_Nest_Taglib
     protected $tags = array(
         "if" => "HTML_Template_Nest_Taglib_Standard_IfTag", 
         "elseif" => "HTML_Template_Nest_Taglib_Standard_ElseIfTag", 
-        "else" => "HTML_Template_Nest_Taglib_Standard_ElseTag", 
+        "else" => "HTML_Template_Nest_Taglib_Standard_ElseTag",
+        "for" => "HTML_Template_Nest_Taglib_Standard_ForTag", 
         "foreach" => "HTML_Template_Nest_Taglib_Standard_ForeachTag",
         "set" => "HTML_Template_Nest_Taglib_Standard_SetTag",
-        
     );        
 }
 
@@ -331,5 +331,70 @@ class HTML_Template_Nest_Taglib_Standard_SetTag extends HTML_Template_Nest_Tag
     {
         $var = $this->getRequiredAttribute("var");
         $this->unregisterVariable($var);
+    }
+}
+
+/**
+ * For tag.
+ *
+ * Takes two attributes: @test the expression to test, @var the variable name 
+ * for the index optionally @increment (this number will be added to the index, by
+ * default it is 1, can be negative), and @start which is the start index 
+ *
+ * @category  HTML_Template
+ * @package   Nest
+ * @author    Tim Thomas <tthomas48@php.net>
+ * @copyright 2009 The PHP Group
+ * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License 
+ * @version   Release: @package_version@
+ * @link      http://pear.php.net/package/HTML_Template_Nest
+ * @since     Function available since Release 0.9.4
+ */
+class HTML_Template_Nest_Taglib_Standard_ForTag extends HTML_Template_Nest_Tag
+{
+    /**
+     * Evaluated before the content of the tag.
+     *
+     * @return string content to add to php file
+     * 
+     * @see HTML_Template_Nest_Tag::start()
+     */   
+    public function start() 
+    {
+        $var = $this->getRequiredAttribute("var");
+        $this->registerVariable($var);
+        
+        $test = $this->compiler->parser->parseExpression(
+            $this->getRequiredAttribute("test")
+        );
+        
+        $output = "";
+        $increment = $this->getOptionalAttribute("increment");
+        if (empty($increment)) {
+            $increment = 1;
+        }
+        $start = $this->getOptionalAttribute("start");
+        if (empty($start)) {
+            $start = 0;
+        }        
+        
+        $output .= "for(\$$var = $start; $test; \$$var = \$$var + $increment) {\n";
+        return $this->wrapOutput($output);
+    }
+
+    /**
+     * Evaluated after the content of the tag.
+     *
+     * @return string content to add to php file
+     * 
+     * @see HTML_Template_Nest_Tag::end()
+     */   
+    public function end() 
+    {
+        $output = "";
+        $var = $this->getRequiredAttribute("var");        
+        $this->unregisterVariable($var);
+        $output .= "}";
+        return $this->wrapOutput($output);
     }
 }

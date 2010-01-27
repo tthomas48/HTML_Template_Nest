@@ -238,7 +238,7 @@ class HTML_Template_Nest_Parser
             $parsedString .= $buffer;
             return $parsedString;
         } catch(HTML_Template_Nest_ParseException $e) {
-            $e->setExpresson($expression);
+            $e->setExpression($expression);
             throw $e;            
         }
     }

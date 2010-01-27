@@ -48,7 +48,7 @@ class HTML_Template_Nest_ParseException extends Exception
      *
      * @return HTML_Template_Nest_ParseException
      */
-    public function __construct($message, $node)
+    public function __construct($message, $node = null)
     {
         // TODO: in php 5.3 we can print line number $node->getLineNo()
         parent::__construct($message);

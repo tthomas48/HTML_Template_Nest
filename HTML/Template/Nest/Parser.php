@@ -29,6 +29,7 @@
  * @since     File available since Release 1.0
 
  */
+require_once 'HTML/Template/Nest/ParseException.php';
 /**
  * Compiles nest expressions into php code.
  *
@@ -156,85 +157,90 @@ class HTML_Template_Nest_Parser
     
     public function parseExpression($expression)
     {
-        $VAR_PATTERN = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
-        
-        $expression = html_entity_decode($expression);
-        $remaining = $expression;
-
-        $parsedString = "";
-        $buffer = "";
-        for($pos = 0, $expressionLength = strlen($expression); $pos < $expressionLength; $pos++) {
-            $char = substr($expression, $pos, 1);
-
-            switch($char) {
-                case "\"":
-                case "'":
-                    $endPos = $this->_jumpLiteral($char, $pos, $expression);
-                    $parsedString .= $buffer . substr($expression, $pos, $endPos - $pos + 1);
-                    $buffer = "";
-                    $pos = $endPos;
-                    break;
-                case ",":
-                    if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
-                        $buffer = $this->parseVariable($buffer);
-                    }
-                    $parsedString .= $buffer . ",";
-                    $buffer = ""; 
-                    break;
-                case "-":
-                    if(substr($expression, $pos + 1, 1) == ">") {
+        try {
+            $VAR_PATTERN = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
+            
+            $expression = html_entity_decode($expression);
+            $remaining = $expression;
+    
+            $parsedString = "";
+            $buffer = "";
+            for($pos = 0, $expressionLength = strlen($expression); $pos < $expressionLength; $pos++) {
+                $char = substr($expression, $pos, 1);
+    
+                switch($char) {
+                    case "\"":
+                    case "'":
+                        $endPos = $this->_jumpLiteral($char, $pos, $expression);
+                        $parsedString .= $buffer . substr($expression, $pos, $endPos - $pos + 1);
+                        $buffer = "";
+                        $pos = $endPos;
+                        break;
+                    case ",":
                         if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
                             $buffer = $this->parseVariable($buffer);
                         }
-                    }
-                    $parsedString .= $buffer . $char;
-                    $buffer = ""; 
-                    break;
-                case "(":
-                    $parsedString .= $buffer . $char;
-                    $buffer = ""; 
-                    break;
-                case "[":
-                    if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
-                        $buffer = $this->parseVariable($buffer);
-                    }
-                    $parsedString .= $buffer . $char;
-                    $buffer = ""; 
-                    break;
-                case ")":
-                case "]":
-                    if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
-                        $buffer = $this->parseVariable($buffer);
-                    }
-                    $parsedString .= $buffer . $char;
-                    $buffer = ""; 
-                    break;
-                case "f":
-                    if(substr($expression, $pos, 3) == 'fn:') {
-                        // we technically need to make sure that this is followed by an actual method name
-                        $pos = $pos + 2;
+                        $parsedString .= $buffer . ",";
+                        $buffer = ""; 
                         break;
-                    }
-                    $buffer .= $char;
-                    break;
-                case " ":
-                    if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
-                        $buffer = $this->parseVariable($buffer);
-                    }
-                    $parsedString .= $buffer . $char;
-                    $buffer = "";
-                    break;
-                default:
-                    $buffer .= $char;
+                    case "-":
+                        if(substr($expression, $pos + 1, 1) == ">") {
+                            if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
+                                $buffer = $this->parseVariable($buffer);
+                            }
+                        }
+                        $parsedString .= $buffer . $char;
+                        $buffer = ""; 
+                        break;
+                    case "(":
+                        $parsedString .= $buffer . $char;
+                        $buffer = ""; 
+                        break;
+                    case "[":
+                        if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
+                            $buffer = $this->parseVariable($buffer);
+                        }
+                        $parsedString .= $buffer . $char;
+                        $buffer = ""; 
+                        break;
+                    case ")":
+                    case "]":
+                        if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
+                            $buffer = $this->parseVariable($buffer);
+                        }
+                        $parsedString .= $buffer . $char;
+                        $buffer = ""; 
+                        break;
+                    case "f":
+                        if(substr($expression, $pos, 3) == 'fn:') {
+                            // we technically need to make sure that this is followed by an actual method name
+                            $pos = $pos + 2;
+                            break;
+                        }
+                        $buffer .= $char;
+                        break;
+                    case " ":
+                        if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
+                            $buffer = $this->parseVariable($buffer);
+                        }
+                        $parsedString .= $buffer . $char;
+                        $buffer = "";
+                        break;
+                    default:
+                        $buffer .= $char;
+                }
+                 
             }
-             
+            
+            if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
+                $buffer = $this->parseVariable($buffer);
+            }
+            $parsedString .= $buffer;
+            return $parsedString;
+        } catch(HTML_Template_Nest_ParseException $e) {
+            $e->setExpresson($expression);
+            throw $e;            
         }
-        
-        if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
-            $buffer = $this->parseVariable($buffer);
-        }
-        $parsedString .= $buffer;
-        return $parsedString;
     }
     
     private function _jumpLiteral($delimiter, $startPos, $expression) {
@@ -248,7 +254,7 @@ class HTML_Template_Nest_Parser
                     }
             }
         }
-        throw new Exception("Unable to find end to string literal: " . substr($expression, $startPos));
+        throw new HTML_Template_Nest_ParseException("Unable to find end to string literal[$startPos]: " . substr($expression, $startPos));
     }
     
     /**

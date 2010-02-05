@@ -50,6 +50,7 @@ require_once "HTML/Template/Nest/CompilerException.php";
 class HTML_Template_Nest_Compiler
 {
     public $parser;
+    public $tagStack = array();
 
     /**
      * Compile a nst into a php file and cache the output
@@ -109,6 +110,11 @@ class HTML_Template_Nest_Compiler
     {
         return $this->processChildren($document);
     }
+    
+    public function compileNode($node)
+    {
+        return $this->processChildren($node);
+    }
 
     /**
      * Process a node and all its children. Called recursively.
@@ -119,12 +125,14 @@ class HTML_Template_Nest_Compiler
      */
     protected function processChildren($node)
     {
+                
         $output = "";
         $taglib = $node->lookupNamespaceURI($node->prefix);
         
         $tag = null;
         if (strpos($taglib, "urn:nsttl:") !== false) {
             $tag = $this->_loadTag($node);
+            $this->tagStack[] = Array($tag);
             $output .= $tag->getAttributeDeclarations();
         }
 
@@ -169,6 +177,18 @@ class HTML_Template_Nest_Compiler
             $output .= "</" . $node->nodeName . ">";
         }
         return $output;
+    }
+    
+    public function getParentByType($type) {
+        $reverseStack = array_reverse($this->tagStack);
+        foreach($reverseStack as $stack) {
+            foreach($stack as $tag) {
+                if(is_a($tag, $type)) {
+                    return $tag;
+                }
+            }
+        }
+        return null;
     }
 
     /**

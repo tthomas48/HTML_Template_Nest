@@ -151,7 +151,12 @@ class HTML_Template_Nest_Compiler
 
         if ($tag != null) {
             $nodeChildren = $tag->getNodeChildren();
+            
+            $childrenList = array();
             foreach ($nodeChildren as $child) {
+                $childrenList[] = $child;
+            }
+            foreach ($childrenList as $child) {
                 $output .= $this->processChildren($child);
             }            
         } elseif ($node->hasChildNodes()) {

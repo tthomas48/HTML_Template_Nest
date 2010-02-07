@@ -54,5 +54,14 @@ This is the body text.
     </test:roundedContainer>
 </test:nestedFooter>
 
+<c:if test="1 == 1">
+    <test:body>
+        First body
+    </test:body>
+    <test:body>
+        Second body
+    </test:body>
+</c:if>
+
 </h:body>
 </html>

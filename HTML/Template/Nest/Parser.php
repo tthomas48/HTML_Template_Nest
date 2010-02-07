@@ -270,7 +270,13 @@ class HTML_Template_Nest_Parser
         if(strcasecmp($variable, "null") == 0) {
             return "null";
         }
-        if ($this->containsVariable($variable)) {
+        elseif(strcasecmp($variable, "true") == 0) {
+            return "true";
+        }
+        elseif(strcasecmp($variable, "false") == 0) {
+            return "false";
+        }
+        elseif ($this->containsVariable($variable)) {
             return "\$" . $variable;
         }
         return "\$_o(\$p, '" . $variable . "')";

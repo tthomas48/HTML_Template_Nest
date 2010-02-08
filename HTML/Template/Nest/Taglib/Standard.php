@@ -56,6 +56,7 @@ class HTML_Template_Nest_Taglib_Standard extends HTML_Template_Nest_Taglib
         "for" => "HTML_Template_Nest_Taglib_Standard_ForTag", 
         "foreach" => "HTML_Template_Nest_Taglib_Standard_ForeachTag",
         "set" => "HTML_Template_Nest_Taglib_Standard_SetTag",
+        "pre" => "HTML_Template_Nest_Taglib_Standard_PreTag",
     );        
 }
 
@@ -397,4 +398,9 @@ class HTML_Template_Nest_Taglib_Standard_ForTag extends HTML_Template_Nest_Tag
         $output .= "}";
         return $this->wrapOutput($output);
     }
+}
+
+class HTML_Template_Nest_Taglib_Standard_PreTag extends HTML_Template_Nest_Tag
+{
+    
 }

@@ -78,7 +78,7 @@ class HTML_Template_Nest_Tag
         foreach($this->declaredAttributes as $key) {
             $value = "";
             if(array_key_exists($key, $this->attributes)) {
-                $value = $this->compiler->parser->parse($this->attributes[$key]);
+                $value = $this->compiler->parser->parse($this->attributes[$key], false);
             }
             $this->registerVariable($key);
             if (strpos($value, '$_o') !== false) {

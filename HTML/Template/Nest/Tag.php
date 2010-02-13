@@ -80,6 +80,9 @@ class HTML_Template_Nest_Tag
             if(array_key_exists($key, $this->attributes)) {
                 $value = $this->compiler->parser->parse($this->attributes[$key], false);
             }
+            // TODO: How do we handle this:
+            // $action = document.location = '$_o($p, 'referer')'; return false;;
+            
             $this->registerVariable($key);
             if (strpos($value, '$_o') !== false) {
                 $output .= "\$$key = $value;\n";                

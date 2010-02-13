@@ -27,7 +27,7 @@ Nest is compatible with PHP 5.
     </lead>
     <date>2010-01-22</date>
     <version>
-        <release>0.9.14</release>
+        <release>0.9.15</release>
         <api>0.9.14</api>
     </version>
     <stability>
@@ -36,7 +36,7 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-added pre tag
+handle strings with nested tags
  </notes>
     <contents>
         <dir name="/">

@@ -78,13 +78,10 @@ class HTML_Template_Nest_Tag
         foreach($this->declaredAttributes as $key) {
             $value = "";
             if(array_key_exists($key, $this->attributes)) {
-                $value = $this->compiler->parser->parse($this->attributes[$key], false);
+                $value = $this->compiler->parser->parse($this->attributes[$key], false, "\"");
             }
-            // TODO: How do we handle this:
-            // $action = document.location = '$_o($p, 'referer')'; return false;;
-            
             $this->registerVariable($key);
-            if (strpos($value, '$_o') !== false) {
+            if (strpos($value, '$_o') == 0) {
                 $output .= "\$$key = $value;\n";                
             } else {
                 $output .= "\$$key = \"" . addcslashes($value, "\"") . "\";\n";

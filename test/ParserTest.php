@@ -354,8 +354,13 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
 
         $output = $parser->parseExpression("foo");
         $this->assertEquals("\$_o(\$p, 'foo')", $output);        
-        
-        
+    }
+    
+    public function testQuoted() 
+    {
+        $parser = new HTML_Template_Nest_Parser();
+        $output = $parser->parse('document.location = \'${referer}\'; return false;', false, "\"");
+        $this->assertEquals("document.location = '\" . \$_o(\$p, 'referer') . \"'; return false;", $output);
     }
     
 }

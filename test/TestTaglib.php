@@ -69,6 +69,8 @@ class TestTaglib extends HTML_Template_Nest_Taglib
  */
 class TestTaglib_TestTagFile extends HTML_Template_Nest_TagFile
 {
+
+    public $declaredAttributes = array("name", "key", "bar", "boo");
     /**
      * gets the tag's filename
      * 

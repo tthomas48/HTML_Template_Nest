@@ -110,6 +110,9 @@ class HTML_Template_Nest_Parser
      */
     public function parse($text, $addPhpBlock = true, $quoteChar = "")
     {
+        // first escape anything we need to escape
+        $text = addcslashes($text, $quoteChar);
+        
         preg_match_all('/[$#]\{[^}]+\}/', $text, $tokens);
         foreach ($tokens[0] as $token) {
             if (count($token) > 0) {

@@ -362,5 +362,11 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         $output = $parser->parse('document.location = \'${referer}\'; return false;', false, "\"");
         $this->assertEquals("document.location = '\" . \$_o(\$p, 'referer') . \"'; return false;", $output);
     }
+    public function testNested()
+    {
+        $parser = new HTML_Template_Nest_Parser();
+        $output = $parser->parse('${(production->isNew() ? \'Create\' : \'Save\')} Production');
+        $this->assertEquals("<?php echo htmlentities((\$_o(\$p, 'production')->isNew() ? 'Create' : 'Save'))?> Production", $output);
+    }
     
 }

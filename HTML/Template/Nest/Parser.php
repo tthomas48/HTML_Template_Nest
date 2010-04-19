@@ -125,7 +125,14 @@ class HTML_Template_Nest_Parser
                     $parsedToken .= "<?php echo ";
                     $parsedToken .= ($escape ? "htmlentities(" : "");
                 }
-                $parsedToken .= $this->parseToken($token, $quoteChar);
+                if($quoteChar) {
+                    $parsedToken .= $quoteChar . " . ";
+                }
+                //$parsedToken .= $this->parseToken($token, $quoteChar);
+                $parsedToken .= $this->parseToken($token);
+                if($quoteChar) {
+                    $parsedToken .=  " . " . $quoteChar;
+                }
                 if($addPhpBlock) {
                     $parsedToken .= ($escape ? ")" : "");
                     $parsedToken .= "?>";
@@ -168,6 +175,7 @@ class HTML_Template_Nest_Parser
     
             $parsedString = "";
             $buffer = "";
+            $needEndQuote = false;
             for($pos = 0, $expressionLength = strlen($expression); $pos < $expressionLength; $pos++) {
                 $char = substr($expression, $pos, 1);
     
@@ -189,7 +197,8 @@ class HTML_Template_Nest_Parser
                     case "-":
                         if(substr($expression, $pos + 1, 1) == ">") {
                             if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
-                                $buffer = $this->parseVariable($buffer, $quoteChar);
+                                $buffer = $this->parseVariable($buffer, $quoteChar, "");
+                                $needEndQuote = true;
                             }
                         }
                         $parsedString .= $buffer . $char;
@@ -201,7 +210,8 @@ class HTML_Template_Nest_Parser
                         break;
                     case "[":
                         if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
-                            $buffer = $this->parseVariable($buffer, $quoteChar);
+                            $buffer = $this->parseVariable($buffer, $quoteChar, "");
+                            $needEndQuote = true;
                         }
                         $parsedString .= $buffer . $char;
                         $buffer = ""; 
@@ -268,8 +278,11 @@ class HTML_Template_Nest_Parser
      * 
      * @return string php code to echo the variable
      */
-    public function parseVariable($variable, $quoteChar = "")
+    public function parseVariable($variable, $startQuoteChar = "", $endQuoteChar = null)
     {
+        if($endQuoteChar === null) {
+            $endQuoteChar = $startQuoteChar;
+        }
         if(strcasecmp($variable, "null") == 0) {
             return "null";
         }
@@ -284,9 +297,11 @@ class HTML_Template_Nest_Parser
         }
         $prefix = "";
         $suffix = "";
-        if($quoteChar != "") {
-            $prefix = $quoteChar . " . ";
-            $suffix = " . " . $quoteChar;
+        if($startQuoteChar != "") {
+            $prefix = $startQuoteChar . " . ";
+            if($endQuoteChar != null) {
+                $suffix = " . " . $endQuoteChar;
+            }
         }
         return $prefix . "\$_o(\$p, '" . $variable . "')" . $suffix;
 

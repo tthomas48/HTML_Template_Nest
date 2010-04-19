@@ -63,5 +63,9 @@ This is the body text.
     </test:body>
 </c:if>
 
+<test:wrappableWithAttributes attribute1="${person->isNew() ? 'Create' : 'Save'} Person">
+foo
+</test:wrappableWithAttributes>
+
 </h:body>
 </html>

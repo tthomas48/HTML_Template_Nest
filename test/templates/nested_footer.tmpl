@@ -1,6 +1,8 @@
 <div xmlns:test="urn:nsttl:TestTaglib">
-    ${#processBody#}
     <test:roundedContainer _replace="true">
         <span class="footer">(c)2008</span>
     </test:roundedContainer>
+    <div id="rightPane">
+        ${#processBody#}
+    </div>
 </div>

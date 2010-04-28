@@ -142,8 +142,8 @@ abstract class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
                         if($nestedChild->nodeName == $child->nodeName) {
                             $replacedNodes = true;
                             $node->insertBefore($nestedChild, $child);    
+                            unset($bodyChildren[$i]);
                         }
-                        unset($bodyChildren[$i]);
                     }
                     if($replacedNodes) {
                         $node->removeChild($child);

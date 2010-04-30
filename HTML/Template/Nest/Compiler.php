@@ -82,7 +82,7 @@ class HTML_Template_Nest_Compiler
             $this->parser = new HTML_Template_Nest_Parser();
             $document = new DomDocument();
             try {
-                $document->loadXml(file_get_contents($filename));
+                $document->loadXml(file_get_contents($filename), LIBXML_NOCDATA);
             } catch(Exception $e) {
                 restore_error_handler();
                 $message= "Unable to parse: $filename; " . $e->getMessage();
@@ -90,7 +90,6 @@ class HTML_Template_Nest_Compiler
             }
             $output = $this->compileDocument($document);
         } catch(DomException $e) {
-            print $e->getTraceAsString();
             restore_error_handler();
             $message= "Unable to parse: $filename; " . $e->getMessage();
             throw new HTML_Template_Nest_CompilerException($message);

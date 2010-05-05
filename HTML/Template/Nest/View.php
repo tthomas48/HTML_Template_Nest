@@ -51,7 +51,7 @@ class HTML_Template_Nest_View
     private $_attributes = Array();
     private $_name = "";
     public static $VIEW_DIR = "views";
-    public static $ALWAYS_COMPILE = false;
+    public static $CACHE = true;
  
     /**
      * Constructor
@@ -104,17 +104,24 @@ class HTML_Template_Nest_View
             $this->_name . ".nst";
         $compiledFilename = HTML_Template_Nest_View::$VIEW_DIR . 
             "/" . $this->_name . ".php";
-        if (HTML_Template_Nest_View::$ALWAYS_COMPILE 
-            || !file_exists($compiledFilename)
-        ) {
+            
+        
+        
+        $output = "";
+        if (HTML_Template_Nest_View::$CACHE && file_exists($compiledFilename)) {
+            $output = file_get_contents($compiledFilename);
+        } else {
             $compiler = new HTML_Template_Nest_Compiler();
-            $compiler->compileAndCache($uncompiledFilename);
-        }
+            $output = $compiler->compile($uncompiledFilename);
+            if(HTML_Template_Nest_View::$CACHE) {
+                file_put_contents($compiledFilename, $output);    
+            }
+        } 
         
         ob_start();
         $p = $this->_attributes;
         $_o = create_function('$p, $key', '$value = array_key_exists($key, $p) ? $p[$key] : null; return $value;');
-        include $compiledFilename;
+        eval("?>" . $output . "<?");
         $contents = ob_get_contents();
         ob_end_clean();
         return $contents;

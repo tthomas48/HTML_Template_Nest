@@ -14,7 +14,7 @@
 &lt;?php
 require_once 'HTML/Template/Nest/View.php';
 
-HTML_Template_Nest_View::$ALWAYS_COMPILE = true;
+HTML_Template_Nest_View::$CACHE = false;
 
 $view = new HTML_Template_Nest_View("simpleview");
 print $view->render();
@@ -37,10 +37,9 @@ the views folder create:</p>
 </fieldset>
 <p>That's it. Point your web browser at SimpleView.php and you should see your Hello World page.</p>
 
-<p>Just a quote note about that $ALWAYS_COMPILE flag. By default Nest only compiles
-a file if the corresponding PHP file does not exist. That's great for production
-environments, but in development you probably want to see changes as you make them.
-Setting $ALWAYS_COMPILE to true makes that happen.</p>
+<p>Just a quote note about that $CACHE flag. By default Nest doesn't cache output
+pages. In production you'll want to set the $CACHE flag to true to have it compile
+once and then reuse that file.</p>
 
 <h1>Adding a variable to your view</h1>
 <p>At this point we've just displayed an HTML document, which we could have done
@@ -52,7 +51,7 @@ SimpleView.php file:</p>
 &lt;?php
 require_once 'HTML/Template/Nest/View.php';
 
-HTML_Template_Nest_View::$ALWAYS_COMPILE = true;
+HTML_Template_Nest_View::$CACHE = false;
 
 $view = new HTML_Template_Nest_View("simpleview");
 <b>$view->addAttribute("username", "Tim");</b>

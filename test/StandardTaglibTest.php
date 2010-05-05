@@ -49,7 +49,7 @@ class HTML_Template_Nest_StandardTaglibTest extends PHPUnit_Framework_TestCase
      */   
     public function testStandardLib()
     {
-        HTML_Template_Nest_View::$ALWAYS_COMPILE = true;
+        HTML_Template_Nest_View::$CACHE = false;
         HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
 
         $view = new HTML_Template_Nest_View("standardtaglib");

@@ -27,16 +27,16 @@ Nest is compatible with PHP 5.
     </lead>
     <date>2010-04-30</date>
     <version>
-        <release>0.9.19</release>
-        <api>0.9.14</api>
+        <release>1.0</release>
+        <api>1.0</api>
     </version>
     <stability>
-        <release>beta</release>
-        <api>beta</api>
+        <release>stable</release>
+        <api>stable</api>
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-added support for preformatted text with html entites when enclosed in CDATA sections
+changed ALWAYS_COMPILE to CACHE and changed it to always do so by default.
  </notes>
     <contents>
         <dir name="/">

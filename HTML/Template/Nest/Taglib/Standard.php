@@ -57,6 +57,7 @@ class HTML_Template_Nest_Taglib_Standard extends HTML_Template_Nest_Taglib
         "foreach" => "HTML_Template_Nest_Taglib_Standard_ForeachTag",
         "set" => "HTML_Template_Nest_Taglib_Standard_SetTag",
         "pre" => "HTML_Template_Nest_Taglib_Standard_PreTag",
+        "attribute" => "HTML_Template_Nest_Taglib_Standard_AttributeTag",
     );        
 }
 
@@ -403,4 +404,17 @@ class HTML_Template_Nest_Taglib_Standard_ForTag extends HTML_Template_Nest_Tag
 class HTML_Template_Nest_Taglib_Standard_PreTag extends HTML_Template_Nest_Tag
 {
     
+}
+class HTML_Template_Nest_Taglib_Standard_AttributeTag extends HTML_Template_Nest_Tag
+{
+    public function start() 
+    {
+        $name = $this->getRequiredAttribute("name");
+        $trim = $this->getOptionalAttribute("trim") == "true";    
+    }
+    public function end()
+    {
+        $this->unregisterVariable("name");
+        $this->unregisterVariable("trim");
+    }
 }

@@ -1,0 +1,7 @@
+<div xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard">
+	<c:attribute name="class" trim="true">
+		<c:foreach items="list" var="classNum">
+			classname${classNum}
+		</c:foreach>
+	</c:attribute>
+</div>

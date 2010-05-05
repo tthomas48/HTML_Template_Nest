@@ -80,9 +80,17 @@ class HTML_Template_Nest_Compiler
         $output = "";
         try {
             $this->parser = new HTML_Template_Nest_Parser();
+            $contents = file_get_contents($filename);
+            
+            // if the content doesn't start with an opening tag treat it as 
+            // plain text content and parse and return
+            if(!preg_match("/^\s*</", $contents)) {
+                return $this->parser->parse($contents);
+            }
+            
             $document = new DomDocument();
             try {
-                $document->loadXml(file_get_contents($filename), LIBXML_NOCDATA);
+                $document->loadXml($contents, LIBXML_NOCDATA);
             } catch(Exception $e) {
                 restore_error_handler();
                 $message= "Unable to parse: $filename; " . $e->getMessage();
@@ -134,21 +142,21 @@ class HTML_Template_Nest_Compiler
             $this->tagStack[] = Array($tag);
             $output .= $tag->getAttributeDeclarations();
         }
-
-        if ($tag != null) {
-            $output .= $tag->start();
-        } elseif (strlen($node->localName) && !$node->hasChildNodes()) {
-            $output .= "<" . $node->nodeName . $this->addAttributes($node) . $this->processNamespace($node) . "/>";
-            return $output;
-        } elseif (strlen($node->localName)) {
-            $output .= "<" . $node->nodeName  . $this->addAttributes($node) . $this->processNamespace($node) .  ">";
-        }
-
+        
+        // just a text node, parse it for variables and return it
         if ($node->nodeType == XML_TEXT_NODE) {
-            $output .= $this->parser->parse($node->nodeValue);
+            return $this->parser->parse($node->nodeValue);
+        }
+        
+        // self-contained tag. just return it
+        if (strlen($node->localName) && $tag == null && !$node->hasChildNodes()) {
+            $output = "<" . $node->nodeName . $this->addAttributes($node) . $this->processNamespace($node) . "/>";
+            return $output;
         }
 
+        // process tags or children
         if ($tag != null) {
+        	$output .= $tag->start();
             $nodeChildren = $tag->getNodeChildren();
             
             $childrenList = array();
@@ -172,8 +180,18 @@ class HTML_Template_Nest_Compiler
                 $output .= $this->processChildren($child);
             }            
         }
+        
+        if($tag != null) {
+        	$output = $tag->filter($output);
+        }
 
-
+        // process opening tags, and append the parsed children, doing this
+        // at this point allows us to have children modify parent attributes
+        if (strlen($node->localName) && $tag == null) {
+            $output = "<" . $node->nodeName  . $this->addAttributes($node) . $this->processNamespace($node) .  ">" . $output;
+        }
+        
+        // process closing tags
         if ($tag != null) {
             $output .= $tag->end();
             $output .= $tag->getAttributeUnsets();

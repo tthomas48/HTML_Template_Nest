@@ -29,6 +29,7 @@
  */
 require_once 'HTML/Template/Nest/TaglibException.php';
 require_once 'HTML/Template/Nest/ParseException.php';
+require_once 'HTML/Template/Nest/View.php';
 /**
  * Base class for Nest Taglibs
  *
@@ -71,8 +72,14 @@ class HTML_Template_Nest_Taglib
      */
     public function getTagByName($compiler, $node, $attributes)
     {
+        $libraryDirectory = strtolower(get_class($this));
+        $libraryDirectory = str_replace("_", "/", $libraryDirectory);
         $name = $node->localName;
         if (!array_key_exists($name, $this->tags)) {
+            $filename = HTML_Template_Nest_View::$VIEW_DIR . "/templates/" . $libraryDirectory . "/" . $name . ".tmpl";
+            if(file_exists($filename)) {
+                return new HTML_Template_Nest_TagFile($compiler, $node, $attributes, $filename);
+            }
             throw new HTML_Template_Nest_TaglibException(
                 "Unable to find tag '$name'", $node
             );

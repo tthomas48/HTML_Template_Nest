@@ -54,8 +54,7 @@ class HTML_Template_Nest_AttributeTest extends PHPUnit_Framework_TestCase
 
         $view = new HTML_Template_Nest_View("attribute");
         $view->addAttribute("list", array(1,2,3,4,5));
-        die($view->render());
-        $filename = dirname(__FILE__) . "/viewoutput/pre.html";
+        $filename = dirname(__FILE__) . "/viewoutput/attribute.html";
         $this->assertEquals(
             $view->render(), 
             trim(file_get_contents($filename))

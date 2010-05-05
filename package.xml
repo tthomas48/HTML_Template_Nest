@@ -25,10 +25,10 @@ Nest is compatible with PHP 5.
         <email>tim@buyplaytix.com</email>
         <active>yes</active>
     </lead>
-    <date>2010-04-30</date>
+    <date>2010-05-05</date>
     <version>
-        <release>1.0</release>
-        <api>1.0</api>
+        <release>1.1</release>
+        <api>1.1</api>
     </version>
     <stability>
         <release>stable</release>
@@ -36,7 +36,8 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-changed ALWAYS_COMPILE to CACHE and changed it to always do so by default.
+added c:attribute
+added the ability for template files to be autofound
  </notes>
     <contents>
         <dir name="/">

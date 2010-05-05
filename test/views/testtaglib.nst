@@ -1,4 +1,4 @@
-<html xmlns:test="urn:nsttl:TestTaglib" xmlns:h="http://www.w3.org/TR/html4/"
+<html xmlns:test="urn:nsttl:TestPackage_TestTaglib" xmlns:h="http://www.w3.org/TR/html4/"
     xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard">
 <h:head>
     <script type="text/javascript">

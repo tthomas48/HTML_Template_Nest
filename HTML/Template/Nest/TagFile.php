@@ -4,8 +4,8 @@
  *
  * Tag files are an easy way to build components without having to write code.
  * Create a valid html snippet and put ${#processBody#} in where you would
- * like nested code to be processed. The abstract method getTagFilename is
- * the only code that should need to be implemented.
+ * like nested code to be processed. The template file is specified by setting
+ * filename.
  *
  * PHP version 5
  *
@@ -45,8 +45,9 @@ require_once 'HTML/Template/Nest/TagException.php';
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     Class available since Release 1.0.0
  */
-abstract class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
+class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
 {
+    public $filename;
     protected $compiler;
     protected $document;
     protected $startDocument = null;
@@ -63,11 +64,16 @@ abstract class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
      * @throws HTML_Template_Nest_TagException
      * @return HTML_Template_Nest_TagFile instance
      */
-    public function __construct($compiler, $node, $attributes)
+    public function __construct($compiler, $node, $attributes, $filename = "")
     {
+        if(!empty($filename)) {
+            $this->filename = $filename;
+        }
+
         if (!file_exists($this->getTagFilename())) {
             throw new HTML_Template_Nest_TagException(
-                "Unable to find file: " . $this->getTagFilename()
+                "Unable to find file " . $this->filename . " for " . $node->tagName,
+                $node
             );
         }
         parent::__construct($compiler, $node, $attributes);
@@ -163,6 +169,10 @@ abstract class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
             }
         }
     }
+    
+    public function getTagFilename() {
+        return $this->filename;
+    }
 
     /**
      * Evaluated before the content of the tag.
@@ -186,13 +196,6 @@ abstract class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
     {
     }
 
-    /**
-     * Returns the name of the tagfile to parse.
-     * 
-     * @return string filename
-     */
-    public abstract function getTagFilename();
-    
     /**
      * Returns the current node's children
      * 

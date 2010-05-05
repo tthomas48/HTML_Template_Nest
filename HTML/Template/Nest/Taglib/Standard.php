@@ -6,7 +6,7 @@
  * a dynamic web page.
  *
  * The tags included replace the basic control functionality such as if/elseif/else
- * and foreach. Include using xlmns:c="taglib/StandardTagLib" @todo Add Switch
+ * and foreach. Include using xlmns:c="taglib/StandardTagLib" 
  *
  * PHP version 5
  *
@@ -56,7 +56,6 @@ class HTML_Template_Nest_Taglib_Standard extends HTML_Template_Nest_Taglib
         "for" => "HTML_Template_Nest_Taglib_Standard_ForTag", 
         "foreach" => "HTML_Template_Nest_Taglib_Standard_ForeachTag",
         "set" => "HTML_Template_Nest_Taglib_Standard_SetTag",
-        "pre" => "HTML_Template_Nest_Taglib_Standard_PreTag",
         "attribute" => "HTML_Template_Nest_Taglib_Standard_AttributeTag",
     );        
 }
@@ -401,20 +400,20 @@ class HTML_Template_Nest_Taglib_Standard_ForTag extends HTML_Template_Nest_Tag
     }
 }
 
-class HTML_Template_Nest_Taglib_Standard_PreTag extends HTML_Template_Nest_Tag
-{
-    
-}
 class HTML_Template_Nest_Taglib_Standard_AttributeTag extends HTML_Template_Nest_Tag
 {
-    public function start() 
+    public function filter($output)
     {
         $name = $this->getRequiredAttribute("name");
-        $trim = $this->getOptionalAttribute("trim") == "true";    
-    }
-    public function end()
-    {
-        $this->unregisterVariable("name");
-        $this->unregisterVariable("trim");
+        $trim = $this->getOptionalAttribute("trim");
+        if(!empty($trim) && strtolower($trim) == "true") {
+        	$output = '<?php ob_start(); ?>' . $output;
+        	$output .= '<?php $output = ob_get_contents();';
+        	$output .= 'ob_end_clean();';
+        	$output .= '$output = preg_replace(\'/(\s+)/\', \' \', $output);';
+        	$output .= 'print trim($output);?>';
+        }
+    	$this->node->parentNode->setAttribute($name, $output);
+    	return "";
     }
 }

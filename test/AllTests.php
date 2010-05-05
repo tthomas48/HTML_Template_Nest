@@ -24,6 +24,8 @@
  * @see       HTML_Template_Nest_View
  * @since     File available since Release 1.0
  */
+require_once 'AttributeTest.php';
+require_once 'PreTest.php';
 require_once 'ErrorTest.php';
 require_once 'ParserTest.php';
 require_once 'StandardTaglibTest.php';
@@ -54,8 +56,10 @@ class HTML_Template_Nest_AllTests
     static public function suite()
     {
         $suite = new PHPUnit_Framework_TestSuite('HTML_Template_Nest');
+        $suite->addTestSuite('HTML_Template_Nest_AttributeTest');        
         $suite->addTestSuite('HTML_Template_Nest_ErrorTest');
         $suite->addTestSuite('HTML_Template_Nest_ParserTest');
+        $suite->addTestSuite('HTML_Template_Nest_PreTest');        
         $suite->addTestSuite('HTML_Template_Nest_StandardTaglibTest');
         $suite->addTestSuite('HTML_Template_Nest_TagLibTest');
         return $suite;

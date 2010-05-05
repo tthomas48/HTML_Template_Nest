@@ -120,5 +120,48 @@ can get that value by assigning a local variable name to the rowcount attribute.
 &lt;/table&gt;
 </pre>
 <p>This will alternate between the css class 'rowA' and 'rowB'</p>
+
+<h2>&lt;c:for&gt;</h2>
+<pre>
+&lt;c:for var="i" test="i &lt; 10"&gt;
+    Should print 10 times.
+&lt;/c:for&gt;
+</pre>
+<pre>
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.	
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.									
+</pre>
+
+<h2>&lt;c:attribute&gt;</h2>
+<pre>
+&lt;div&gt;
+	&lt;c:attribute name="class" trim="true"&gt;
+	   	&lt;c:for var="i" test="i &lt; 10"&gt;
+            class${i}
+        &lt;/c:for&gt;
+	&lt;/c:attribute&gt;
+&lt;/div&gt;
+</pre>
+<pre>
+	&lt;div class="class0 class1 class2 class3 class4 class5 class6 class7 class8 class9"&gt;
+		
+	&lt;/div&gt;
+</pre>
+
+<h2>&lt;c:set&gt;</h2>
+<pre>
+&lt;c:set var="mylocalvar" value="${bulletClass}"&gt;
+    ${mylocalvar}
+&lt;/c:set&gt;
+</pre>
+
 </body>
 </html>

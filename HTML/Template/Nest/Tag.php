@@ -139,6 +139,16 @@ class HTML_Template_Nest_Tag
     }
 
     /**
+     * Evaluated after all child content is processed. Allows filtering of child body.
+     *
+     * @return string content to add to php file
+     */
+    public function filter($output)
+    {
+    	return $output;
+    }
+
+    /**
      * Evaluated after the content of the tag.
      *
      * @return string content to add to php file

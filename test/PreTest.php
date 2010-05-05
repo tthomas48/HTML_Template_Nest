@@ -42,8 +42,7 @@ require_once 'PHPUnit/Framework/TestCase.php';
 class HTML_Template_Nest_PreTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * Tests the various tags of the standard tag library using the
-     * standardtaglib.nst file.
+     * Tests preformatted text that could be evaluated as xml
      * 
      * @return unknown_type
      */   
@@ -60,4 +59,23 @@ class HTML_Template_Nest_PreTest extends PHPUnit_Framework_TestCase
             trim(file_get_contents($filename))
         );        
     }
+    
+    /**
+     * Test a template that is not xml
+     * 
+     * @return unknown_type
+     */   
+    public function testJson()
+    {
+        HTML_Template_Nest_View::$CACHE = false;
+        HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+
+        $view = new HTML_Template_Nest_View("json");
+        $view->addAttribute("title", "My Title");
+        $filename = dirname(__FILE__) . "/viewoutput/json.html";
+        $this->assertEquals(
+            $view->render(), 
+            trim(file_get_contents($filename))
+        );        
+    }    
 }

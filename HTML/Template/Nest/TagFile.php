@@ -123,8 +123,8 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
     }
 
     /**
-     * Recursively looks for the ${#processBody#} token. It removes the token
-     * and appends the original node's children to the parent of the token.
+     * Recursively looks for the <nst:processBody /> tag. It removes the tag
+     * and appends the original node's children to the parent of the tag.
      *
      * @param DomNode     $node     the current node to inspect
      * @param DomNodeList $children the children of the the original tag
@@ -155,8 +155,8 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
                         $node->removeChild($child);
                     }
                 }
-                if ($child->nodeType == XML_TEXT_NODE) {
-                    if (trim($child->nodeValue) == '${#processBody#}') {
+                if ($child->lookupNamespaceURI($child->prefix) == "http://nest.sourceforge.net/") {
+                    if (trim($child->localName) == 'processBody') {
                         foreach ($bodyChildren as $nestedChild) {
                             $node->insertBefore($nestedChild, $child);
                         }

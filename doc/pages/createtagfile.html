@@ -71,15 +71,15 @@ class SimpleTaglib_SimpleTagFile extends HTML_Template_Nest_TagFile
 </fieldset>
 
 <p>Which gives us basically the same output as before, but this time it's wrapped
-in a div. Rather than hard code that information, however we can put the token
-${#processBody#} into our template and then move the actual text back out of
+in a div. Rather than hard code that information, however we can put the tag
+&lt;nst:processBody /&gt; into our template and then move the actual text back out of
 the tag file. This is where the nesting actually comes into play.</p>
 
 <fieldset>
 <legend>simple_tagfile.tmpl</legend>
 <pre>
 &lt;div class="welcome"&gt;
-    <b>${#processBody#}</b>
+    <b>&lt;nst:processBody xmlns:nst="http://nest.sourceforge.net" /&gt;</b>
 &lt;/div&gt;
 </pre>
 </fieldset>
@@ -107,8 +107,8 @@ to add the standard tag library in our simple_tagfile.tmpl we'd do so like this:
 <fieldset>
 <legend>simple_tagfile.tmpl</legend>
 <pre>
-&lt;div class="welcome" <b>xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard"</b>&gt;
-    ${#processBody#}
+&lt;div class="welcome" <b>xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard"</b> xmlns:nst="http://nest.sourceforge.net/"&gt;
+    &lt;nst:processBody /&gt;
 &lt;/div&gt;
 </pre>
 </fieldset>

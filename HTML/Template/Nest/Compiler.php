@@ -97,6 +97,10 @@ class HTML_Template_Nest_Compiler
                 throw new HTML_Template_Nest_CompilerException($message);
             }
             $output = $this->compileDocument($document);
+        } catch(HTML_Template_Nest_TaglibException $e) {
+            throw new HTML_Template_Nest_CompilerException("In file $filename\n" . $e->getMessage());
+        } catch(HTML_Template_Nest_CompilerException $e) {
+            throw new HTML_Template_Nest_CompilerException("In file $filename\n" . $e->getMessage());
         } catch(DomException $e) {
             restore_error_handler();
             $message= "Unable to parse: $filename; " . $e->getMessage();
@@ -156,6 +160,7 @@ class HTML_Template_Nest_Compiler
 
         // process tags or children
         if ($tag != null) {
+            $output .= "<?php /*<" . $node->tagName . ">*/?>";
         	$output .= $tag->start();
             $nodeChildren = $tag->getNodeChildren();
             
@@ -195,6 +200,7 @@ class HTML_Template_Nest_Compiler
         if ($tag != null) {
             $output .= $tag->end();
             $output .= $tag->getAttributeUnsets();
+            $output .= "<?php /*</" . $node->tagName . ">*/?>";
         } elseif (strlen($node->localName)) {
             $output .= "</" . $node->nodeName . ">";
         }
@@ -268,11 +274,21 @@ class HTML_Template_Nest_Compiler
         }
 
         $taglib = str_replace("urn:nsttl:", "", $taglib);
-        include_once str_replace("_", "/", $taglib) . ".php";
+        $taglibFile = str_replace("_", "/", $taglib) . ".php";
+        try {
+            set_error_handler(array($this,'errorHandler'));
+            include_once $taglibFile;
+            restore_error_handler();
+        } catch(Exception $e) {
+            throw new HTML_Template_Nest_CompilerException($e->getMessage(), $node);
+        }
 
         $className = $taglib;
         if (strpos($taglib, "/") !== false) {
             $className = substr($taglib, strrpos($taglib, "/") + 1);
+        }
+        if(!class_exists($className, false)) {
+            throw new HTML_Template_Nest_CompilerException("Unable to find tag class " . $className, $node);
         }
         $class = new $className();
         $tag = $class->getTagByName($this, $node, $attributes);
@@ -299,6 +315,9 @@ class HTML_Template_Nest_Compiler
             && (substr_count($errstr, "DOMDocumentFragment::appendXML()") > 0)
         ) {
             throw new DOMException($errstr);
+        } elseif ($errno==E_WARNING)
+        {
+            throw new Exception($errstr);            
         } else {
             return false;
         }

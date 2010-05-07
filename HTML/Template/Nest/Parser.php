@@ -122,7 +122,9 @@ class HTML_Template_Nest_Parser
                 }
                 $parsedToken = "";
                 if($addPhpBlock) {
-                    $parsedToken .= "<?php echo ";
+                    // neutering the $ so that we don't accidentally parse as a token later in parsing
+                    $parsedToken .= "<?php /* " . str_replace("$", "", $token) . " */ ";
+                    $parsedToken .= "echo ";
                     $parsedToken .= ($escape ? "htmlentities(" : "");
                 }
                 if($quoteChar) {

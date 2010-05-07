@@ -40,6 +40,7 @@
 class HTML_Template_Nest_ParseException extends Exception
 {
     private $expression;
+    private $node;
     /**
      * Constructor
      *
@@ -52,6 +53,7 @@ class HTML_Template_Nest_ParseException extends Exception
     {
         // TODO: in php 5.3 we can print line number $node->getLineNo()
         parent::__construct($message);
+        $this->node = $node;
     }
     
     public function setExpression($expression) {
@@ -59,6 +61,11 @@ class HTML_Template_Nest_ParseException extends Exception
     }
 
     public function __toString() {
-        "Error parsing " . $this->expression . ":\n" . $this->getMessage(); 
+        // only available in php >= 5.3
+        if($this->node != null && method_exists($this->node, "getLineNo")) {
+            
+            return "";
+        }
+        return "Error parsing " . $this->expression . ":\n" . $this->getMessage(); 
     }
 }

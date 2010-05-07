@@ -37,5 +37,35 @@
  */
 class HTML_Template_Nest_CompilerException extends Exception
 {
-
+    /**
+     * Constructor
+     *
+     * @param string  $message the error message
+     * @param DomNode $node    the node where the error occurred
+     *
+     * @return HTML_Template_Nest_ParseException
+     */
+    public function __construct($message, $node = null)
+    {
+        // only available in php >= 5.3
+        if($node != null && method_exists($node, "getLineNo")) {
+            
+            $lineNo = $node->getLineNo();
+            $message .= " on line " . $lineNo. ":\n";
+            
+            $originalDoc = explode("\n", $node->ownerDocument->saveXml($node->ownerDocument));
+            
+            $message .= "...\n";
+            if($node->getLineNo() - 1 >= 0) {
+                $message .= ($lineNo - 1) . ":" . $originalDoc[$lineNo - 1] . "\n";
+            }
+            $message .= $node->getLineNo() . ":" . $originalDoc[$lineNo] . "\n";
+            if($node->getLineNo() + 1 < count($originalDoc)) {
+                $message .= ($lineNo + 1) . ":" . $originalDoc[$lineNo + 1] . "\n";
+            }
+            $message .= "...\n";
+            
+        }
+        parent::__construct($message);
+    }
 }

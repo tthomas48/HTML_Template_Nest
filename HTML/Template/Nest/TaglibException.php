@@ -49,7 +49,24 @@ class HTML_Template_Nest_TaglibException extends Exception
      */
     public function __construct($message, $node)
     {
-        // TODO: in php 5.3 we can print line number $node->getLineNo()
+        if($node != null && method_exists($node, "getLineNo")) {
+            
+            $lineNo = $node->getLineNo();
+            $message .= " on line " . $lineNo. ":\n";
+            
+            $originalDoc = explode("\n", $node->ownerDocument->saveXml($node->ownerDocument));
+            
+            $message .= "...\n";
+            if($node->getLineNo() - 1 >= 0) {
+                $message .= ($lineNo - 1) . ":" . $originalDoc[$lineNo - 1] . "\n";
+            }
+            $message .= $node->getLineNo() . ":" . $originalDoc[$lineNo] . "\n";
+            if($node->getLineNo() + 1 < count($originalDoc)) {
+                $message .= ($lineNo + 1) . ":" . $originalDoc[$lineNo + 1] . "\n";
+            }
+            $message .= "...\n";
+            
+        }
         parent::__construct($message);
     }
 }

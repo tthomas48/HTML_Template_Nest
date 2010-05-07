@@ -54,6 +54,7 @@ class HTML_Template_Nest_View
     private $_name = "";
     public static $VIEW_DIR = "views";
     public static $CACHE = true;
+    private $output;
 
     /**
      * Constructor
@@ -102,7 +103,7 @@ class HTML_Template_Nest_View
      */
     public function render()
     {
-        $output = $this->loadContent();
+        $this->output = $this->loadContent();
         ob_start();
         $p = $this->_attributes;
         $_o = create_function('$p, $key', '$value = array_key_exists($key, $p) ? $p[$key] : null; return $value;');
@@ -112,11 +113,11 @@ class HTML_Template_Nest_View
         $initialReporting = error_reporting();
         try {
             error_reporting(E_ALL ^ E_ERROR);
-            eval("\nset_error_handler(\$errorHandler);?>" . $output);
+            eval("\nset_error_handler(\$errorHandler);?>" . $this->output);
         } catch(HTML_Template_Nest_EvalException $e) {
             ob_clean();
             error_reporting($initialReporting);
-            throw new HTML_Template_Nest_ViewException($e, $output);
+            throw new HTML_Template_Nest_ViewException($e, $this->output);
         }
         error_reporting($initialReporting);
         $contents = ob_get_contents();
@@ -157,21 +158,25 @@ class HTML_Template_Nest_View
         }
 
 
-        ob_clean();
+        if(ob_get_level() > 0) {
+            ob_end_clean();
+        }
         # Checking if last error is a fatal error
-        if(($error['type'] === E_ERROR) || ($error['type'] === E_USER_ERROR))
+        if(($error['type'] === E_ERROR) 
+            || ($error['type'] === E_USER_ERROR)
+            || ($error['type'] === E_PARSE))
         {
             # Here we handle the error, displaying HTML, logging, ...
-            $output = $this->loadContent();
-            $lines = explode("\n", $output);
+            $lines = explode("\n", $this->output);
             
             $message = "Fatal Template Error: " . $error['message'] . " on line " . ($error['line'] - 2) . "\n";
             for($i = 0, $il = count($lines); $i < $il; $i++) {
                 $line = $lines[$i];
-                $message .= $i . ":" . $line . "\n";
+                $message .= $i . ":" . htmlentities($line) . "\n";
             }
+            print "<pre>\n";
             print $message;
-             
+            print "\n</pre>";
         }
     }
 }

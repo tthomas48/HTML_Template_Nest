@@ -51,6 +51,8 @@ class HTML_Template_Nest_AttributeTest extends PHPUnit_Framework_TestCase
     {
         HTML_Template_Nest_View::$CACHE = false;
         HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+        HTML_Template_Nest_View::$HTML_ERRORS = false;
+
 
         $view = new HTML_Template_Nest_View("attribute");
         $view->addAttribute("list", array(1,2,3,4,5));

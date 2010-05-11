@@ -162,6 +162,12 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
                         }
                         $node->removeChild($child);                        
                     }
+                    elseif (trim($child->localName) == 'attribute') {
+                        if($child->hasAttribute("name")) {
+                            $this->declaredAttributes[] = $child->getAttribute("name");
+                            $node->removeChild($child);
+                        }
+                    }
                 }
                 if ($child->hasChildNodes()) {
                     $this->_processBodyToken($child, $bodyChildren);

@@ -76,18 +76,18 @@ class HTML_Template_Nest_Compiler
     public function compile($filename)
     {
         set_error_handler(array($this,'errorHandler'));
-        
+
         $output = "";
         try {
             $this->parser = new HTML_Template_Nest_Parser();
             $contents = file_get_contents($filename);
-            
-            // if the content doesn't start with an opening tag treat it as 
+
+            // if the content doesn't start with an opening tag treat it as
             // plain text content and parse and return
             if(!preg_match("/^\s*</", $contents)) {
                 return $this->parser->parse($contents);
             }
-            
+
             $document = new DomDocument();
             try {
                 $document->loadXml($contents, LIBXML_NOCDATA);
@@ -121,7 +121,7 @@ class HTML_Template_Nest_Compiler
     {
         return $this->processChildren($document);
     }
-    
+
     public function compileNode($node)
     {
         return $this->processChildren($node);
@@ -136,24 +136,28 @@ class HTML_Template_Nest_Compiler
      */
     protected function processChildren($node)
     {
-                
+
         $output = "";
         $taglib = $node->lookupNamespaceURI($node->prefix);
-        
+
         $tag = null;
+        $rootTag = false;
         if (strpos($taglib, "urn:nsttl:") !== false) {
             $tag = $this->_loadTag($node);
             $this->tagStack[] = Array($tag);
             $output .= $tag->getAttributeDeclarations();
         }
-        
+        elseif ($taglib == "http://nest.sourceforge.net/" && trim($node->localName) == 'root') {
+            $rootTag = true;
+        }
+
         // just a text node, parse it for variables and return it
         if ($node->nodeType == XML_TEXT_NODE) {
             return $this->parser->parse($node->nodeValue);
         }
-        
+
         // self-contained tag. just return it
-        if (strlen($node->localName) && $tag == null && !$node->hasChildNodes()) {
+        if (!$rootTag && strlen($node->localName) && $tag == null && !$node->hasChildNodes()) {
             $output = "<" . $node->nodeName . $this->addAttributes($node) . $this->processNamespace($node) . "/>";
             return $output;
         }
@@ -161,19 +165,19 @@ class HTML_Template_Nest_Compiler
         // process tags or children
         if ($tag != null) {
             $output .= "<?php /*<" . $node->tagName . ">*/?>";
-        	$output .= $tag->start();
+            $output .= $tag->start();
             $nodeChildren = $tag->getNodeChildren();
-            
+
             $childrenList = array();
             foreach ($nodeChildren as $child) {
                 $childrenList[] = $child;
             }
             foreach ($childrenList as $child) {
                 $output .= $this->processChildren($child);
-            }            
+            }
         } elseif ($node->hasChildNodes()) {
             $nodeChildren = $node->childNodes;
-            
+
             // we have to copy off the current children list in
             // case one of the children modifies the dom and
             // confuses the parser
@@ -183,30 +187,30 @@ class HTML_Template_Nest_Compiler
             }
             foreach ($childrenList as $child) {
                 $output .= $this->processChildren($child);
-            }            
+            }
         }
-        
+
         if($tag != null) {
-        	$output = $tag->filter($output);
+            $output = $tag->filter($output);
         }
 
         // process opening tags, and append the parsed children, doing this
         // at this point allows us to have children modify parent attributes
-        if (strlen($node->localName) && $tag == null) {
+        if (!$rootTag && strlen($node->localName) && $tag == null) {
             $output = "<" . $node->nodeName  . $this->addAttributes($node) . $this->processNamespace($node) .  ">" . $output;
         }
-        
+
         // process closing tags
         if ($tag != null) {
             $output .= $tag->end();
             $output .= $tag->getAttributeUnsets();
             $output .= "<?php /*</" . $node->tagName . ">*/?>";
-        } elseif (strlen($node->localName)) {
+        } elseif (!$rootTag && strlen($node->localName)) {
             $output .= "</" . $node->nodeName . ">";
         }
         return $output;
     }
-    
+
     public function getParentByType($type) {
         $reverseStack = array_reverse($this->tagStack);
         foreach($reverseStack as $stack) {
@@ -227,23 +231,23 @@ class HTML_Template_Nest_Compiler
      *
      * @return string php output after compiling attributes
      */
-    protected function addAttributes($node) 
+    protected function addAttributes($node)
     {
         $output = "";
         foreach ($node->attributes as $attribute) {
-            $output .= " " . $attribute->name . "=\""; 
+            $output .= " " . $attribute->name . "=\"";
             $output .= str_replace('"', '&quot;', $this->parser->parse($attribute->value));
             $output .= "\"";
         }
         return $output;
     }
-    
-    
+
+
     /**
      * Processes any namespaces that are not nest tag libraries.
-     * 
+     *
      * @param DomNode $node node to process
-     * 
+     *
      * @return string string of xml namespace declarations
      */
     protected function processNamespace($node)
@@ -251,7 +255,7 @@ class HTML_Template_Nest_Compiler
         if(strlen($node->prefix) == 0) {
             return "";
         }
-        $uri = $node->lookupNamespaceURI($node->prefix); 
+        $uri = $node->lookupNamespaceURI($node->prefix);
         return " xmlns:" . $node->prefix . "=\"" . str_replace('"', '&quot;', $uri) . "\"";
     }
 
@@ -297,29 +301,29 @@ class HTML_Template_Nest_Compiler
 
     /**
      * Error handler for xml parsing
-     * 
+     *
      * @param int    $errno   error number
      * @param string $errstr  error string
      * @param string $errfile file error occurred
      * @param int    $errline line number error occurred
-     * 
+     *
      * @return boolean error handled
      */
     public static function errorHandler($errno, $errstr, $errfile, $errline)
     {
-        if ($errno==E_WARNING 
-            && (substr_count($errstr, "DOMDocument::loadXML()") > 0)
+        if ($errno==E_WARNING
+        && (substr_count($errstr, "DOMDocument::loadXML()") > 0)
         ) {
             throw new DOMException($errstr);
-        } elseif ($errno==E_WARNING 
-            && (substr_count($errstr, "DOMDocumentFragment::appendXML()") > 0)
+        } elseif ($errno==E_WARNING
+        && (substr_count($errstr, "DOMDocumentFragment::appendXML()") > 0)
         ) {
             throw new DOMException($errstr);
         } elseif ($errno==E_WARNING)
         {
-            throw new Exception($errstr);            
+            throw new Exception($errstr);
         } else {
             return false;
         }
     }
-} 
+}

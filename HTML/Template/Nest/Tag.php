@@ -53,6 +53,7 @@ class HTML_Template_Nest_Tag
     protected $compiler;
     protected $attributes;
     protected $declaredAttributes = array();
+    private $id;
 
     /**
      * Constructor
@@ -68,6 +69,7 @@ class HTML_Template_Nest_Tag
         $this->compiler = $compiler;
         $this->node = $node;
         $this->attributes = $attributes;
+        $this->id = $node->tagName . uniqid(get_class($this));
     }
     
     public function getAttributeDeclarations() {
@@ -81,7 +83,7 @@ class HTML_Template_Nest_Tag
                 $value = $this->compiler->parser->parse($this->attributes[$key], false, "\"");
             }
             $this->registerVariable($key);
-            $output .= "\$$key = \"" . $value . "\";\n";
+            $output .= "\$" . $this->getVariableName($key) . " = \"" . $value . "\";\n";
         }
         $output .= "?>";
         return $output;
@@ -95,7 +97,7 @@ class HTML_Template_Nest_Tag
         $output = "<?php ";
         foreach($this->declaredAttributes as $key) {
             $this->unregisterVariable($key);
-            $output .= "unset(\$$key);\n";
+            $output .= "unset(\$" . $this->getVariableName($key) . ");\n";
         }
         $output .= "?>";
         return $output;
@@ -112,7 +114,7 @@ class HTML_Template_Nest_Tag
      */
     protected function registerVariable($key)
     {
-        $this->compiler->parser->registerVariable($key);
+        $this->compiler->parser->registerVariable($this->id, $key);
     }
 
     /**
@@ -125,7 +127,12 @@ class HTML_Template_Nest_Tag
      */
     protected function unregisterVariable($key)
     {
-        $this->compiler->parser->unregisterVariable($key);
+        $this->compiler->parser->unregisterVariable($this->id, $key);
+    }
+    
+    protected function getVariableName($key)
+    {
+        return $this->compiler->parser->getVariableName($this->id, $key);
     }
  
     /**

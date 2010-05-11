@@ -58,13 +58,13 @@ class HTML_Template_Nest_Parser
      *
      * @return null
      */
-    public function registerVariable($key)
+    public function registerVariable($namespace, $key)
     {
-        if (isset($this->_localVariables[$key])) {
-            $this->_localVariables[$key]++;
+        if (isset($this->_localVariables[$namespace][$key])) {
+            $this->_localVariables[$namespace][$key]++;
             return;
         }
-        $this->_localVariables[$key] = 1;
+        $this->_localVariables[$namespace][$key] = 1;
     }
      
     /**
@@ -76,13 +76,14 @@ class HTML_Template_Nest_Parser
      *
      * @return null
      */
-    public function unregisterVariable($key)
+    public function unregisterVariable($namespace, $key)
     {
-        if (isset($this->_localVariables[$key])) {
-            $this->_localVariables[$key]--;
+        
+        if (isset($this->_localVariables[$namespace][$key])) {
+            $this->_localVariables[$namespace][$key]--;
         }
-        if ($this->_localVariables[$key] < 0) {
-            $this->_localVariables[$key] = 0;
+        if ($this->_localVariables[$namespace][$key] < 0) {
+            $this->_localVariables[$namespace][$key] = 0;
         }
     }
 
@@ -95,10 +96,43 @@ class HTML_Template_Nest_Parser
      */
     public function containsVariable($key)
     {
-        if (!isset($this->_localVariables[$key])) {
-            return false;
+        foreach($this->_localVariables as $namespace => $keys) {
+            if(!isset($keys[$key])) {
+                continue;
+            }
+            if($keys[$key] > 0) {
+                return true;
+            }
         }
-        return $this->_localVariables[$key] > 0;
+        return false;
+    }
+    
+    public function getLocalVariableName($key)
+    {
+        // we reverse to start with the lowest nesting first
+        $reversedVariables = array_reverse($this->_localVariables, true);
+        foreach($reversedVariables as $namespace => $keys) {
+
+            if(!isset($keys[$key])) {
+                continue;
+            }
+            if($keys[$key] > 0) {
+                // backwards compatability for tests. use at your own risk
+                if($namespace == null) {
+                    return $key;
+                }
+                return "nst_" . str_replace(':', '_', $namespace) ."_".$key;
+            }
+        }
+        throw new HTML_Template_Nest_ParseException("Unable to find local variable $key");
+    }
+    
+    public function getVariableName($namespace, $key)
+    {
+        if(!isset($this->_localVariables[$namespace])) {
+            throw new HTML_Template_Nest_ParseException("Unable to find local variable $key");
+        }
+        return "nst_" . str_replace(':', '_', $namespace) ."_".$key;
     }
 
     /**
@@ -295,7 +329,7 @@ class HTML_Template_Nest_Parser
             return "false";
         }
         elseif ($this->containsVariable($variable)) {
-            return "\$" . $variable;
+            return "\$" . $this->getLocalVariableName($variable);
         }
         $prefix = "";
         $suffix = "";

@@ -25,9 +25,9 @@ Nest is compatible with PHP 5.
         <email>tim@buyplaytix.com</email>
         <active>yes</active>
     </lead>
-    <date>2010-05-07</date>
+    <date>2010-05-10</date>
     <version>
-        <release>1.2.4</release>
+        <release>1.2.5</release>
         <api>1.2.1</api>
     </version>
     <stability>
@@ -36,7 +36,9 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-added handler for parse errors, and updated package.xml to better reflect current code
+added namespace and unique ids to variable names so that nested tags can have the same variable name
+without conflicting.
+added nst:root and nst:attribute
  </notes>
     <contents>
         <dir name="/">
@@ -154,6 +156,7 @@ added handler for parse errors, and updated package.xml to better reflect curren
                     <file name="badxml.nst" role="test" />
                     <file name="standardtaglib.nst" role="test" />
                     <file name="attribute.nst" role="test" />
+                    <file name="nested.nst" role="test" />
                 </dir>
                 <dir name="viewoutput" role="test">
                     <file name="pre.html" role="test" />
@@ -161,6 +164,7 @@ added handler for parse errors, and updated package.xml to better reflect curren
                     <file name="testtaglib.html" role="test" />
                     <file name="json.html" role="test" />
                     <file name="standardtaglib.html" role="test" />
+                    <file name="nested.html" role="test" />
                 </dir>
                 <dir name="TestPackage" role="test">
                     <file name="TestTaglib.php" role="test" />
@@ -172,6 +176,7 @@ added handler for parse errors, and updated package.xml to better reflect curren
                 <file name="PreTest.php" role="test" />
                 <file name="ParserTest.php" role="test" />
                 <file name="ErrorTest.php" role="test" />
+                <file name="NestedTagsTest.php" role="test" />
             </dir>
             <file name="LICENSE" role="doc" />
         </dir> <!-- / -->

@@ -52,7 +52,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         $parser = new HTML_Template_Nest_Parser();
         $output = $parser->parse('${some_var}');
         $this->assertEquals("<?php /* {some_var} */ echo htmlentities(\$_o(\$p, 'some_var'))?>", $output);
-        $parser->registerVariable('my_var');
+        $parser->registerVariable(null, 'my_var');
         $output = $parser->parse('${my_var}');
         $this->assertEquals("<?php /* {my_var} */ echo htmlentities(\$my_var)?>", $output);
     }
@@ -226,12 +226,12 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         );
                 
 
-        $parser->registerVariable("_field");
+        $parser->registerVariable(null, "_field");
         $output = $parser->parse('${_field->class != \'\' ? _field->class : \'\'}${(_field->error != \'\' ? \' errored\' : \'\')}');
         $this->assertEquals(
         '<?php /* {_field->class != \'\' ? _field->class : \'\'} */ echo htmlentities($_field->class != \'\' ? $_field->class : \'\')?><?php /* {(_field->error != \'\' ? \' errored\' : \'\')} */ echo htmlentities(($_field->error != \'\' ? \' errored\' : \'\'))?>',
         $output);
-        $parser->unregisterVariable("_field");
+        $parser->unregisterVariable(null, "_field");
         
     }
     
@@ -251,17 +251,17 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             $output
         );
 
-        $parser->registerVariable('onsubmit');
+        $parser->registerVariable(null, 'onsubmit');
         $output = $parser->parse('${fn:strlen(onsubmit) > 0 ? onsubmit : \'return validate(this);\'}');
-        $parser->unregisterVariable('onsubmit');
+        $parser->unregisterVariable(null, 'onsubmit');
         $this->assertEquals(
             '<?php /* {fn:strlen(onsubmit) > 0 ? onsubmit : \'return validate(this);\'} */ echo htmlentities(strlen($onsubmit) > 0 ? $onsubmit : \'return validate(this);\')?>',
             $output
         );
         
-        $parser->registerVariable('_field');
+        $parser->registerVariable(null, '_field');
         $output = $parser->parse('${fn:implode(\',\',_field->validators)}');
-        $parser->unregisterVariable('_field');
+        $parser->unregisterVariable(null, '_field');
         
         $this->assertEquals(
             '<?php /* {fn:implode(\',\',_field->validators)} */ echo htmlentities(implode(\',\',$_field->validators))?>',
@@ -269,9 +269,9 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         );
         
         // can we nest?
-        $parser->registerVariable('_field');
+        $parser->registerVariable(null, '_field');
         $output = $parser->parse('${fn:count(fn:implode(\',\',_field->validators))}');
-        $parser->unregisterVariable('_field');
+        $parser->unregisterVariable(null, '_field');
         
         $this->assertEquals(
             '<?php /* {fn:count(fn:implode(\',\',_field->validators))} */ echo htmlentities(count(implode(\',\',$_field->validators)))?>',
@@ -279,9 +279,9 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         );
         
         // can we handle static?
-        $parser->registerVariable('_field');
+        $parser->registerVariable(null, '_field');
         $output = $parser->parse('${fn:MyClass::parse(_field->validators)}');
-        $parser->unregisterVariable('_field');
+        $parser->unregisterVariable(null, '_field');
         
         $this->assertEquals(
             '<?php /* {fn:MyClass::parse(_field->validators)} */ echo htmlentities(MyClass::parse($_field->validators))?>',
@@ -289,10 +289,10 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         );
 
         
-        $parser->registerVariable('col');
+        $parser->registerVariable(null, 'col');
         //$output = $parser->parse("\${fn:strpos(col, '&lt;img') &gt;= 0 ? 'centeredImg' : ''}");
         $output = $parser->parse("\${fn:strpos(col, '&lt;img') &gt;= 0 ? 'centeredImg' : ''}", false);
-        $parser->unregisterVariable('col');
+        $parser->unregisterVariable(null, 'col');
         $this->assertEquals(
             'strpos($col, \'<img\') >= 0 ? \'centeredImg\' : \'\'',
             $output

@@ -54,6 +54,7 @@ class HTML_Template_Nest_View
     private $_name = "";
     public static $VIEW_DIR = "views";
     public static $CACHE = true;
+    public static $HTML_ERRORS = true;
     private $output;
 
     /**
@@ -172,11 +173,21 @@ class HTML_Template_Nest_View
             $message = "Fatal Template Error: " . $error['message'] . " on line " . ($error['line'] - 2) . "\n";
             for($i = 0, $il = count($lines); $i < $il; $i++) {
                 $line = $lines[$i];
-                $message .= $i . ":" . htmlentities($line) . "\n";
+                if(HTML_Template_Nest_View::$HTML_ERRORS) {
+                    $line = htmlentities($line);
+                }
+                $message .= $i . ":" . $line . "\n";
             }
-            print "<pre>\n";
+            
+            if(HTML_Template_Nest_View::$HTML_ERRORS) {
+                print "<pre>\n";
+            }
+            
             print $message;
-            print "\n</pre>";
+            
+            if(HTML_Template_Nest_View::$HTML_ERRORS) {
+                print "\n</pre>";
+            }
         }
     }
 }

@@ -41,6 +41,15 @@ require_once 'PHPUnit/Framework/TestCase.php';
  */
 class HTML_Template_Nest_TaglibTest extends PHPUnit_Framework_TestCase
 {
+
+    public function setup()
+    {
+
+        HTML_Template_Nest_View::$CACHE = false;
+        HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+        HTML_Template_Nest_View::$HTML_ERRORS = false;
+    }
+
     
     /**
      * Tests custom tag library.

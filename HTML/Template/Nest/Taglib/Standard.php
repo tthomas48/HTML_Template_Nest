@@ -238,16 +238,16 @@ class HTML_Template_Nest_Taglib_Standard_ForeachTag extends HTML_Template_Nest_T
         $position = $this->getOptionalAttribute("position");
         if (!empty($position)) {
             $this->registerVariable($position);
-            $output = "\$$position = 0;\n";
+            $output = "\$" . $this->getVariableName($position) . " = 0;\n";
         }
         
         $key = $this->getOptionalAttribute("key");
         if (!empty($key)) {
             $this->registerVariable($key);
-            $output .= "foreach($items as \$$key => \$$var) {\n";
+            $output .= "foreach($items as \$" . $this->getVariableName($key) . " => \$" . $this->getVariableName($var) . ") {\n";
             return $this->wrapOutput($output);
         }
-        $output .= "foreach($items as \$$var) {\n";
+        $output .= "foreach($items as \$" . $this->getVariableName($var) . ") {\n";
         return $this->wrapOutput($output);
     }
 
@@ -266,7 +266,7 @@ class HTML_Template_Nest_Taglib_Standard_ForeachTag extends HTML_Template_Nest_T
         $position = $this->getOptionalAttribute("position");
         if (!empty($position)) {
             $this->unregisterVariable($position);
-            $output = "\$$position++;\n";
+            $output = "\$" . $this->getVariableName($position) . "++;\n";
         }
         $key = $this->getOptionalAttribute("key");
         if (!empty($key)) {
@@ -304,6 +304,7 @@ class HTML_Template_Nest_Taglib_Standard_SetTag extends HTML_Template_Nest_Tag
     public function start() 
     {
         $var = $this->getRequiredAttribute("var");        
+        $this->registerVariable($var);
         
         $input = $this->getRequiredAttribute("value"); 
         $value = $this->compiler->parser->parse(
@@ -312,12 +313,12 @@ class HTML_Template_Nest_Taglib_Standard_SetTag extends HTML_Template_Nest_Tag
         
         $output = "<?php ";
         if ($input != $value) {
-            $output .= "\$$var = $value;\n";
+            $output .= "\$" . $this->getVariableName($var) . " = $value;\n";
         } else {
-            $output .= "\$$var = \"" . addcslashes($value, "\"") . "\";\n";
+            $output .= "\$" . $this->getVariableName($var) . " = \"" . addcslashes($value, "\"") . "\";\n";
         }
         $output .= "?>";
-        $this->registerVariable($var);
+        
         return $output;        
     }
     
@@ -379,7 +380,7 @@ class HTML_Template_Nest_Taglib_Standard_ForTag extends HTML_Template_Nest_Tag
             $start = 0;
         }        
         
-        $output .= "for(\$$var = $start; $test; \$$var = \$$var + $increment) {\n";
+        $output .= "for(\$" . $this->getVariableName($var) . " = $start; $test; \$" . $this->getVariableName($var) . " = \$" . $this->getVariableName($var) . " + $increment) {\n";
         return $this->wrapOutput($output);
     }
 

@@ -39,54 +39,27 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @see       HTML_Template_Nest_Taglib_Standard
  * @since     Class available since Release 1.0.0
  */
-class HTML_Template_Nest_StandardTaglibTest extends PHPUnit_Framework_TestCase
+class HTML_Template_Nest_NestedTagsTest extends PHPUnit_Framework_TestCase
 {
-
-    public function setup()
-    {
-
-        HTML_Template_Nest_View::$CACHE = false;
-        HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
-        HTML_Template_Nest_View::$HTML_ERRORS = false;
-    }
-
     /**
-     * Tests the various tags of the standard tag library using the
-     * standardtaglib.nst file.
+     * Tests nested tags that use the same local variable
      * 
      * @return unknown_type
      */   
-    public function testStandardLib()
+    public function testNested()
     {
         HTML_Template_Nest_View::$CACHE = false;
         HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+        HTML_Template_Nest_View::$HTML_ERRORS = false;
 
-        $view = new HTML_Template_Nest_View("standardtaglib");
+
+        $view = new HTML_Template_Nest_View("nested");
         $view->addAttribute("outval", "Output Me!");
-        $view->addAttribute("myArray", Array(1, 2, 3));
-        $view->addAttribute(
-            "associativeArray", 
-            Array("Jan" => "January", 
-                "Feb" => "February", 
-                "Mar" => "March", 
-                "Apr" => "April", 
-                "May" => "May", 
-                "Jun" => "June", 
-                "Jul" => "July", 
-                "Aug" => "August", 
-                "Sep" => "September", 
-                "Oct" => "October",
-                "Nov" => "November", 
-                "Dec" => "December"
-            )
-        );
-        $view->addAttribute("var", 4);
-        $view->addAttribute("bulletClass", "tinyBullets");
-        
-        $filename = dirname(__FILE__) . "/viewoutput/standardtaglib.html";
+        $filename = dirname(__FILE__) . "/viewoutput/nested.html";
         $this->assertEquals(
             $view->render(), 
             trim(file_get_contents($filename))
         );        
     }
+    
 }

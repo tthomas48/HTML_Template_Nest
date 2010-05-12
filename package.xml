@@ -25,9 +25,9 @@ Nest is compatible with PHP 5.
         <email>tim@buyplaytix.com</email>
         <active>yes</active>
     </lead>
-    <date>2010-05-10</date>
+    <date>2010-05-11</date>
     <version>
-        <release>1.2.5</release>
+        <release>1.2.6</release>
         <api>1.2.1</api>
     </version>
     <stability>
@@ -36,9 +36,7 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-added namespace and unique ids to variable names so that nested tags can have the same variable name
-without conflicting.
-added nst:root and nst:attribute
+fixed issues with nesting variable names, added defaultValue attribute to nst:attribute.
  </notes>
     <contents>
         <dir name="/">
@@ -146,6 +144,8 @@ added nst:root and nst:attribute
                                 <file name="nestedFooter.tmpl" role="test" />
                                 <file name="badXml.tmpl" role="test" />
                                 <file name="tagfile.tmpl" role="test" />
+                                <file name="tabindexa.tmpl" role="test" />
+                                <file name="tabindexb.tmpl" role="test" />
                             </dir>
                         </dir>
                     </dir>
@@ -157,6 +157,7 @@ added nst:root and nst:attribute
                     <file name="standardtaglib.nst" role="test" />
                     <file name="attribute.nst" role="test" />
                     <file name="nested.nst" role="test" />
+                    <file name="nestedvars.nst" role="test" />
                 </dir>
                 <dir name="viewoutput" role="test">
                     <file name="pre.html" role="test" />
@@ -165,6 +166,7 @@ added nst:root and nst:attribute
                     <file name="json.html" role="test" />
                     <file name="standardtaglib.html" role="test" />
                     <file name="nested.html" role="test" />
+                    <file name="nestedvars.html" role="test" />
                 </dir>
                 <dir name="TestPackage" role="test">
                     <file name="TestTaglib.php" role="test" />

@@ -268,6 +268,7 @@ class HTML_Template_Nest_Parser
                         }
                         $buffer .= $char;
                         break;
+                    case "+":
                     case " ":
                         if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
                             $buffer = $this->parseVariable($buffer, $quoteChar);
@@ -280,7 +281,7 @@ class HTML_Template_Nest_Parser
                 }
                  
             }
-            
+
             if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {
                 $buffer = $this->parseVariable($buffer, $quoteChar);
             }

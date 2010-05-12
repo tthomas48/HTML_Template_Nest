@@ -61,5 +61,22 @@ class HTML_Template_Nest_NestedTagsTest extends PHPUnit_Framework_TestCase
             trim(file_get_contents($filename))
         );        
     }
+
+    public function testNestedVars()
+    {
+        HTML_Template_Nest_View::$CACHE = true;
+        HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+        HTML_Template_Nest_View::$HTML_ERRORS = false;
+
+
+        $view = new HTML_Template_Nest_View("nestedvars");
+        $view->addAttribute("outval", "Output Me!");
+        $filename = dirname(__FILE__) . "/viewoutput/nestedvars.html";
+        $this->assertEquals(
+            $view->render(), 
+            trim(file_get_contents($filename))
+        );        
+    }
+
     
 }

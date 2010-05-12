@@ -165,6 +165,9 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
                     elseif (trim($child->localName) == 'attribute') {
                         if($child->hasAttribute("name")) {
                             $this->declaredAttributes[] = $child->getAttribute("name");
+                            if($child->hasAttribute("defaultValue")) {
+                                $this->attributes[$child->getAttribute("name")] = $child->getAttribute("defaultValue");
+                            }
                             $node->removeChild($child);
                         }
                     }

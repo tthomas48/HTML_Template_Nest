@@ -96,8 +96,8 @@ class HTML_Template_Nest_Tag
                 
         $output = "<?php ";
         foreach($this->declaredAttributes as $key) {
-            $this->unregisterVariable($key);
             $output .= "unset(\$" . $this->getVariableName($key) . ");\n";
+            $this->unregisterVariable($key);
         }
         $output .= "?>";
         return $output;
@@ -132,7 +132,7 @@ class HTML_Template_Nest_Tag
     
     protected function getVariableName($key)
     {
-        return $this->compiler->parser->getVariableName($this->id, $key);
+        return $this->compiler->parser->getLocalVariableName($key);
     }
  
     /**

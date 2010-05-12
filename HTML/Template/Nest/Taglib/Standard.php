@@ -265,8 +265,8 @@ class HTML_Template_Nest_Taglib_Standard_ForeachTag extends HTML_Template_Nest_T
         $this->unregisterVariable($var);
         $position = $this->getOptionalAttribute("position");
         if (!empty($position)) {
-            $this->unregisterVariable($position);
             $output = "\$" . $this->getVariableName($position) . "++;\n";
+            $this->unregisterVariable($position);
         }
         $key = $this->getOptionalAttribute("key");
         if (!empty($key)) {

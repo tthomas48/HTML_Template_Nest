@@ -60,6 +60,10 @@ class HTML_Template_Nest_ParseException extends Exception
         $this->expression = $expression;
     }
 
+    public function getNode() {
+        return $this->node;
+    }
+
     public function __toString() {
         // only available in php >= 5.3
         if($this->node != null && method_exists($this->node, "getLineNo")) {

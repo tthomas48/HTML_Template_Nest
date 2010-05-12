@@ -30,6 +30,7 @@
  */
 require_once "HTML/Template/Nest/Parser.php";
 require_once "HTML/Template/Nest/CompilerException.php";
+
 /**
  * Compiles .nst files into .php files
  *
@@ -97,6 +98,8 @@ class HTML_Template_Nest_Compiler
                 throw new HTML_Template_Nest_CompilerException($message);
             }
             $output = $this->compileDocument($document);
+        } catch(HTML_Template_Nest_ParseException $e) {
+            throw new HTML_Template_Nest_CompilerException("In file $filename\n" . $e->getMessage() . "\n" . $e->getTraceAsString());
         } catch(HTML_Template_Nest_TaglibException $e) {
             throw new HTML_Template_Nest_CompilerException("In file $filename\n" . $e->getMessage());
         } catch(HTML_Template_Nest_CompilerException $e) {
@@ -153,7 +156,8 @@ class HTML_Template_Nest_Compiler
 
         // just a text node, parse it for variables and return it
         if ($node->nodeType == XML_TEXT_NODE) {
-            return $this->parser->parse($node->nodeValue);
+            $output = $this->parser->parse($node->nodeValue);
+            return $output;
         }
 
         // self-contained tag. just return it

@@ -304,12 +304,12 @@ class HTML_Template_Nest_Taglib_Standard_SetTag extends HTML_Template_Nest_Tag
     public function start() 
     {
         $var = $this->getRequiredAttribute("var");        
-        $this->registerVariable($var);
-        
         $input = $this->getRequiredAttribute("value"); 
         $value = $this->compiler->parser->parse(
             $input, false
         );
+        
+        $this->registerVariable($var);
         
         $output = "<?php ";
         if ($input != $value) {

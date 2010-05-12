@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>Creating a custom taglib</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="Stylesheet" rev="Stylesheet" href="../css/documentation.css"
+    type="text/css" media="All" charset="iso-8859-1">
+</head>
+<body>
+<h1>Creating a custom tag library</h1>
+<p>Nest tag libraries are just classes that extend the tag library class
+and map tag classnames to simple names. Generally the tag implementations
+themselves are stored in the same file to simplify file including.</p>
+<p>Let's start by creating a simple tag library that we will add to through
+the next steps.</p>
+<fieldset>
+<legend>SimpleTaglib.php</legend>
+<pre>
+&lt;php
+require_once 'HTML/Template/Nest/Taglib.php';
+
+class SimpleTaglib extends HTML_Template_Nest_Taglib
+{
+    protected $tags = array(
+        "simpleTagFile" => "SimpleTaglib_SimpleTagFile", 
+        "simpleTag" => "SimpleTaglib_SimpleTag",
+    );
+}
+</pre>
+</fieldset>
+<p>The key in the $tags array is how the tag will be referenced in the nest
+template, and the value is the actual classname.</p>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<html>
+<head>
+<title>Creating a tag</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="Stylesheet" rev="Stylesheet" href="../css/documentation.css"
+    type="text/css" media="All" charset="iso-8859-1">
+</head>
+<body>
+<h1>Creating a tag</h1>
+<p>Tags give you the power to do pretty much anything you want in a tag. You
+can pass in parameters via attributes. You can access the actual dom model and
+modify the document before the body is processed. The tagfile object is actually
+a tag that loads the template file and includes it in the main xml document
+modifying it on the fly.</p>
+<p>Most of those uses are beyond the scope of this document, but let's create
+a simple tag that has a required and optional attribute that are used in the 
+body of the tag.</p>
+<p>Tags can specify a start() method and end() method. They
+also have access to a member variable $node which contains the current node. </p>
+<p>There are two helper functions getRequiredAttribute and getOptionalAttribute
+that can be used to get attributes for the current node.</p>
+<fieldset>
+<legend>SimpleTaglib.php</legend>
+<pre>
+&lt;php
+require_once 'HTML/Template/Nest/Taglib.php';
+require_once 'HTML/Template/Nest/TagFile.php';
+<b>require_once 'HTML/Template/Nest/Tag.php';</b>
+
+class SimpleTaglib extends HTML_Template_Nest_Taglib
+{
+    protected $tags = array(
+        "simpleTagFile" => "SimpleTaglib_SimpleTagFile", 
+        "simpleTag" => "SimpleTaglib_SimpleTag",
+    );
+}
+
+class SimpleTaglib_SimpleTagFile extends HTML_Template_Nest_TagFile
+{
+    public function getTagFilename() 
+    {
+        return dirname(__FILE__) . "/simple_tagfile.tmpl";
+    }
+}
+<b>
+class SimpleTaglib_SimpleTag extends HTML_Template_Nest_Tag
+{
+    public function start() 
+    {
+        $name = $this->compiler->parser->parseExpression(
+            $this->getRequiredAttribute("name")
+        );    
+        $size = $this->compiler->parser->parseExpression(
+            $this->getOptionalAttribute("size")
+        );
+        
+        $output = "&lt;input type=\"test\" name=\"$name\"";
+        if($size != null) {
+            $output .= " size=\"$size\"";
+        }
+        $output .= " value=\"";
+        return $output;
+    }
+    public function end()
+    {
+        return "\"/&gt;";
+    }
+}
+</b>
+</pre>
+</fieldset>
+<p>We can now refer to this tag like so:</p>
+<pre>
+&lt;simpleTag:simpleTag name="myName"&gt;myValue&lt;/simpleTag:simpleTag&gt; 
+Output: &lt;input name="myName" value="myValue" /&gt;
+
+&lt;simpleTag:simpleTag name="myName" size="10" &gt;myValue&lt;/simpleTag:simpleTag&gt;
+Output: &lt;input name="myName" size="10" value="myValue" /&gt;
+</pre>
+</body>
+</html>

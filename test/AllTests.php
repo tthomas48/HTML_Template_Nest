@@ -31,6 +31,7 @@ require_once 'ParserTest.php';
 require_once 'StandardTaglibTest.php';
 require_once 'TaglibTest.php';
 require_once 'NestedTagsTest.php';
+require_once 'ReplaceTagTest.php';
 require_once 'PHPUnit/Framework/TestSuite.php';
 /**
  * Runs all tests
@@ -64,6 +65,7 @@ class HTML_Template_Nest_AllTests
         $suite->addTestSuite('HTML_Template_Nest_StandardTaglibTest');
         $suite->addTestSuite('HTML_Template_Nest_TagLibTest');
         $suite->addTestSuite('HTML_Template_Nest_NestedTagsTest');
+        $suite->addTestSuite('HTML_Template_Nest_ReplaceTagTest');
         return $suite;
     }
 }

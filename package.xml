@@ -27,7 +27,7 @@ Nest is compatible with PHP 5.
     </lead>
     <date>2010-05-11</date>
     <version>
-        <release>1.2.7</release>
+        <release>1.2.8</release>
         <api>1.2.7</api>
     </version>
     <stability>
@@ -36,7 +36,7 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-fixed issues with nesting variable names, added defaultValue attribute to nst:attribute.
+fixed issue with _replace tags not being appended to the correct place in the tree.
  </notes>
     <contents>
         <dir name="/">
@@ -146,6 +146,8 @@ fixed issues with nesting variable names, added defaultValue attribute to nst:at
                                 <file name="tagfile.tmpl" role="test" />
                                 <file name="tabindexa.tmpl" role="test" />
                                 <file name="tabindexb.tmpl" role="test" />
+                                <file name="nestedbody.tmpl" role="test" />
+                                <file name="helppane.tmpl" role="test" />
                             </dir>
                         </dir>
                     </dir>
@@ -158,6 +160,7 @@ fixed issues with nesting variable names, added defaultValue attribute to nst:at
                     <file name="attribute.nst" role="test" />
                     <file name="nested.nst" role="test" />
                     <file name="nestedvars.nst" role="test" />
+                    <file name="replace.nst" role="test" />
                 </dir>
                 <dir name="viewoutput" role="test">
                     <file name="pre.html" role="test" />
@@ -167,6 +170,7 @@ fixed issues with nesting variable names, added defaultValue attribute to nst:at
                     <file name="standardtaglib.html" role="test" />
                     <file name="nested.html" role="test" />
                     <file name="nestedvars.html" role="test" />
+                    <file name="replace.html" role="test" />
                 </dir>
                 <dir name="TestPackage" role="test">
                     <file name="TestTaglib.php" role="test" />
@@ -179,6 +183,7 @@ fixed issues with nesting variable names, added defaultValue attribute to nst:at
                 <file name="ParserTest.php" role="test" />
                 <file name="ErrorTest.php" role="test" />
                 <file name="NestedTagsTest.php" role="test" />
+                <file name="ReplaceTagTest.php" role="test" />
             </dir>
             <file name="LICENSE" role="doc" />
         </dir> <!-- / -->

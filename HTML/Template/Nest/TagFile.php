@@ -173,10 +173,11 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
                     }
                 }
                 if ($child->hasChildNodes()) {
-                    $this->_processBodyToken($child, $bodyChildren);
+                    $bodyChildren = $this->_processBodyToken($child, $bodyChildren);
                 }
             }
         }
+        return $bodyChildren;
     }
     
     public function getTagFilename() {

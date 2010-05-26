@@ -25,9 +25,9 @@ Nest is compatible with PHP 5.
         <email>tim@buyplaytix.com</email>
         <active>yes</active>
     </lead>
-    <date>2010-05-11</date>
+    <date>2010-05-26</date>
     <version>
-        <release>1.2.8</release>
+        <release>1.2.9</release>
         <api>1.2.7</api>
     </version>
     <stability>
@@ -36,7 +36,7 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-fixed issue with _replace tags not being appended to the correct place in the tree.
+added the ability to have taglibs without an actual taglib class based on filesystem paths only.
  </notes>
     <contents>
         <dir name="/">
@@ -135,6 +135,9 @@ fixed issue with _replace tags not being appended to the correct place in the tr
             <dir name="test" role="test">
                 <dir name="views" role="test">
                     <dir name="templates" role="test">
+                        <dir name="notaglibclass" role="test">
+                            <file name="test.tmpl" role="test" />
+                        </dir>
                         <dir name="testpackage" role="test">
                             <dir name="testtaglib" role="test">
                                 <file name="wrappableTagFile.tmpl" role="test" />

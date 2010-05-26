@@ -49,6 +49,7 @@ require_once 'HTML/Template/Nest/View.php';
 class HTML_Template_Nest_Taglib
 {
     protected $tags = Array();
+    private $libraryDirectory = "";
 
     /**
      * Constructor
@@ -57,6 +58,10 @@ class HTML_Template_Nest_Taglib
      */
     public function __construct()
     {
+    }
+    
+    public function setLibraryDirectory($libraryDirectory) {
+        $this->libraryDirectory = $libraryDirectory;
     }
 
     /**
@@ -72,7 +77,10 @@ class HTML_Template_Nest_Taglib
      */
     public function getTagByName($compiler, $node, $attributes)
     {
-        $libraryDirectory = strtolower(get_class($this));
+        $libraryDirectory = strtolower($this->libraryDirectory);
+        if(get_class() != get_class($this)) {
+            $libraryDirectory = strtolower(get_class($this));
+        }
         $libraryDirectory = str_replace("_", "/", $libraryDirectory);
         $name = $node->localName;
         if (!array_key_exists($name, $this->tags)) {

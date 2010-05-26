@@ -283,22 +283,33 @@ class HTML_Template_Nest_Compiler
 
         $taglib = str_replace("urn:nsttl:", "", $taglib);
         $taglibFile = str_replace("_", "/", $taglib) . ".php";
+
+        $className = "";
+        $isDefault = false;
         try {
-            set_error_handler(array($this,'errorHandler'));
-            include_once $taglibFile;
-            restore_error_handler();
+            if(HTML_Template_Nest_Compiler::file_exists_ip($taglibFile)) {
+                set_error_handler(array($this,'errorHandler'));
+                include_once $taglibFile;
+                restore_error_handler();
+                $className = $taglib;
+            } else {
+                $isDefault = true;
+                $className = "HTML_Template_Nest_Taglib";
+            }
         } catch(Exception $e) {
             throw new HTML_Template_Nest_CompilerException($e->getMessage(), $node);
         }
 
-        $className = $taglib;
-        if (strpos($taglib, "/") !== false) {
-            $className = substr($taglib, strrpos($taglib, "/") + 1);
+        if (strpos($className, "/") !== false) {
+            $className = substr($className, strrpos($className, "/") + 1);
         }
         if(!class_exists($className, false)) {
             throw new HTML_Template_Nest_CompilerException("Unable to find tag class " . $className, $node);
         }
         $class = new $className();
+        if($isDefault) {
+            $class->setLibraryDirectory($taglib);
+        }
         $tag = $class->getTagByName($this, $node, $attributes);
         return $tag;
     }
@@ -330,4 +341,34 @@ class HTML_Template_Nest_Compiler
             return false;
         }
     }
+    
+    /*
+     * Pulled from: http://php.net/manual/en/function.file-exists.php 
+     * Expanden file_exists function 
+     * Searches in include_path 
+     */ 
+    private static function file_exists_ip($filename) {
+        if(function_exists("get_include_path")) { 
+            $include_path = get_include_path(); 
+        } elseif(false !== ($ip = ini_get("include_path"))) { 
+            $include_path = $ip; 
+        } else {
+            return false;
+        } 
+
+        if(false !== strpos($include_path, PATH_SEPARATOR)) { 
+            if(false !== ($temp = explode(PATH_SEPARATOR, $include_path)) && count($temp) > 0) { 
+                for($n = 0; $n < count($temp); $n++) {
+                    if(false !== @file_exists($temp[$n] . "/" . $filename)) { 
+                        return true; 
+                    } 
+                } 
+                return false; 
+            } else {return false;} 
+        } elseif(!empty($include_path)) { 
+            if(false !== @file_exists($include_path)) { 
+                return true; 
+            } else {return false;} 
+        } else {return false;} 
+    }     
 }

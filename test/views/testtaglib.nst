@@ -1,5 +1,6 @@
 <html xmlns:test="urn:nsttl:TestPackage_TestTaglib" xmlns:h="http://www.w3.org/TR/html4/"
-    xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard">
+    xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard"
+    xmlns:ntt="urn:nsttl:NoTagLibClass">
 <h:head>
     <script type="text/javascript">
         var basepath = '${director->getProducerPath()}';
@@ -66,6 +67,6 @@ This is the body text.
 <test:wrappableWithAttributes attribute1="${person->isNew() ? 'Create' : 'Save'} Person">
 foo
 </test:wrappableWithAttributes>
-
+<ntt:test />
 </h:body>
 </html>

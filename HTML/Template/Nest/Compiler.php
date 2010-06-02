@@ -216,8 +216,8 @@ class HTML_Template_Nest_Compiler
     }
 
     public function getParentByType($type) {
-        $reverseStack = array_reverse($this->tagStack);
-        foreach($reverseStack as $stack) {
+        for($i = count($this->tagStack) - 1; $i >= 0; $i--) {
+            $stack = $this->tagStack[$i];
             foreach($stack as $tag) {
                 if(is_a($tag, $type)) {
                     return $tag;

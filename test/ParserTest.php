@@ -192,7 +192,7 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         );
         $output = $parser->parse('${some_var - some_other_var}');
         $this->assertEquals(
-            "<?php /* {some_var - some_other_var} */ echo htmlentities(\$_o(\$p, 'some_var') - \$_o(\$p, 'some_other_var'))?>", $output
+            "<?php /* {some_var - some_other_var} */ echo htmlentities(\$_o(\$p, 'some_var') - \$_o(\$p, 'some_other_var'))?>1", $output, "my name"
         );
         $output = $parser->parse('${(a + b + c) * (d - 3)}');
         $this->assertEquals(

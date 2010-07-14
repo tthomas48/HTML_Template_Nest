@@ -143,13 +143,18 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
                     && $child->getAttribute("_replace") == "true"
                 ) {
                     $replacedNodes = false;
+                    $toUnset = array();
                     for($i = 0; $i < count($bodyChildren); $i++) {
                         $nestedChild = $bodyChildren[$i];
                         if($nestedChild->nodeName == $child->nodeName) {
                             $replacedNodes = true;
                             $node->insertBefore($nestedChild, $child);    
-                            unset($bodyChildren[$i]);
+                            $toUnset[] = $nestedChild;
                         }
+                    }
+                    foreach($toUnset as $nestedChild) {
+                        $index = array_search($nestedChild, $bodyChildren);
+                        unset($bodyChildren[$index]);
                     }
                     if($replacedNodes) {
                         $node->removeChild($child);

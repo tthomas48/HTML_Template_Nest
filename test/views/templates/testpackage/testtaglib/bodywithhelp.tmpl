@@ -1,0 +1,18 @@
+<body xmlns:test="urn:nsttl:TestPackage_TestTaglib" xmlns:nst="http://nest.sourceforge.net/"
+    xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard">
+    <nst:attribute name="nohelppane" />
+    <div class="rounded">
+
+        <test:roundedContainer>
+            <div id="mainBody">
+                <c:if test="nohelppane != 'true'">
+                    <test:helppane _replace="true">
+                    </test:helppane>       
+                </c:if>     
+                <div id="rightpane">
+                    <nst:processBody />
+                </div>
+            </div>
+        </test:roundedContainer>
+    </div>
+</body>

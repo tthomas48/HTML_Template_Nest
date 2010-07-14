@@ -1,0 +1,41 @@
+body {
+	padding: 2em;
+	font-family: sans;
+	font-size: 10pt;
+}
+h1, h2, h3, h4, h5 {
+    color: #00a5d9;
+    border-bottom: thin solid #00a5d9; 
+}
+.tableOfContents {
+	padding: 0 0 0 0;
+	color: white;
+	background-color: #00a5d9;
+	font-family: sans;
+	font-size: 8pt;
+	margin: .25em;
+}
+.tableOfContents h1 {
+	color: white;
+}
+#logoBody {
+    text-align: center;
+}
+pre {
+    padding: .5em;
+    font-family: monospace;
+    margin: 1em;    
+    border: thin dashed #00a5d9;
+    background-color: whitesmoke;
+    color: black;
+}
+fieldset {
+    margin: 1em;	
+    border: thin dashed #00a5d9;
+    background-color: whitesmoke;
+    color: black;
+}
+fieldset pre {
+	margin: 0 0 0 0;
+	border: none;
+}

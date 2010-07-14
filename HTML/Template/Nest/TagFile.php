@@ -154,7 +154,7 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
                     }
                     foreach($toUnset as $nestedChild) {
                         $index = array_search($nestedChild, $bodyChildren);
-                        unset($bodyChildren[$index]);
+                        array_splice($bodyChildren, $index, 1);
                     }
                     if($replacedNodes) {
                         $node->removeChild($child);

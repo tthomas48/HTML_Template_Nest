@@ -95,7 +95,11 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
 
         $newChild = $node->ownerDocument->createDocumentFragment();
         try {
-            $newChild->appendXML(file_get_contents($this->filename));
+            if(!$newChild->appendXML(file_get_contents($this->filename))) {
+            	$message = "Error appending tagfile: " .
+                	$this->getTagFilename();
+            	throw new HTML_Template_Nest_TagException($message, $node);
+            }
         } catch(Exception $e) {
             $message = "Error parsing tagfile: " .
                 $this->getTagFilename() . "; " . $e->getMessage();

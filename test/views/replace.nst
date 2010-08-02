@@ -1,0 +1,8 @@
+<div xmlns:test="urn:nsttl:TestPackage_TestTaglib">
+    <test:nestedbody>
+        <test:helppane>
+            foo
+        </test:helppane>
+        Foo body
+    </test:nestedbody>
+</div>

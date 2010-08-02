@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<html xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard">
+    <body>
+        <c:if test="1 == 1">
+            Show me
+</c:if>
+        <c:if test="1 == 2">
+            Don't show me
+</c:if>
+        ${outval}
+
+        <c:if test="'a' == 'b'">
+            Not me.
+</c:if>
+        <c:elseif test="'b' == 'c'">
+            Also not me.
+</c:elseif>
+        <c:else>
+            But me!
+</c:else>
+
+        <ul class="${bulletClass}" id="unorderListTest">
+            <c:foreach items="myArray" var="myvar">
+                <li>${myvar}</li>
+            </c:foreach>
+        </ul>
+        <table>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+                <c:foreach items="associativeArray" var="myvalue"
+                    key="mykey" position="mypos">
+                    <tr class="tableRow${(mypos % 2 == 0) ? 1 : 2 }">
+                        <td>${mykey}</td>
+                        <td>${myvalue}</td>
+                    </tr>
+                </c:foreach>
+            </tr>
+        </table>
+        Make sure the correct variable prints once out of context:
+        ${var}
+    </body>
+    
+<c:set var="mylocalvar" value="${bulletClass}">
+    ${mylocalvar}
+</c:set>    
+Empty: ${mylocalvar}
+
+<c:set var="mylocalvar" value="bulletClass">
+    ${mylocalvar}
+</c:set>
+Empty: ${mylocalvar}
+<c:for var="i" test="i &lt; 10">
+    Should print 10 times.
+</c:for>
+</html>

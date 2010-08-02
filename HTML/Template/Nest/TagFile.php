@@ -66,24 +66,28 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
      */
     public function __construct($compiler, $node, $attributes, $filename = "")
     {
+
+        $fullFilename = "";
         if(!empty($filename)) {
             $this->filename = $filename;
-        }
+        } 
 
         $foundFile = false;
-        if(file_exists($this->filename)) {
+        if(file_exists($this->getTagFilename())) {
+            $fullFilename = $this->getTagFilename();
         	$foundFile = true;
-        	$this->filename = $filename;
         }
-        foreach(HTML_Template_Nest_View::$INCLUDE_PATHS as $path) {
-        	if (file_exists($path . $this->filename)) {
-        		$this->filename = $path . $this->filename;
-        		$foundFile = true;
-        	}
+        if(!$foundFile) {
+            foreach(HTML_Template_Nest_View::$INCLUDE_PATHS as $path) {
+            	if (file_exists($path . "/" . $this->getTagFilename())) {
+            		$fullFilename = $path . "/" . $this->getTagFilename();
+            		$foundFile = true;
+            	}
+            }
         }
         if (!$foundFile) {
             throw new HTML_Template_Nest_TagException(
-                "Unable to find file " . $this->filename . " for " . $node->tagName,
+                "Unable to find file " . $this->getTagFilename() . " for " . $node->tagName,
                 $node
             );
         }
@@ -95,7 +99,7 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
 
         $newChild = $node->ownerDocument->createDocumentFragment();
         try {
-            if(!$newChild->appendXML(file_get_contents($this->filename))) {
+            if(!$newChild->appendXML(file_get_contents($fullFilename))) {
             	$message = "Error appending tagfile: " .
                 	$this->getTagFilename();
             	throw new HTML_Template_Nest_TagException($message, $node);

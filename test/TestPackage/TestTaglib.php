@@ -73,7 +73,7 @@ class TestPackage_TestTaglib_TestTagFile extends HTML_Template_Nest_TagFile
      */
     public function getTagFilename() 
     {
-        return "views/templates/testpackage/testtaglib/tagfile.tmpl";
+        return "templates/testpackage/testtaglib/tagfile.tmpl";
     } 
 }
 
@@ -91,6 +91,6 @@ class TestPackage_TestTaglib_WrappableWithAttributesTagFile
      */
     public function getTagFilename() 
     {
-        return "views/templates/testpackage/testtaglib/wrappableTagFile.tmpl";
+        return "templates/testpackage/testtaglib/wrappableTagFile.tmpl";
     } 
 }

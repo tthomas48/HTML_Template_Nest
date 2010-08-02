@@ -85,12 +85,12 @@ class HTML_Template_Nest_Taglib
         $name = $node->localName;
         if (!array_key_exists($name, $this->tags)) {
         	  $filename = "";
-	        	foreach(HTML_Template_Nest_View::$INCLUDE_PATHS as $path) {
-	        		$filename = $path . "/templates/" . $libraryDirectory . "/" . $name . ".tmpl";
-              if(file_exists($filename)) {
-                return new HTML_Template_Nest_TagFile($compiler, $node, $attributes, $filename);
-              }
-	        	}
+	          foreach(HTML_Template_Nest_View::$INCLUDE_PATHS as $path) {
+	        	$filename = $path . "/templates/" . $libraryDirectory . "/" . $name . ".tmpl";
+                if(file_exists($filename)) {
+                    return new HTML_Template_Nest_TagFile($compiler, $node, $attributes, $filename);
+                }
+            }	        
             throw new HTML_Template_Nest_TaglibException(
                 "Unable to find tag '$name' in tag library " . get_class($this), $node
             );

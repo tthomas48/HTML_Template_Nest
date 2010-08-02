@@ -46,7 +46,7 @@ class HTML_Template_Nest_TaglibTest extends PHPUnit_Framework_TestCase
     {
 
         HTML_Template_Nest_View::$CACHE = false;
-        HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+        HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
         HTML_Template_Nest_View::$HTML_ERRORS = false;
     }
 
@@ -60,7 +60,7 @@ class HTML_Template_Nest_TaglibTest extends PHPUnit_Framework_TestCase
     {
         
         HTML_Template_Nest_View::$CACHE = false;
-        HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+        HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
 
         $view = new HTML_Template_Nest_View("testtaglib");
         $view->addAttribute("testAttribute", "Testing 1..2..3..");

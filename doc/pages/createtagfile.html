@@ -11,9 +11,9 @@
 users will find that tag files contain all the functionality they need.</p>
 <p>Basic tagfiles just work as templates. You can drop a file into the taglib's
 template directory and it will be found automatically. If your taglib classname is
-SimpleTaglib then your template directory will be:
+SimpleTaglib then your template directory will be in your include path:
 <pre>
-HTML_Template_Nest_View::$VIEW_DIR . "/templates/simpletaglib/"	
+HTML_Template_Nest_View::$INCLUDE_PATHS . "/templates/simpletaglib/"	
 </pre>
 
 <p>If we want to explicitly add a tag file (for example to override tag methods or add
@@ -39,7 +39,7 @@ class SimpleTaglib_SimpleTagFile extends HTML_Template_Nest_TagFile
 {
     public function getTagFilename() 
     {
-        return HTML_Template_Nest_View::$VIEW_DIR . "/templates/simpletaglib/simple_tagfile.tmpl";
+        return  "views/templates/simpletaglib/simple_tagfile.tmpl";
     }
 }
 </b>

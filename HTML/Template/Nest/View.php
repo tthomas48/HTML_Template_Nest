@@ -52,7 +52,7 @@ class HTML_Template_Nest_View
 {
     private $_attributes = Array();
     private $_name = "";
-    public static $VIEW_DIR = "views";
+    public static $INCLUDE_PATHS = array("views");
     public static $CACHE = true;
     public static $HTML_ERRORS = true;
     private $output;
@@ -95,6 +95,19 @@ class HTML_Template_Nest_View
     {
         $this->_attributes = $attributes;
     }
+    
+    /**
+     * Adds an include path to search for resources.
+     *
+     * @param array $path path to search
+     *
+     * @return null
+     */
+    public static function addIncludePath($path)
+    {
+    	HTML_Template_Nest_View::$INCLUDE_PATHS[] = $path;
+    }
+    
 
     /**
      * Renders the view using the current attributes and returns the rendred
@@ -128,11 +141,15 @@ class HTML_Template_Nest_View
     }
 
     private function loadContent() {
-        $uncompiledFilename = HTML_Template_Nest_View::$VIEW_DIR . "/" .
-        $this->_name . ".nst";
-        $compiledFilename = HTML_Template_Nest_View::$VIEW_DIR .
-            "/" . $this->_name . ".php";
-
+    	
+    	  $viewPath = "";
+    	  foreach(HTML_Template_Nest_View::$INCLUDE_PATHS as $path) {
+    	  	if(file_exists($path  . "/" . $this->_name . ".nst")) {
+    	  		$viewPath = $path;
+    	  	}
+    	  }
+        $uncompiledFilename = $viewPath . "/" . $this->_name . ".nst";
+        $compiledFilename = $viewPath . "/" . $this->_name . ".php";
 
 
         $output = "";

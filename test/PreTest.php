@@ -49,7 +49,7 @@ class HTML_Template_Nest_PreTest extends PHPUnit_Framework_TestCase
     public function testPre()
     {
         HTML_Template_Nest_View::$CACHE = false;
-        HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+        HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
         HTML_Template_Nest_View::$HTML_ERRORS = false;
 
         $view = new HTML_Template_Nest_View("pre");
@@ -69,7 +69,7 @@ class HTML_Template_Nest_PreTest extends PHPUnit_Framework_TestCase
     public function testJson()
     {
         HTML_Template_Nest_View::$CACHE = false;
-        HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+        HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
 
         $view = new HTML_Template_Nest_View("json");
         $view->addAttribute("title", "My Title");

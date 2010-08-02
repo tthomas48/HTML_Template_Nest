@@ -49,7 +49,7 @@ class HTML_Template_Nest_NestedTagsTest extends PHPUnit_Framework_TestCase
     public function testNested()
     {
         HTML_Template_Nest_View::$CACHE = false;
-        HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+        HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
         HTML_Template_Nest_View::$HTML_ERRORS = false;
 
 
@@ -65,7 +65,7 @@ class HTML_Template_Nest_NestedTagsTest extends PHPUnit_Framework_TestCase
     public function testNestedVars()
     {
         HTML_Template_Nest_View::$CACHE = false;
-        HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+        HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
         HTML_Template_Nest_View::$HTML_ERRORS = false;
 
 

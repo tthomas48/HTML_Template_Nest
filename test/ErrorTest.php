@@ -54,7 +54,7 @@ class HTML_Template_Nest_ErrorTest extends PHPUnit_Framework_TestCase
     {
         
         HTML_Template_Nest_View::$CACHE = false;
-        HTML_Template_Nest_View::$VIEW_DIR = dirname(__FILE__) . "/views";
+        HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
         HTML_Template_Nest_View::$HTML_ERRORS = false;
     }
 

@@ -70,7 +70,18 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
             $this->filename = $filename;
         }
 
-        if (!file_exists($this->getTagFilename())) {
+        $foundFile = false;
+        if(file_exists($this->filename)) {
+        	$foundFile = true;
+        	$this->filename = $filename;
+        }
+        foreach(HTML_Template_Nest_View::$INCLUDE_PATHS as $path) {
+        	if (file_exists($path . $this->filename)) {
+        		$this->filename = $path . $this->filename;
+        		$foundFile = true;
+        	}
+        }
+        if (!$foundFile) {
             throw new HTML_Template_Nest_TagException(
                 "Unable to find file " . $this->filename . " for " . $node->tagName,
                 $node
@@ -84,7 +95,7 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
 
         $newChild = $node->ownerDocument->createDocumentFragment();
         try {
-            $newChild->appendXML(file_get_contents($this->getTagFilename()));
+            $newChild->appendXML(file_get_contents($this->filename));
         } catch(Exception $e) {
             $message = "Error parsing tagfile: " .
                 $this->getTagFilename() . "; " . $e->getMessage();

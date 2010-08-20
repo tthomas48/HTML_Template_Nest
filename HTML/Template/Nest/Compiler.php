@@ -130,6 +130,22 @@ class HTML_Template_Nest_Compiler
         return $this->processChildren($node);
     }
 
+    private function getNamespace($node) {
+        $taglib = $node->lookupNamespaceURI($node->prefix);
+        if($node instanceof DomElement && $taglib == null && strpos($node->nodeName, ":") !== false) {
+            // must be some sort of DOM bug. Look and see if we can figure it out from simplexml
+            $sxe = simplexml_import_dom($node);
+            $namespaces = $sxe->getNamespaces();
+            foreach($namespaces as $prefix => $namespace) {
+                if(strpos($node->nodeName, $prefix . ":") == 0) {
+                    $taglib = $namespace;
+                    break;
+                }
+            }
+        }
+        return $taglib;
+    }
+
     /**
      * Process a node and all its children. Called recursively.
      *
@@ -141,7 +157,7 @@ class HTML_Template_Nest_Compiler
     {
 
         $output = "";
-        $taglib = $node->lookupNamespaceURI($node->prefix);
+        $taglib = $this->getNamespace($node);
 
         $tag = null;
         $rootTag = false;
@@ -201,6 +217,7 @@ class HTML_Template_Nest_Compiler
         // process opening tags, and append the parsed children, doing this
         // at this point allows us to have children modify parent attributes
         if (!$rootTag && strlen($node->localName) && $tag == null) {
+
             $output = "<" . $node->nodeName  . $this->addAttributes($node) . $this->processNamespace($node) .  ">" . $output;
         }
 
@@ -259,7 +276,7 @@ class HTML_Template_Nest_Compiler
         if(strlen($node->prefix) == 0) {
             return "";
         }
-        $uri = $node->lookupNamespaceURI($node->prefix);
+        $uri = $this->getNamespace($node);
         return " xmlns:" . $node->prefix . "=\"" . str_replace('"', '&quot;', $uri) . "\"";
     }
 
@@ -274,7 +291,7 @@ class HTML_Template_Nest_Compiler
      */
     private function _loadTag($node)
     {
-        $taglib = $node->lookupNamespaceURI($node->prefix);
+        $taglib = $this->getNamespace($node);
 
         $attributes = array();
         foreach ($node->attributes as $attr) {

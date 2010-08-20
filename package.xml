@@ -25,9 +25,9 @@ Nest is compatible with PHP 5.
         <email>tim@buyplaytix.com</email>
         <active>yes</active>
     </lead>
-    <date>2010-07-14</date>
+    <date>2010-08-20</date>
     <version>
-        <release>1.3.1</release>
+        <release>1.3.2</release>
         <api>1.3</api>
     </version>
     <stability>
@@ -36,7 +36,7 @@ Nest is compatible with PHP 5.
     </stability>
     <license uri="http://www.opensource.org/licenses/bsd-license.php">New BSD License</license>
     <notes>
-finished fixing the dynamic include paths
+used simpleXML to find the namespace in cases where DOM was failing
  </notes>
     <contents>
         <dir name="/">

@@ -1,0 +1,72 @@
+<html xmlns:test="urn:nsttl:TestPackage_TestTaglib" xmlns:h="http://www.w3.org/TR/html4/"
+    xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard"
+    xmlns:ntt="urn:nsttl:NoTagLibClass">
+<h:head>
+    <script type="text/javascript">
+        var basepath = '${director->getProducerPath()}';
+        var imagepath = '${director->getImagePath()}';
+    </script>
+</h:head>
+<h:body>
+<test:testTagFile name="foo" key="return '${foo}';" bar="${foo}" boo='"foo"${foo}'/>
+
+<test:wrappableTagFile>
+    <b>This is wrapped</b>
+</test:wrappableTagFile>
+
+<test:wrappableTagFile />
+
+<test:wrappableTagFile>
+    <test:wrappableTagFile>
+        This also is wrapped
+    </test:wrappableTagFile>
+</test:wrappableTagFile>
+
+<test:nested id="topTag">
+    <div id="middleStaticDiv" v='["required"]'>
+        <strong>This is some nested text.</strong>
+    </div>
+</test:nested>
+
+<test:body>
+This is the body text.
+</test:body>
+
+<test:wrappableWithAttributes attribute1="true" attribute2="false" attribute3="99">
+    <c:if test="attribute1 == 'true'">
+        Show me.
+    </c:if>
+    <c:if test="attribute2 == 'true'">
+        Don't show me
+    </c:if>
+    <c:if test="attribute3 > 50">
+        Show ${attribute3}
+    </c:if>
+</test:wrappableWithAttributes>
+
+<test:nestedFooter>
+    Some copywritten text.
+</test:nestedFooter>
+
+<test:nestedFooter>
+    Some copywritten text.
+    <test:roundedContainer>
+        <span class="footer">(c)2010</span>
+    </test:roundedContainer>
+</test:nestedFooter>
+
+<c:if test="1 == 1">
+    <test:body>
+        First body
+    </test:body>
+    <test:body>
+        Second body
+    </test:body>
+</c:if>
+
+<test:wrappableWithAttributes attribute1="${person->isNew() ? 'Create' : 'Save'} Person">
+foo
+</test:wrappableWithAttributes>
+<ntt:test />
+</h:body>
+</html>

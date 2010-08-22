@@ -414,15 +414,7 @@ class HTML_Template_Nest_Taglib_Standard_AttributeTag extends HTML_Template_Nest
             $output .= '$output = preg_replace(\'/(\s+)/\', \' \', $output);';
             $output .= 'print trim($output);?>';
         }
-        // We want to skip over any standard taglib stuff like c:if
-        $parentNode = $this->node->parentNode;
-        $namespaceUri = $this->node->lookupNamespaceUri($this->node->prefix);
-        while($parentNode && $namespaceUri == $parentNode->lookupNamespaceUri($parentNode->prefix)) {
-            $parentNode = $parentNode->parentNode;
-        }
-        if($parentNode) {
-            $parentNode->setAttribute($name, $output);
-        }
+        $this->node->parentNode->setAttribute($name, $output);
         return "";
     }
 }

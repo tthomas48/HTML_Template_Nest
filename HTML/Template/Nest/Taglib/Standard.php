@@ -408,13 +408,21 @@ class HTML_Template_Nest_Taglib_Standard_AttributeTag extends HTML_Template_Nest
         $name = $this->getRequiredAttribute("name");
         $trim = $this->getOptionalAttribute("trim");
         if(!empty($trim) && strtolower($trim) == "true") {
-        	$output = '<?php ob_start(); ?>' . $output;
-        	$output .= '<?php $output = ob_get_contents();';
-        	$output .= 'ob_end_clean();';
-        	$output .= '$output = preg_replace(\'/(\s+)/\', \' \', $output);';
-        	$output .= 'print trim($output);?>';
+            $output = '<?php ob_start(); ?>' . $output;
+            $output .= '<?php $output = ob_get_contents();';
+            $output .= 'ob_end_clean();';
+            $output .= '$output = preg_replace(\'/(\s+)/\', \' \', $output);';
+            $output .= 'print trim($output);?>';
         }
-    	$this->node->parentNode->setAttribute($name, $output);
-    	return "";
+        // We want to skip over any standard taglib stuff like c:if
+        $parentNode = $this->node->parentNode;
+        $namespaceUri = $this->node->lookupNamespaceUri($this->node->prefix);
+        while($parentNode && $namespaceUri == $parentNode->lookupNamespaceUri($parentNode->prefix)) {
+            $parentNode = $parentNode->parentNode;
+        }
+        if($parentNode) {
+            $parentNode->setAttribute($name, $output);
+        }
+        return "";
     }
 }

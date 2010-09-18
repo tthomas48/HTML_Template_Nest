@@ -122,7 +122,13 @@ class HTML_Template_Nest_Compiler
      */
     public function compileDocument($document)
     {
-        return $this->processChildren($document);
+        $doctype = $document->doctype;
+        $output = "";
+        if($doctype) {
+            $output .= "<!DOCTYPE " . $doctype->name . " PUBLIC \"" . $doctype->publicId . "\" \"" . $doctype->systemId . "\">\n"; 
+        }
+        $output .= $this->processChildren($document);
+        return $output;
     }
 
     public function compileNode($node)

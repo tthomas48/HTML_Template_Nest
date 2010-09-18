@@ -66,6 +66,7 @@ class HTML_Template_Nest_AllTests
         $suite->addTestSuite('HTML_Template_Nest_TagLibTest');
         $suite->addTestSuite('HTML_Template_Nest_NestedTagsTest');
         $suite->addTestSuite('HTML_Template_Nest_ReplaceTagTest');
+        $suite->addTestSuite('HTML_Template_Nest_DocTypeTest');
         return $suite;
     }
 }

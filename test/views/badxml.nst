@@ -1,0 +1,5 @@
+<html xmlns:test="urn:nsttl:TestPackage_TestTaglib">
+<body>
+<test:badXml />
+</body>
+</html>

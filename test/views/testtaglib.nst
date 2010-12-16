@@ -68,5 +68,6 @@ This is the body text.
 foo
 </test:wrappableWithAttributes>
 <ntt:test />
+<ntt:hasattr attr1="bar" attr2="${person}" />
 </h:body>
 </html>

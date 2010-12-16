@@ -192,6 +192,9 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
                             if($child->hasAttribute("defaultValue")) {
                                 $this->attributes[$child->getAttribute("name")] = $child->getAttribute("defaultValue");
                             }
+                            if($child->hasAttribute("type")) {
+                                $this->attributeTypes[$child->getAttribute("name")] = $child->hasAttribute("type"); 
+                            }
                             $node->removeChild($child);
                         }
                     }

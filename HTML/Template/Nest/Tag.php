@@ -17,13 +17,13 @@
  * http://www.opensource.org/licenses/bsd-license.php
  * If you did not receive a copy of the new BSDlicense and are unable
  * to obtain it through the world-wide-web, please send a note to
- * tthomas48@php.net so we can mail you a copy immediately. 
+ * tthomas48@php.net so we can mail you a copy immediately.
  *
  * @category  HTML_Template
  * @package   Nest
  * @author    Tim Thomas <tthomas48@php.net>
  * @copyright 2009 The PHP Group
- * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License 
+ * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version   SVN: $Id$
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     File available since Release 1.0
@@ -37,12 +37,12 @@ require_once 'HTML/Template/Nest/ParseException.php';
  * tag class defines a start and end tag. The body will be evaluated in between.
  * The current node is provided so that you can do more complex operations based upon
  * the context of the current DOM node.
- * 
+ *
  * @category  HTML_Template
  * @package   Nest
  * @author    Tim Thomas <tthomas48@php.net>
  * @copyright 2009 The PHP Group
- * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License 
+ * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version   Release: @package_version@
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     Class available since Release 1.0.0
@@ -53,6 +53,7 @@ class HTML_Template_Nest_Tag
     protected $compiler;
     protected $attributes;
     protected $declaredAttributes = array();
+    protected $attributeTypes = array();
     private $id;
 
     /**
@@ -71,7 +72,7 @@ class HTML_Template_Nest_Tag
         $this->attributes = $attributes;
         $this->id = $node->tagName . uniqid(get_class($this));
     }
-    
+
     public function getAttributeDeclarations() {
         if(count($this->declaredAttributes) == 0) {
             return "";
@@ -83,17 +84,33 @@ class HTML_Template_Nest_Tag
                 $value = $this->compiler->parser->parse($this->attributes[$key], false, "\"");
             }
             $this->registerVariable($key);
-            $output .= "\$" . $this->getVariableName($key) . " = \"" . $value . "\";\n";
+
+            $type = "string";
+            if(array_key_exists($key, $this->attributeTypes)) {
+                $type = $this->attributeTypes[$key];
+            }
+            
+            switch($type) {
+                case 'string':
+                    $output .= "\$" . $this->getVariableName($key) . " = \"" . $value . "\";\n";
+                    break;
+                case 'object':
+                default:
+                    // just output the value, no string handling
+                    $output .= "\$" . $this->getVariableName($key) . " = " . $value . ";\n";
+                    break;
+            }
+
         }
         $output .= "?>";
         return $output;
     }
-    
+
     public function getAttributeUnsets() {
         if(count($this->declaredAttributes) == 0) {
             return "";
         }
-                
+
         $output = "<?php ";
         foreach($this->declaredAttributes as $key) {
             $output .= "unset(\$" . $this->getVariableName($key) . ");\n";
@@ -101,15 +118,15 @@ class HTML_Template_Nest_Tag
         }
         $output .= "?>";
         return $output;
-    }    
+    }
 
     /**
      * Registers a local variable. This variable will be used literally
      * rather than pulling a key from the $p global array until
      * unregisterVariable is called.
-     * 
+     *
      * @param string $key name of variable
-     * 
+     *
      * @return null
      */
     protected function registerVariable($key)
@@ -120,29 +137,29 @@ class HTML_Template_Nest_Tag
     /**
      * Unregisters a local variable. The variable specified will again be
      * pulled from the $p global array.
-     * 
+     *
      * @param string $key name of variable
-     * 
+     *
      * @return null
      */
     protected function unregisterVariable($key)
     {
         $this->compiler->parser->unregisterVariable($this->id, $key);
     }
-    
+
     protected function getVariableName($key)
     {
         return $this->compiler->parser->getLocalVariableName($key);
     }
- 
+
     /**
      * Evaluated before the content of the tag.
      *
      * @return string content to add to php file
      */
-    public function start() 
+    public function start()
     {
-        
+
     }
 
     /**
@@ -152,7 +169,7 @@ class HTML_Template_Nest_Tag
      */
     public function filter($output)
     {
-    	return $output;
+        return $output;
     }
 
     /**
@@ -160,34 +177,34 @@ class HTML_Template_Nest_Tag
      *
      * @return string content to add to php file
      */
-    public function end() 
+    public function end()
     {
-        
+
     }
 
-     /**
+    /**
      * A utility function to find the next non-text sibling node.
      *
      * @param DomNode $node the current node
      *
      * @return DomNode next sibling node
      */
-    public function findNextSibling($node) 
+    public function findNextSibling($node)
     {
         $nextSibling = null;
-        if ($node->nextSibling != null 
-            && $node->nextSibling->nodeType == XML_TEXT_NODE
+        if ($node->nextSibling != null
+        && $node->nextSibling->nodeType == XML_TEXT_NODE
         ) {
             return $this->findNextSibling($node->nextSibling);
         }
         return $node->nextSibling;
     }
-    
+
     /**
      * Simply wraps the input in php tags.
-     * 
+     *
      * @param string $output input to wrap
-     * 
+     *
      * @return string wrapped input
      */
     public function wrapOutput($output)
@@ -196,11 +213,11 @@ class HTML_Template_Nest_Tag
     }
 
     /**
-     * Helper function that gets a required attribute and 
+     * Helper function that gets a required attribute and
      * throws an exception if it doesn't exist.
-     * 
+     *
      * @param string $name sname of attribute
-     * 
+     *
      * @throws HTML_Template_Nest_ParseException
      * @return string attribute value
      */
@@ -209,21 +226,21 @@ class HTML_Template_Nest_Tag
         if (!array_key_exists($name, $this->attributes)) {
             throw new HTML_Template_Nest_ParseException(
                 "Missing required attribute '$name'", 
-                $this->node
+            $this->node
             );
         }
-        return $this->attributes[$name];        
+        return $this->attributes[$name];
     }
-    
+
     /**
-     * Helper function that gets an optional attribute and 
+     * Helper function that gets an optional attribute and
      * returns null if it doesn't exist.
-     * 
+     *
      * @param string $name sname of attribute
-     * 
+     *
      * @return string attribute value
      */
-    
+
     public function getOptionalAttribute($name)
     {
         if (!array_key_exists($name, $this->attributes)) {
@@ -231,10 +248,10 @@ class HTML_Template_Nest_Tag
         }
         return $this->attributes[$name];
     }
-    
+
     /**
      * Returns the current node's children
-     * 
+     *
      * @return Array current node children
      */
     public function getNodeChildren()

@@ -43,7 +43,7 @@ require_once 'HTML/Template/Nest/ParseException.php';
  * @author    Tim Thomas <tthomas48@php.net>
  * @copyright 2009 The PHP Group
  * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License
- * @version   Release: @package_version@
+ * @version   Release: 1.3.4
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     Class available since Release 1.0.0
  */
@@ -80,10 +80,6 @@ class HTML_Template_Nest_Tag
         $output = "<?php ";
         foreach($this->declaredAttributes as $key) {
             $value = "";
-            if(array_key_exists($key, $this->attributes)) {
-                $value = $this->compiler->parser->parse($this->attributes[$key], false, "\"");
-            }
-            $this->registerVariable($key);
 
             $type = "string";
             if(array_key_exists($key, $this->attributeTypes)) {
@@ -92,10 +88,21 @@ class HTML_Template_Nest_Tag
             
             switch($type) {
                 case 'string':
+                    if(array_key_exists($key, $this->attributes)) {
+                        $value = $this->compiler->parser->parse($this->attributes[$key], false, "\"");
+                    }
+                    $this->registerVariable($key);
+
                     $output .= "\$" . $this->getVariableName($key) . " = \"" . $value . "\";\n";
                     break;
                 case 'object':
                 default:
+
+                    if(array_key_exists($key, $this->attributes)) {
+                        $value = $this->compiler->parser->parse($this->attributes[$key], false, "");
+                    }
+                    $this->registerVariable($key);
+
                     // just output the value, no string handling
                     $output .= "\$" . $this->getVariableName($key) . " = " . $value . ";\n";
                     break;

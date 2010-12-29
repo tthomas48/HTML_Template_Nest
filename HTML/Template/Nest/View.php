@@ -121,12 +121,12 @@ class HTML_Template_Nest_View
         ob_start();
         $p = $this->_attributes;
         $_o = create_function('$p, $key', '$value = array_key_exists($key, $p) ? $p[$key] : null; return $value;');
-        $errorHandler = create_function('$errno, $errstr, $errfile, $errline', 'throw new HTML_Template_Nest_EvalException($errno, $errstr, $errfile, $errline);');
+        $errorHandler = create_function('$errno, $errstr, $errfile, $errline', 'if(($errno === E_ERROR) || ($errno === E_USER_ERROR) || ($errno === E_PARSE)) { throw new HTML_Template_Nest_EvalException($errno, $errstr, $errfile, $errline); }');
         register_shutdown_function(array($this, 'fatal_template_error'));
         
         $initialReporting = error_reporting();
         try {
-            error_reporting(E_ALL ^ E_ERROR);
+            error_reporting(E_ERROR | E_USER_ERROR | E_PARSE);
             eval("\nset_error_handler(\$errorHandler);?>" . $this->output);
         } catch(HTML_Template_Nest_EvalException $e) {
             ob_clean();

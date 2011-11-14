@@ -1,6 +1,6 @@
 HTML_Template_Nest
 ==================
-well-formed xml templating for php
+Well-Formed xml templating for PHP
 ----------------------------------
 
 HTML_Template_Nest provides xml based templating based on JSP 2.0. Documents are well formed documents and can be trivially added to with simple xml. Below is a trivial grocery list.

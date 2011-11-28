@@ -262,9 +262,21 @@ class HTML_Template_Nest_Compiler
     {
         $output = "";
         foreach ($node->attributes as $attribute) {
-            $output .= " " . $attribute->name . "=\"";
-            $output .= str_replace('"', '&quot;', $this->parser->parse($attribute->value));
-            $output .= "\"";
+            $value = $this->parser->parse($attribute->value);
+            $output .= '<?php ob_start()?>';
+            $output .= str_replace('"', '&quot;', $value);
+            $output .= '<?php $output = ob_get_clean();';
+
+            $name = $attribute->name;
+            if(strpos($attribute->name, 'prune.') === 0) {
+              $name = str_replace("prune.", "", $name);
+              $output .= 'if(!empty($output)) { ';
+            }
+            $output .= 'echo \' ' . $name . '="\' . $output . \'"\';';
+            if(strpos($attribute->name, 'prune.') === 0) {
+              $output .= "}";
+            }
+            $output .= '?>';
         }
         return $output;
     }

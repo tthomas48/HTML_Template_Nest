@@ -407,14 +407,23 @@ class HTML_Template_Nest_Taglib_Standard_AttributeTag extends HTML_Template_Nest
     {
         $name = $this->getRequiredAttribute("name");
         $trim = $this->getOptionalAttribute("trim");
+        $prune = $this->getOptionalAttribute("prune");
+
+        $output = '<?php ob_start(); ?>' . $output;
+        $output .= '<?php $output = ob_get_clean();';
         if(!empty($trim) && strtolower($trim) == "true") {
-            $output = '<?php ob_start(); ?>' . $output;
-            $output .= '<?php $output = ob_get_contents();';
-            $output .= 'ob_end_clean();';
             $output .= '$output = preg_replace(\'/(\s+)/\', \' \', $output);';
-            $output .= 'print trim($output);?>';
+            $output .= '$output = trim($output);';
         }
-        $this->node->parentNode->setAttribute($name, $output);
+        $output .= 'print $output;';
+
+        $prefix = '';
+        if(!empty($prune) && strtolower($prune) == "true") {
+            $prefix = 'prune.';
+        }
+
+        $output .= '?>';
+        $this->node->parentNode->setAttribute($prefix . $name, $output);
         return "";
     }
 }

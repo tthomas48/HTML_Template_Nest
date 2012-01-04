@@ -43,7 +43,7 @@ require_once "HTML/Template/Nest/CompilerException.php";
  * @author    Tim Thomas <tthomas48@php.net>
  * @copyright 2009 The PHP Group
  * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License
- * @version   Release: @package_version@
+ * @version   Release: 1.3.6
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @see       HTML_Template_Nest_View*
  * @since     Class available since Release 1.0.0
@@ -260,19 +260,30 @@ class HTML_Template_Nest_Compiler
      */
     protected function addAttributes($node)
     {
+        $uris = array();
         $output = "";
         foreach ($node->attributes as $attribute) {
+            $uri = $this->getNamespace($attribute);
+            if(!empty($uri) && !in_array($uri, $uris)) {
+              $uris[] = $uri;
+	      $output .= " xmlns:" . $attribute->prefix . "=\"$uri\" ";
+            }
+
             $value = $this->parser->parse($attribute->value);
             $output .= '<?php ob_start()?>';
             $output .= str_replace('"', '&quot;', $value);
             $output .= '<?php $output = ob_get_clean();';
 
             $name = $attribute->name;
+            $prefix = (!empty($attribute->prefix) ? $attribute->prefix . ":" : "");
             if(strpos($attribute->name, 'prune.') === 0) {
               $name = str_replace("prune.", "", $name);
               $output .= 'if(!empty($output)) { ';
             }
-            $output .= 'echo \' ' . $name . '="\' . $output . \'"\';';
+
+
+
+            $output .= 'echo \' ' . $prefix . $name . '="\' . $output . \'"\';';
             if(strpos($attribute->name, 'prune.') === 0) {
               $output .= "}";
             }
@@ -291,11 +302,16 @@ class HTML_Template_Nest_Compiler
      */
     protected function processNamespace($node)
     {
+        $output = "";
+        if($node->namespaceURI != NULL) {
+          $output .= " xmlns=\"" . $node->namespaceURI . "\" ";
+        }
         if(strlen($node->prefix) == 0) {
-            return "";
+            return $output;
         }
         $uri = $this->getNamespace($node);
-        return " xmlns:" . $node->prefix . "=\"" . str_replace('"', '&quot;', $uri) . "\"";
+        $output .= " xmlns:" . $node->prefix . "=\"" . str_replace('"', '&quot;', $uri) . "\"";
+        return $output;
     }
 
 

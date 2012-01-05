@@ -43,7 +43,7 @@ require_once 'HTML/Template/Nest/Taglib.php';
  * @author    Tim Thomas <tthomas48@php.net>
  * @copyright 2009 The PHP Group
  * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License 
- * @version   Release: @package_version@
+ * @version   Release: 1.3.7
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     Class available since Release 1.0.0
  */
@@ -70,7 +70,7 @@ class HTML_Template_Nest_Taglib_Standard extends HTML_Template_Nest_Taglib
  * @author    Tim Thomas <tthomas48@php.net>
  * @copyright 2009 The PHP Group
  * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License 
- * @version   Release: @package_version@
+ * @version   Release: 1.3.7
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     Class available since Release 1.0.0
  */
@@ -120,7 +120,7 @@ class HTML_Template_Nest_Taglib_Standard_IfTag extends HTML_Template_Nest_Tag
  * @author    Tim Thomas <tthomas48@php.net>
  * @copyright 2009 The PHP Group
  * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License 
- * @version   Release: @package_version@
+ * @version   Release: 1.3.7
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     Class available since Release 1.0.0
  */
@@ -170,7 +170,7 @@ class HTML_Template_Nest_Taglib_Standard_ElseIfTag extends HTML_Template_Nest_Ta
  * @author    Tim Thomas <tthomas48@php.net>
  * @copyright 2009 The PHP Group
  * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License 
- * @version   Release: @package_version@
+ * @version   Release: 1.3.7
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     Class available since Release 1.0.0
  */
@@ -213,7 +213,7 @@ class HTML_Template_Nest_Taglib_Standard_ElseTag extends HTML_Template_Nest_Tag
  * @author    Tim Thomas <tthomas48@php.net>
  * @copyright 2009 The PHP Group
  * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License 
- * @version   Release: @package_version@
+ * @version   Release: 1.3.7
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     Class available since Release 1.0.0
  */
@@ -288,7 +288,7 @@ class HTML_Template_Nest_Taglib_Standard_ForeachTag extends HTML_Template_Nest_T
  * @author    Tim Thomas <tthomas48@php.net>
  * @copyright 2009 The PHP Group
  * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License 
- * @version   Release: @package_version@
+ * @version   Release: 1.3.7
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     Class available since Release 1.0.0
  */
@@ -348,7 +348,7 @@ class HTML_Template_Nest_Taglib_Standard_SetTag extends HTML_Template_Nest_Tag
  * @author    Tim Thomas <tthomas48@php.net>
  * @copyright 2009 The PHP Group
  * @license   http://www.opensource.org/licenses/bsd-license.php  New BSD License 
- * @version   Release: @package_version@
+ * @version   Release: 1.3.7
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     Function available since Release 0.9.4
  */
@@ -375,10 +375,13 @@ class HTML_Template_Nest_Taglib_Standard_ForTag extends HTML_Template_Nest_Tag
         if (empty($increment)) {
             $increment = 1;
         }
-        $start = $this->getOptionalAttribute("start");
+        $start = $this->compiler->parser->parseExpression(
+            $this->getOptionalAttribute("start")
+        );
         if (empty($start)) {
             $start = 0;
-        }        
+        }
+       
         
         $output .= "for(\$" . $this->getVariableName($var) . " = $start; $test; \$" . $this->getVariableName($var) . " = \$" . $this->getVariableName($var) . " + $increment) {\n";
         return $this->wrapOutput($output);

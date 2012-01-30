@@ -142,7 +142,7 @@ class HTML_Template_Nest_Parser
      * @return boolean true if string has parseable tokens
      */
     public function isParseable($text) {
-         preg_match_all('/[$#]\{[^}]+\}/', $text, $tokens);
+         preg_match('/[$#]\{[^}]+\}/', $text, $tokens);
          return count($tokens) > 0;
     }
 

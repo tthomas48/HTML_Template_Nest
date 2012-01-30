@@ -102,9 +102,9 @@ class HTML_Template_Nest_Tag
                         $value = $this->compiler->parser->parse($this->attributes[$key], false, "");
                     }
                     $this->registerVariable($key);
-
+  
                     // just output the value, no string handling
-                    $output .= "\$" . $this->getVariableName($key) . " = " . $value . ";\n";
+                    $output .= "\$" . $this->getVariableName($key) . " = " . ($value === NULL || $value == "" ? "NULL" : $value) . ";\n";
                     break;
             }
 

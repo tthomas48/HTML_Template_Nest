@@ -134,6 +134,17 @@ class HTML_Template_Nest_Parser
         }
         return "nst_" . str_replace(':', '_', $namespace) ."_".$key;
     }
+    /**
+     * Checks if a string needs to be parse
+     *
+     * @param string $text text to test
+     *
+     * @return boolean true if string has parseable tokens
+     */
+    public function isParseable($text) {
+         preg_match_all('/[$#]\{[^}]+\}/', $text, $tokens);
+         return count($tokens) > 0;
+    }
 
     /**
      * Parse a text string replacing tokens with php code.

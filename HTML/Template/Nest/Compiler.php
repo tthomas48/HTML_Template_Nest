@@ -268,7 +268,10 @@ class HTML_Template_Nest_Compiler
               $uris[] = $uri;
 	      $output .= " xmlns:" . $attribute->prefix . "=\"$uri\" ";
             }
-
+            if($this->parser->isParseable($attribute->value) === false) {
+              $output .= " " . $attribute->name . "=\"" . $attribute->value . "\"";
+              continue;
+            }
             $value = $this->parser->parse($attribute->value);
             $output .= '<?php ob_start()?>';
             $output .= str_replace('"', '&quot;', $value);
@@ -303,10 +306,10 @@ class HTML_Template_Nest_Compiler
     protected function processNamespace($node)
     {
         $output = "";
-        if($node->namespaceURI != NULL) {
-          $output .= " xmlns=\"" . $node->namespaceURI . "\" ";
-        }
         if(strlen($node->prefix) == 0) {
+            if($node->namespaceURI != NULL) {
+              $output .= " xmlns=\"" . $node->namespaceURI . "\" ";
+            }
             return $output;
         }
         $uri = $this->getNamespace($node);

@@ -56,6 +56,8 @@ class HTML_Template_Nest_AttributeTest extends PHPUnit_Framework_TestCase
 
         $view = new HTML_Template_Nest_View("attribute");
         $view->addAttribute("list", array(1,2,3,4,5));
+        $view->addAttribute("2quoteString", '"quoted"');
+        $view->addAttribute("1quoteString", "'quoted'");
         $filename = dirname(__FILE__) . "/viewoutput/attribute.html";
         $this->assertEquals(
             $view->render(), 

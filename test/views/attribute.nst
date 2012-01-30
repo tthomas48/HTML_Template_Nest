@@ -6,4 +6,6 @@
     </c:attribute>
     This is just some stuff inside the div  <b> with some nested</b> tags.
     <div>And stuff</div>
+    <div v="'quoted'">Test</div>
+    <div v='"quoted"'>Test</div>
 </div>

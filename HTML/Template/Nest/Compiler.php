@@ -269,7 +269,11 @@ class HTML_Template_Nest_Compiler
 	      $output .= " xmlns:" . $attribute->prefix . "=\"$uri\" ";
             }
             if(!$this->parser->isParseable($attribute->value)) {
-              $output .= " " . $attribute->name . "=\"" . $attribute->value . "\"";
+              $q = '"';
+              if(strpos($attribute->value, '"') !== false) { 
+                $q = "'";
+              }
+              $output .= " " . $attribute->name . "=" . $q . $attribute->value . $q;
               continue;
             }
             $value = $this->parser->parse($attribute->value);

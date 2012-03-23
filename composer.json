@@ -1,0 +1,6 @@
+{
+    "name": "buyplaytix/HTML_Template_Nest",
+    "require": {
+        "php": ">=5.2.0",
+    }
+}

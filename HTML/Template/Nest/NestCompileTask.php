@@ -26,7 +26,7 @@
  */
 
 require_once 'phing/Task.php';
-require_once 'HTML/Template/Nest/Compiler.php';
+require_once 'Compiler.php';
 
 /**
  * Phing task to compiles .nst files into .php files

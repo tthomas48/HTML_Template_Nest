@@ -28,8 +28,8 @@
  * @see       HTML_Template_Nest_View
  * @since     File available since Release 1.0
  */
-require_once "HTML/Template/Nest/Parser.php";
-require_once "HTML/Template/Nest/CompilerException.php";
+require_once "Parser.php";
+require_once "CompilerException.php";
 
 /**
  * Compiles .nst files into .php files

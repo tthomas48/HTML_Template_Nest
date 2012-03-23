@@ -27,9 +27,9 @@
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     File available since Release 1.0
  */
-require_once 'HTML/Template/Nest/Compiler.php';
-require_once 'HTML/Template/Nest/EvalException.php';
-require_once 'HTML/Template/Nest/ViewException.php';
+require_once 'Compiler.php';
+require_once 'EvalException.php';
+require_once 'ViewException.php';
 /**
  * View class for Nest templates
  *

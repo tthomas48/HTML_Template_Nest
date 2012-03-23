@@ -29,7 +29,7 @@
  * @since     File available since Release 1.0
 
  */
-require_once 'HTML/Template/Nest/ParseException.php';
+require_once 'ParseException.php';
 /**
  * Compiles nest expressions into php code.
  *

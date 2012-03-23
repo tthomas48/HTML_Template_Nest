@@ -1,10 +1,19 @@
 {
-    "name": "buyplaytix/HTML_Template_Nest",
+    "name": "buyplaytix/nest",
     "require": {
         "php": ">=5.2.0"
-    }
+    },
+    "description": "Well-Formed xml templating for PHP",
+    "keywords": ["templating","html"],
+    "license": "MIT",
   "autoload": {
-    "psr-0": {"HTML": "HTML"}
-  }
-
+    "psr-0": {"HTML": "."}
+  },
+  "authors": [
+        {
+            "name": "Tim Thomas",
+            "email": "tim@buyplaytix.com",
+            "homepage": "http://www.buyplaytix.com/"
+        }
+   ]
 }

@@ -30,7 +30,6 @@
 */
 require_once "Parser.php";
 require_once "CompilerException.php";
-
 /**
  * Compiles .nst files into .php files
  *
@@ -342,8 +341,9 @@ class HTML_Template_Nest_Compiler
 		$taglib = str_replace("urn:nsttl:", "", $taglib);
 		$taglibFile = str_replace("_", "/", $taglib) . ".php";
 
-		$className = "";
+		$className = $taglib;
 		$isDefault = false;
+		/*
 		try {
 			if(HTML_Template_Nest_Compiler::file_exists_ip($taglibFile)) {
 				set_error_handler(array($this,'errorHandler'));
@@ -363,6 +363,11 @@ class HTML_Template_Nest_Compiler
 		}
 		if(!class_exists($className, false)) {
 			throw new HTML_Template_Nest_CompilerException("Unable to find tag class " . $className, $node);
+		}
+		*/
+		if(!class_exists($className, true)) {
+			$isDefault = true;
+			$className = "HTML_Template_Nest_Taglib";
 		}
 		$class = new $className();
 		if($isDefault) {

@@ -1,0 +1,10 @@
+<nst:root xmlns:nst="http://nest.sourceforge.net/" xmlns:r="urn:nsttl:HTML_Template_Nest_Taglib_Resource">
+	<r:css name="res/css.min.css">
+		<r:cssfile name="res/a.css" />
+		<r:cssfile name="res/b.css" />
+	</r:css>
+	<r:js name="res/js.min.js">
+		<r:jsfile name="res/a.js" />
+		<r:jsfile name="res/b.js" />
+	</r:js>
+</nst:root>

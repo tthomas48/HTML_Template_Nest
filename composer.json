@@ -4,5 +4,8 @@
     "require": {
 	"oyatel/minify": "dev-master",
 	"natxet/CssMin": "dev-master"
+    },
+    "autoload": {
+      "psr-0": {"HTML": "./"}
     }
 }

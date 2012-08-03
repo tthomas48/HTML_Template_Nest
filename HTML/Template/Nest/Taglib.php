@@ -90,7 +90,7 @@ class HTML_Template_Nest_Taglib
                 if(file_exists($filename)) {
                     return new HTML_Template_Nest_TagFile($compiler, $node, $attributes, $filename);
                 }
-            }	        
+            }	    
             throw new HTML_Template_Nest_TaglibException(
                 "Unable to find tag '$name' in tag library " . get_class($this), $node
             );

@@ -1,0 +1,10 @@
+<nst:root xmlns:nst="http://nest.sourceforge.net/"
+	xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard">				
+<c:foreach items="prices" var="price">
+  <option value="${price->UID}">
+    <c:attribute name="selected" trim="true" prune="true">${price->DEFAULT == 'True' ? 'selected' : ''}</c:attribute>
+    <c:if test="price->NAME != ''">${price->NAME}(${price->PRICE})</c:if>
+    <c:else>${price->PRICE}</c:else>
+  </option>
+</c:foreach>
+</nst:root>

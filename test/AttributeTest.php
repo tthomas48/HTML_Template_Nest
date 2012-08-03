@@ -64,4 +64,32 @@ class HTML_Template_Nest_AttributeTest extends PHPUnit_Framework_TestCase
             trim(file_get_contents($filename))
         );        
     }
+   public function testPrune()
+    {
+        HTML_Template_Nest_View::$CACHE = false;
+        HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
+        HTML_Template_Nest_View::$HTML_ERRORS = false;
+
+        $prices = array();
+        $price = new stdClass();
+        $price->DEFAULT = 'false';
+        $price->NAME = 'General Admission';
+        $price->PRICE = '15.00';
+        $prices[] = $price;
+
+        $price2 = new stdClass();
+        $price2->DEFAULT = 'True';
+        $price2->NAME = 'Students';
+        $price2->PRICE = '12.00';
+        $prices[] = $price2;
+
+        $view = new HTML_Template_Nest_View("prunetest");
+        $view->addAttribute("prices", $prices);
+        $filename = dirname(__FILE__) . "/viewoutput/prunetest.html";
+        $this->assertEquals(
+            $view->render(), 
+            file_get_contents($filename)
+        );        
+    }
+
 }

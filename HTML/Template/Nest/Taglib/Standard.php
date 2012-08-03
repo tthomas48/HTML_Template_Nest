@@ -27,8 +27,6 @@
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     File available since Release 1.0
  */
-require_once 'HTML/Template/Nest/Tag.php';
-require_once 'HTML/Template/Nest/Taglib.php';
 
 
 /**

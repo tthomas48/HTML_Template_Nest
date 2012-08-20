@@ -25,9 +25,9 @@ Nest is compatible with PHP 5.
         <email>tim@buyplaytix.com</email>
         <active>yes</active>
     </lead>
-    <date>2012-08-01</date>
+    <date>2012-08-20</date>
     <version>
-        <release>1.4.0</release>
+        <release>1.4.1</release>
         <api>1.4</api>
     </version>
     <stability>
@@ -110,7 +110,7 @@ optimizations
                 </dir>
             </dir> <!-- /Nest -->
             <dir name="doc">
-                <dir name="pages" role="doc">
+                <dir name="pages">
                     <file name="customtaglib.html" role="doc" />
                     <file name="license.html" role="doc" />
                     <file name="simpleview.html" role="doc" />
@@ -122,28 +122,28 @@ optimizations
                     <file name="install.html" role="doc" />
                     <file name="createtagfile.html" role="doc" />
                 </dir>
-                <dir name="css" role="doc">
+                <dir name="css">
                     <file name="documentation.css" role="doc" />
                 </dir>
-                <dir name="frame" role="doc">
+                <dir name="frame">
                     <file name="toc.html" role="doc" />
                     <file name="docFrame.html" role="doc" />
                     <file name="start.html" role="doc" />
                     <file name="navTop.html" role="doc" />
                 </dir>
-                <dir name="images" role="doc">
+                <dir name="images">
                     <file name="nestlogo.png" role="doc" />
                 </dir>
                 <file name="index.html" role="doc" />
             </dir> <!-- /doc -->
-            <dir name="test" role="test">
-                <dir name="views" role="test">
-                    <dir name="templates" role="test">
-                        <dir name="notaglibclass" role="test">
+            <dir name="test">
+                <dir name="views">
+                    <dir name="templates">
+                        <dir name="notaglibclass">
                             <file name="test.tmpl" role="test" />
                         </dir>
-                        <dir name="testpackage" role="test">
-                            <dir name="testtaglib" role="test">
+                        <dir name="testpackage">
+                            <dir name="testtaglib">
                                 <file name="wrappableTagFile.tmpl" role="test" />
                                 <file name="roundedContainer.tmpl" role="test" />
                                 <file name="body.tmpl" role="test" />
@@ -169,7 +169,7 @@ optimizations
                     <file name="nestedvars.nst" role="test" />
                     <file name="replace.nst" role="test" />
                 </dir>
-                <dir name="viewoutput" role="test">
+                <dir name="viewoutput">
                     <file name="pre.html" role="test" />
                     <file name="attribute.html" role="test" />
                     <file name="testtaglib.html" role="test" />
@@ -179,7 +179,7 @@ optimizations
                     <file name="nestedvars.html" role="test" />
                     <file name="replace.html" role="test" />
                 </dir>
-                <dir name="TestPackage" role="test">
+                <dir name="TestPackage">
                     <file name="TestTaglib.php" role="test" />
                 </dir>
                 <file name="AllTests.php" role="test" />

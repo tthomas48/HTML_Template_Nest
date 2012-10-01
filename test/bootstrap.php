@@ -1,0 +1,25 @@
+<?php
+
+function test_autoload($className) {
+  $path = dirname ( __FILE__ ) . "/../";
+
+  
+  if(strpos($className, '\\') === false) {
+    $pieces = explode("_", $className);
+  } else {
+    $pieces = explode('\\', $className);
+  }
+  $classPath = implode("/", $pieces);
+  
+  if (file_exists($path . "test/" . $classPath . '.php')) {
+    require_once $classPath . '.php';
+    return true;
+  }
+  return false;
+}
+
+$path = dirname ( __FILE__ ) . "/..";
+$current_path = ini_get('include_path');
+ini_set('include_path', "$path:$path/tests:$current_path");
+require "$path/vendor/autoload.php";
+spl_autoload_register('test_autoload');

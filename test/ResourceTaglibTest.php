@@ -85,8 +85,8 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
 
 
         $view = new HTML_Template_Nest_View("snippet");
-        $this->assertEquals('  {"mysnippet":"<r:snippet name=\"mysnippet\">\n    <div class=\"myclass\" id=\"foo\">\n        Some text {{foo}}\n    <\/div>\n  <\/r:snippet>"}  {"otherbit":"<r:snippet name=\"otherbit\">\n      Just some text in here.\n  <\/r:snippet>"}',
-        $view->render());
+        $this->assertEquals('var test_snippets = {\'mysnippet\': "\n        <div class=\"myclass\" id=\"foo\">\n            Some text {{foo}}\n        <\/div>\n      ",\'otherbit\': "\n          Just some text in here.\n      "}',
+        trim($view->render()));
         }
 
    

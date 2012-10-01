@@ -7,7 +7,7 @@
     <target name="test">
         <includepath classpath=".:test:/usr/share/php" />
 
-        <phpunit printsummary="true" haltonerror="true" haltonfailure="true">
+        <phpunit printsummary="true" haltonerror="true" haltonfailure="true" bootstrap="test/bootstrap.php">
             <batchtest>
                 <fileset dir="test">
                     <include name="**/*Test.php" />

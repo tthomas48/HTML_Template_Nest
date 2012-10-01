@@ -167,7 +167,7 @@ class HTML_Template_Nest_Compiler
 		$tag = null;
 		$rootTag = false;
 		if (strpos($taglib, "urn:nsttl:") !== false) {
-			$tag = $this->_loadTag($node);
+			$tag = $this->loadTag($node);
 			$this->tagStack[] = Array($tag);
 			$output .= $tag->getAttributeDeclarations();
 		}
@@ -329,7 +329,7 @@ class HTML_Template_Nest_Compiler
 	 *
 	 * @return HTML_Template_Nest_Tag appropriate tag
 	 */
-	private function _loadTag($node)
+	public function loadTag($node)
 	{
 		$taglib = $this->getNamespace($node);
 

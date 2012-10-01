@@ -52,6 +52,7 @@ class HTML_Template_Nest_Taglib_Resource extends HTML_Template_Nest_Taglib
       "css" => "HTML_Template_Nest_Taglib_Resource_Css",
       "cssfile" => "HTML_Template_Nest_Taglib_Resource_CssFile",
       "snippet" => "HTML_Template_Nest_Taglib_Resource_Snippet",
+      "snippets" => "HTML_Template_Nest_Taglib_Resource_Snippets",
   );
 }
 
@@ -163,12 +164,12 @@ class HTML_Template_Nest_Taglib_Resource_CssFile extends HTML_Template_Nest_Tag 
     return "<link rel=\"stylesheet\" href=\"$name\" />";
   }
 }
-class HTML_Template_Nest_Taglib_Resource_Snippet extends HTML_Template_Nest_Tag {
+class HTML_Template_Nest_Taglib_Resource_Snippets extends HTML_Template_Nest_Tag {
     protected $declaredAttributes = array("name");
-
-  public function start() {
+    
+    public function start() {
     $name = $this->getRequiredAttribute("name");
-    $content = $this->node->ownerDocument->saveXml($this->node);
+    $content = array();
     
     $children = $this->getNodeChildren();
     $childrenList = array();
@@ -177,10 +178,35 @@ class HTML_Template_Nest_Taglib_Resource_Snippet extends HTML_Template_Nest_Tag 
     }
     $file = array();
     foreach($childrenList as $child) {
+      if($child->localName == "snippet") {
+        $content[] = $this->compiler->loadTag($child)->start();
+      }
+      $this->node->removeChild($child);
+    }
+    
+    return "var $name = {" . implode(",", $content) . "}";
+  }    
+}
+class HTML_Template_Nest_Taglib_Resource_Snippet extends HTML_Template_Nest_Tag {
+    protected $declaredAttributes = array("name");
+
+  public function start() {
+    $name = $this->getRequiredAttribute("name");
+    $content = "";
+    
+    $children = $this->getNodeChildren();
+    $childrenList = array();
+    foreach ($children as $child) {
+      $childrenList[] = $child;
+    }
+    $file = array();
+    foreach($childrenList as $child) {
+      $content .= $this->node->ownerDocument->saveXml($child);
       $this->node->removeChild($child);
     }
     
     
-    return json_encode(array($name => $content));
+    return "'" . $name ."': " . json_encode($content);
+    
   }
 }

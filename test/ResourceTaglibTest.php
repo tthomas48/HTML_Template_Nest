@@ -49,7 +49,7 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
      * 
      * @return unknown_type
      */   
-    public function testPre()
+    public function testMinify()
     {
         HTML_Template_Nest_View::$CACHE = false;
         HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
@@ -58,9 +58,6 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
 
 
         $view = new HTML_Template_Nest_View("resourcetaglib");
-//         $view->addAttribute("list", array(1,2,3,4,5));
-//         $view->addAttribute("2quoteString", '"quoted"');
-//         $view->addAttribute("1quoteString", "'quoted'");
         $filename = dirname(__FILE__) . "/viewoutput/resourcetaglib.html";
 #        print $view->render();
 #        exit;
@@ -78,4 +75,19 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
         ); 
 
     }
+    
+    public function testSnippet() {
+    
+        HTML_Template_Nest_View::$CACHE = false;
+        HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
+        HTML_Template_Nest_View::$HTML_ERRORS = false;
+        HTML_Template_Nest_Taglib_Resource::$BASE_PATH = dirname(__FILE__) . "/";
+
+
+        $view = new HTML_Template_Nest_View("snippet");
+        $this->assertEquals('  {"mysnippet":"<r:snippet name=\"mysnippet\">\n    <div class=\"myclass\" id=\"foo\">\n        Some text {{foo}}\n    <\/div>\n  <\/r:snippet>"}  {"otherbit":"<r:snippet name=\"otherbit\">\n      Just some text in here.\n  <\/r:snippet>"}',
+        $view->render());
+        }
+
+   
 }

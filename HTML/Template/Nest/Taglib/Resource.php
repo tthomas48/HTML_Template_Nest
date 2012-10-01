@@ -51,6 +51,7 @@ class HTML_Template_Nest_Taglib_Resource extends HTML_Template_Nest_Taglib
       "jsfile" => "HTML_Template_Nest_Taglib_Resource_JavascriptFile",
       "css" => "HTML_Template_Nest_Taglib_Resource_Css",
       "cssfile" => "HTML_Template_Nest_Taglib_Resource_CssFile",
+      "snippet" => "HTML_Template_Nest_Taglib_Resource_Snippet",
   );
 }
 
@@ -161,5 +162,25 @@ class HTML_Template_Nest_Taglib_Resource_CssFile extends HTML_Template_Nest_Tag 
     $name = $this->getRequiredAttribute("name");
     return "<link rel=\"stylesheet\" href=\"$name\" />";
   }
+}
+class HTML_Template_Nest_Taglib_Resource_Snippet extends HTML_Template_Nest_Tag {
+    protected $declaredAttributes = array("name");
 
+  public function start() {
+    $name = $this->getRequiredAttribute("name");
+    $content = $this->node->ownerDocument->saveXml($this->node);
+    
+    $children = $this->getNodeChildren();
+    $childrenList = array();
+    foreach ($children as $child) {
+      $childrenList[] = $child;
+    }
+    $file = array();
+    foreach($childrenList as $child) {
+      $this->node->removeChild($child);
+    }
+    
+    
+    return json_encode(array($name => $content));
+  }
 }

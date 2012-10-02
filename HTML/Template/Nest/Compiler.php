@@ -47,11 +47,32 @@ require_once "CompilerException.php";
  * @see       HTML_Template_Nest_View*
  * @since     Class available since Release 1.0.0
  */
-class HTML_Template_Nest_Compiler
+class HTML_Template_Nest_Compiler extends php_user_filter
 {
 	public $parser;
 	public $tagStack = array();
-
+	
+	public function __construct() {
+	   stream_filter_register("nst.filter", "HTML_Template_Nest_Compiler");
+	}
+	
+    function filter($in, $out, &$consumed, $closing) {
+      $input = "";
+      $lastBucket = NULL;
+      while ($bucket = stream_bucket_make_writeable($in)) {
+          
+          $lastBucket = $bucket;
+          $input .= $bucket->data;
+          $consumed += $bucket->datalen;
+      }
+      //$bucket = stream_bucket_new($out, "a" . $input . "b");
+      if($lastBucket != NULL) {
+        $lastBucket->data = $this->compile("filter.data", $input);
+        stream_bucket_append($out, $lastBucket);
+      }
+      return PSFS_PASS_ON;
+    }	
+	
 	/**
 	 * Compile a nst into a php file and cache the output
 	 *
@@ -64,7 +85,7 @@ class HTML_Template_Nest_Compiler
 		$outputFilename = str_replace(".nst", ".php", $filename);
 		file_put_contents($outputFilename, $this->compile($filename));
 	}
-
+	
 	/**
 	 * Compile a nst into a php file and return the output as a string
 	 *
@@ -73,14 +94,16 @@ class HTML_Template_Nest_Compiler
 	 * @throws HTML_Template_Nest_CompilerException
 	 * @return string compiled output
 	 */
-	public function compile($filename)
+	public function compile($filename, $contents = NULL)
 	{
 		set_error_handler(array($this,'errorHandler'));
 
 		$output = "";
 		try {
 			$this->parser = new HTML_Template_Nest_Parser();
-			$contents = file_get_contents($filename);
+			if($contents == NULL) {
+			    $contents = file_get_contents($filename);
+			}
 
 			// if the content doesn't start with an opening tag treat it as
 			// plain text content and parse and return
@@ -189,7 +212,9 @@ class HTML_Template_Nest_Compiler
 
 		// process tags or children
 		if ($tag != null) {
-			$output .= "<?php /*<" . $node->tagName . ">*/?>";
+		    if($tag->isPhpEnabled()) {
+			   $output .= "<?php /*<" . $node->tagName . ">*/?>";
+			}
 			$output .= $tag->start();
 			$nodeChildren = $tag->getNodeChildren();
 
@@ -230,7 +255,9 @@ class HTML_Template_Nest_Compiler
 		if ($tag != null) {
 			$output .= $tag->end();
 			$output .= $tag->getAttributeUnsets();
-			$output .= "<?php /*</" . $node->tagName . ">*/?>";
+			if($tag->isPhpEnabled()) {
+  		        $output .= "<?php /*</" . $node->tagName . ">*/?>";
+  		    }
 		} elseif (!$rootTag && strlen($node->localName)) {
 			$output .= "</" . $node->nodeName . ">";
 		}

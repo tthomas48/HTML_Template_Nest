@@ -59,8 +59,6 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
 
         $view = new HTML_Template_Nest_View("resourcetaglib");
         $filename = dirname(__FILE__) . "/viewoutput/resourcetaglib.html";
-#        print $view->render();
-#        exit;
         $this->assertEquals(
             trim($view->render()), 
             trim(file_get_contents($filename))
@@ -87,7 +85,32 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
         $view = new HTML_Template_Nest_View("snippet");
         $this->assertEquals('var test_snippets = {\'mysnippet\': "\n        <div class=\"myclass\" id=\"foo\">\n            Some text {{foo}}\n        <\/div>\n      ",\'otherbit\': "\n          Just some text in here.\n      "}',
         trim($view->render()));
-        }
+    }
+    public function testFilter() {
+    
+        HTML_Template_Nest_View::$CACHE = false;
+        HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
+        HTML_Template_Nest_View::$HTML_ERRORS = false;
+        HTML_Template_Nest_Taglib_Resource::$BASE_PATH = dirname(__FILE__) . "/";
+        
+        $view = new HTML_Template_Nest_View("filter");
+        $output = $view->render();
+        $this->assertEquals(
+        "<link rel=\"stylesheet\" href=\"res/scss.min.css\" />\t<script type=\"text/javascript\" src=\"res/js.filter.min.js\"></script>",
+        
+        trim($output));
+
+        
+        $this->assertEquals(
+            file_get_contents(dirname(__FILE__) . "/viewoutput/js.filter.min.js"),
+            file_get_contents(dirname(__FILE__) . "/res/js.filter.min.js")
+        );
+        $this->assertEquals(
+            file_get_contents(dirname(__FILE__) . "/viewoutput/c.css"),
+            file_get_contents(dirname(__FILE__) . "/res/c.css")
+        );
+        
+    }
 
    
 }

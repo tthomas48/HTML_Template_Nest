@@ -265,4 +265,8 @@ class HTML_Template_Nest_Tag
     {
         return $this->node->childNodes;
     }
+    public function isPhpEnabled()
+    {
+        return true;
+    }
 }

@@ -2,3 +2,4 @@ HTML_Template_Nest*.tgz
 vendor
 composer.lock
 composer.phar
+.sass-cache

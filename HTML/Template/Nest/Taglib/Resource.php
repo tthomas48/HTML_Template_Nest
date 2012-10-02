@@ -51,12 +51,77 @@ class HTML_Template_Nest_Taglib_Resource extends HTML_Template_Nest_Taglib
       "jsfile" => "HTML_Template_Nest_Taglib_Resource_JavascriptFile",
       "css" => "HTML_Template_Nest_Taglib_Resource_Css",
       "cssfile" => "HTML_Template_Nest_Taglib_Resource_CssFile",
+      "scssfile" => "HTML_Template_Nest_Taglib_Resource_ScssFile",
       "snippet" => "HTML_Template_Nest_Taglib_Resource_Snippet",
       "snippets" => "HTML_Template_Nest_Taglib_Resource_Snippets",
   );
 }
 
 abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template_Nest_Tag {
+
+  public function scss($name) {
+
+    $children = $this->getNodeChildren();
+    $childrenList = array();
+    foreach ($children as $child) {
+      $childrenList[] = $child;
+    }
+    $files = array();
+    foreach($childrenList as $child) {
+      if($child->localName == "scssfile") {
+        $new_filename = str_replace(".scss", ".css", $child->getAttribute("name"));
+        $files[] = 
+        array("before" => $child->getAttribute("name"),
+        "after" => $new_filename);
+        $new_child = new DomElement("cssfile", "", "urn:nsttl:HTML_Template_Nest_Taglib_Resource");
+         
+        $this->node->insertBefore($new_child, $child);
+        $new_child->setAttribute("name", $new_filename);
+        
+        $this->node->removeChild($child);
+      }
+    }
+    foreach($files as $file_components) {
+      $file = $file_components["before"];
+      $compile = false;
+      
+      $is_url = strstr($file, '://') !== FALSE;
+      
+      $md5_file = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file . ".md5";
+      if($is_url) {
+          $md5_file = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . md5($file) . ".md5";
+      }
+      if(!file_exists($md5_file)) {
+        $compile = true;
+      }
+      if(!$compile) {
+          $old_md5 = file_get_contents($md5_file);
+          if($is_url) {
+            //TODO: this needs to do some time based caching for http
+            $new_md5 = md5(file_get_contents($file));
+          } else {
+            $new_md5 = md5_file(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file);
+          }
+          if($old_md5 != $new_md5) {
+            $compile = true;
+          }
+      }
+      
+      if($compile) {
+        $before = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file;
+        if($is_url) {
+          $before = $file_components["before"];
+        }
+        
+        $after = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file_components["after"];
+        if($is_url) {
+            $after = $file_components["after"];
+        }
+        exec("sass $before:$after"); 
+      }
+    }
+  }
+
 
   public function minify($name, $child_tag, $min_function) {
 
@@ -65,7 +130,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
     foreach ($children as $child) {
       $childrenList[] = $child;
     }
-    $file = array();
+    $files = array();
     foreach($childrenList as $child) {
       if($child->localName == $child_tag) {
         $files[] = $child->getAttribute("name");
@@ -73,7 +138,8 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
       }
       $this->node->removeChild($child);
     }
-
+    
+    
     $min_file_exists = file_exists(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name);
     if(HTML_Template_Nest_View::$CACHE == false || !$min_file_exists) {
 
@@ -82,14 +148,25 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         $compile = false;
         // check the md5s to see if we need to recompile
 
+        
         foreach($files as $file) {
+          $is_url = strstr($file, '://') !== FALSE;
+          
           $md5_file = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file . ".md5";
+          if($is_url) {
+            $md5_file = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . md5($file) . ".md5";
+          }
+          
           if(!file_exists($md5_file)) {
             $compile = true;
             continue;
           }
           $old_md5 = file_get_contents($md5_file);
-          $new_md5 = md5_file(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file);
+          if($is_url) {
+            $new_md5 = md5(file_get_contents($file));
+          } else {
+            $new_md5 = md5_file(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file);
+          }
           if($old_md5 != $new_md5) {
             $compile = true;
           }
@@ -99,10 +176,24 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
       if($compile) {
         $output = "";
         foreach($files as $file) {
-          $output .= call_user_func($min_function, file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file));
+          $is_url = strstr($file, '://') !== FALSE;
+          $contents = "";
+          if($is_url) {
+            $contents = file_get_contents($file);
+          } else {
+            $contents = file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file);
+          }
+            
+          
+          $output .= call_user_func($min_function, $contents);
 
-          $md5_file = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file . ".md5";
-          file_put_contents($md5_file, md5_file(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file));
+          if($is_url) {
+            $md5_file = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . md5($file) . ".md5";
+            file_put_contents($md5_file, md5($contents));
+          } else {
+            $md5_file = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file . ".md5";
+            file_put_contents($md5_file, md5_file(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file));
+          }
         }
         file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name, $output);
       }
@@ -113,8 +204,6 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
       $this->node->removeChild($child);
     }
   }
-
-
 }
 
 class HTML_Template_Nest_Taglib_Resource_Javascript extends HTML_Template_Nest_Taglib_Resource_Minifier {
@@ -151,6 +240,7 @@ class HTML_Template_Nest_Taglib_Resource_Css extends HTML_Template_Nest_Taglib_R
       return "";
     }
     $name = $this->getRequiredAttribute("name");
+    $this->scss($name);
     $this->minify($name, "cssfile", array("CssMin", 'minify'));
     return "<link rel=\"stylesheet\" href=\"$name\" />";
   }
@@ -164,8 +254,22 @@ class HTML_Template_Nest_Taglib_Resource_CssFile extends HTML_Template_Nest_Tag 
     return "<link rel=\"stylesheet\" href=\"$name\" />";
   }
 }
+
+class HTML_Template_Nest_Taglib_Resource_ScssFile extends HTML_Template_Nest_Taglib_Resource_Minifier {
+  protected $declaredAttributes = array("name");
+
+  public function start() {
+    $name = $this->getRequiredAttribute("name");
+    
+    $output_name = str_replace(".scss", ".css", $name);
+    $this->scss($name);
+    $this->minify($output_name, "scssfile", array("CssMin", 'minify'));
+    return "<link rel=\"stylesheet\" href=\"$output_name\" />";
+  }
+}
+
 class HTML_Template_Nest_Taglib_Resource_Snippets extends HTML_Template_Nest_Tag {
-    protected $declaredAttributes = array("name");
+    //protected $declaredAttributes = array("name");
     
     public function start() {
     $name = $this->getRequiredAttribute("name");
@@ -186,9 +290,13 @@ class HTML_Template_Nest_Taglib_Resource_Snippets extends HTML_Template_Nest_Tag
     
     return "var $name = {" . implode(",", $content) . "}";
   }    
+  public function isPhpEnabled()
+  {
+      return false;
+  }  
 }
 class HTML_Template_Nest_Taglib_Resource_Snippet extends HTML_Template_Nest_Tag {
-    protected $declaredAttributes = array("name");
+    //protected $declaredAttributes = array("name");
 
   public function start() {
     $name = $this->getRequiredAttribute("name");
@@ -207,6 +315,10 @@ class HTML_Template_Nest_Taglib_Resource_Snippet extends HTML_Template_Nest_Tag 
     
     
     return "'" . $name ."': " . json_encode($content);
-    
   }
+  public function isPhpEnabled()
+  {
+      return false;
+  }
+  
 }

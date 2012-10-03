@@ -99,22 +99,20 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
       if($is_url) {
           $md5_file = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . md5($file) . ".md5";
       }
-      if(!file_exists($md5_file)) {
+      $old_md5 = NULL;
+      if(file_exists($md5_file)) {
+        $old_md5 = file_get_contents($md5_file);
+      }
+      if($is_url) {
+        //TODO: this needs to do some time based caching for http
+        $new_md5 = md5(file_get_contents($file));
+      } else {
+        $new_md5 = md5_file(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file);
+      }
+      if($old_md5 != $new_md5) {
         $compile = true;
       }
-      if(!$compile) {
-          $old_md5 = file_get_contents($md5_file);
-          if($is_url) {
-            //TODO: this needs to do some time based caching for http
-            $new_md5 = md5(file_get_contents($file));
-          } else {
-            $new_md5 = md5_file(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file);
-          }
-          if($old_md5 != $new_md5) {
-            $compile = true;
-          }
-      }
-      
+
       if($compile) {
         $before = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file;
         if($is_url) {
@@ -125,12 +123,16 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         if($is_url) {
             $after = $file_components["after"];
         }
-        exec("sass $before:$after"); 
+        exec("sass --update -f $before:$after"); 
+        if(file_exists("$after.md5")) {
+          unlink("$after.md5");
+        }
+        file_put_contents($md5_file, $new_md5);
       }
     }
   }
 
-
+ 
   public function minify($name, $child_tag, $min_function) {
 
     $children = $this->getNodeChildren();

@@ -42,6 +42,7 @@ class HTML_Template_Nest_Taglib_Resource extends HTML_Template_Nest_Taglib
 {
   
   public static $BASE_PATH = "./";
+  public static $SASS_BINARY = "/usr/bin/sass";
 
   protected $tags = array(
       "js" => "HTML_Template_Nest_Taglib_Resource_Javascript",
@@ -123,7 +124,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         if($is_url) {
             $after = $file_components["after"];
         }
-        exec("sass --update -f $before:$after"); 
+        exec($SASS_BINARY . " --update -f $before:$after"); 
         if(file_exists("$after.md5")) {
           unlink("$after.md5");
         }

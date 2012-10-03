@@ -212,9 +212,14 @@ class HTML_Template_Nest_Taglib_Resource_Javascript extends HTML_Template_Nest_T
       return "";
     }
 
+    $name = $this->compiler->parser->parse(
+        $this->getRequiredAttribute("name")
+    );
+    $localfile = $this->getOptionalAttribute("localfile", $name);
+
     $name = $this->getRequiredAttribute("name");
 
-    $this->minify($name, "jsfile", array('JSMin', 'minify'));
+    $this->minify($localfile, "jsfile", array('JSMin', 'minify'));
     return "<script type=\"text/javascript\" src=\"$name\"></script>";
   }
 }
@@ -223,7 +228,9 @@ class HTML_Template_Nest_Taglib_Resource_JavascriptFile extends HTML_Template_Ne
   protected $declaredAttributes = array("name");
 
   public function start() {
-    $name = $this->getRequiredAttribute("name");
+    $name = $this->compiler->parser->parse(
+        $this->getRequiredAttribute("name")
+    );
     return "<script type=\"text/javascript\" src=\"$name\"></script>";
   }
 
@@ -236,9 +243,13 @@ class HTML_Template_Nest_Taglib_Resource_Css extends HTML_Template_Nest_Taglib_R
     if(isset($_REQUEST["nocache"]) && $_REQUEST["nocache"] == "true") {
       return "";
     }
-    $name = $this->getRequiredAttribute("name");
-    $this->scss($name);
-    $this->minify($name, "cssfile", array("CssMin", 'minify'));
+    $name = $this->compiler->parser->parse(
+        $this->getRequiredAttribute("name")
+    );
+    $localfile = $this->getOptionalAttribute("localfile", $name);
+    
+    $this->scss($localfile);
+    $this->minify($localfile, "cssfile", array("CssMin", 'minify'));
     return "<link rel=\"stylesheet\" href=\"$name\" />";
   }
 }
@@ -247,7 +258,9 @@ class HTML_Template_Nest_Taglib_Resource_CssFile extends HTML_Template_Nest_Tag 
   protected $declaredAttributes = array("name");
 
   public function start() {
-    $name = $this->getRequiredAttribute("name");
+    $name = $this->compiler->parser->parse(
+        $this->getRequiredAttribute("name")
+    );
     return "<link rel=\"stylesheet\" href=\"$name\" />";
   }
 }
@@ -256,12 +269,16 @@ class HTML_Template_Nest_Taglib_Resource_ScssFile extends HTML_Template_Nest_Tag
   protected $declaredAttributes = array("name");
 
   public function start() {
-    $name = $this->getRequiredAttribute("name");
+    $name = $this->compiler->parser->parse(
+        $this->getRequiredAttribute("name")
+    );
+    $localfile = $this->getOptionalAttribute("localfile", $name);
+
     
-    $output_name = str_replace(".scss", ".css", $name);
-    $this->scss($name);
+    $output_name = str_replace(".scss", ".css", $localfile);
+    $this->scss($localfile);
     $this->minify($output_name, "scssfile", array("CssMin", 'minify'));
-    return "<link rel=\"stylesheet\" href=\"$output_name\" />";
+    return "<link rel=\"stylesheet\" href=\"$name\" />";
   }
 }
 

@@ -248,10 +248,10 @@ class HTML_Template_Nest_Tag
      * @return string attribute value
      */
 
-    public function getOptionalAttribute($name)
+    public function getOptionalAttribute($name, $default_value = NULL)
     {
         if (!array_key_exists($name, $this->attributes)) {
-            return null;
+            return $default_value;
         }
         return $this->attributes[$name];
     }

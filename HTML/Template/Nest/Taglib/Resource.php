@@ -66,14 +66,25 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
     $files = array();
     foreach($childrenList as $child) {
       if($child->localName == "scssfile") {
-        $new_filename = str_replace(".scss", ".css", $child->getAttribute("name"));
+
+        $localfile = $child->getAttribute("localfile");
+        $file = $child->getAttribute("name");
+        if(empty($localfile)) {
+          $localfile = $file;
+        }
+	$new_name = str_replace(".scss", ".css", $name);
+        $new_filename = str_replace(".scss", ".css", $localfile);
+
+
         $files[] = 
-        array("before" => $child->getAttribute("name"),
+        array("before" => $localfile,
         "after" => $new_filename);
         $new_child = new DomElement("cssfile", "", "urn:nsttl:HTML_Template_Nest_Taglib_Resource");
          
         $this->node->insertBefore($new_child, $child);
-        $new_child->setAttribute("name", $new_filename);
+        $new_child->setAttribute("name", $new_name);
+        $new_child->setAttribute("localfile", $new_filename);
+
         
         $this->node->removeChild($child);
       }
@@ -130,7 +141,11 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
     $files = array();
     foreach($childrenList as $child) {
       if($child->localName == $child_tag) {
-        $files[] = $child->getAttribute("name");
+        $localfile = $child->getAttribute("localfile");
+        if(empty($localfile)) {
+          $localfile = $child->getAttribute("name");
+        }
+        $files[] = $localfile;
          
       }
       $this->node->removeChild($child);
@@ -216,8 +231,6 @@ class HTML_Template_Nest_Taglib_Resource_Javascript extends HTML_Template_Nest_T
         $this->getRequiredAttribute("name")
     );
     $localfile = $this->getOptionalAttribute("localfile", $name);
-
-    $name = $this->getRequiredAttribute("name");
 
     $this->minify($localfile, "jsfile", array('JSMin', 'minify'));
     return "<script type=\"text/javascript\" src=\"$name\"></script>";

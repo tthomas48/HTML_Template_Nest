@@ -124,7 +124,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         if($is_url) {
             $after = $file_components["after"];
         }
-        exec($SASS_BINARY . " --update -f $before:$after"); 
+        exec(HTML_Template_Nest_Taglib_Resource::$SASS_BINARY . " --update -f $before:$after"); 
         if(file_exists("$after.md5")) {
           unlink("$after.md5");
         }
@@ -318,7 +318,7 @@ class HTML_Template_Nest_Taglib_Resource_Snippets extends HTML_Template_Nest_Tag
       $this->node->removeChild($child);
     }
     
-    return "var $name = {" . implode(",", $content) . "}";
+    return "var $name = {" . implode(",", $content) . "};";
   }    
   public function isPhpEnabled()
   {

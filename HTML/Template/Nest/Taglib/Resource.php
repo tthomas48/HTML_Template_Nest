@@ -299,26 +299,33 @@ class HTML_Template_Nest_Taglib_Resource_ScssFile extends HTML_Template_Nest_Tag
 }
 
 class HTML_Template_Nest_Taglib_Resource_Snippets extends HTML_Template_Nest_Tag {
-    //protected $declaredAttributes = array("name");
-    
+
     public function start() {
-    $name = $this->getRequiredAttribute("name");
-    $content = array();
-    
-    $children = $this->getNodeChildren();
-    $childrenList = array();
-    foreach ($children as $child) {
-      $childrenList[] = $child;
-    }
-    $file = array();
-    foreach($childrenList as $child) {
-      if($child->localName == "snippet") {
-        $content[] = $this->compiler->loadTag($child)->start();
+      $children = $this->getNodeChildren();
+      $childrenList = array();
+      foreach ($children as $child) {
+        if($child->localName == "snippet") {
+          $childrenList[] = $child;
+        }
       }
-      $this->node->removeChild($child);
+      $files = array();
+      for($i = 0; $i < count($childrenList); $i++) {
+        $child = $childrenList[$i];
+        if($i == count($childrenList) - 1) {
+          break;
+        }
+        $child->setAttribute("addcomma", "true");
+      }
     }
     
-    return "var $name = {" . implode(",", $content) . "};";
+    public function filter($output) {
+    $name = $this->getRequiredAttribute("name");
+
+    $output = '<?php ob_start(); ?>' . $output;
+    $output .= '<?php $output = ob_get_clean();';
+    $output .= 'print $output';
+    $output .= '?>';
+    return "var $name = { $output };";
   }    
   public function isPhpEnabled()
   {
@@ -326,25 +333,20 @@ class HTML_Template_Nest_Taglib_Resource_Snippets extends HTML_Template_Nest_Tag
   }  
 }
 class HTML_Template_Nest_Taglib_Resource_Snippet extends HTML_Template_Nest_Tag {
-    //protected $declaredAttributes = array("name");
 
-  public function start() {
+  public function filter($output) {
     $name = $this->getRequiredAttribute("name");
-    $content = "";
-    
-    $children = $this->getNodeChildren();
-    $childrenList = array();
-    foreach ($children as $child) {
-      $childrenList[] = $child;
+
+    $output = '<?php ob_start(); ?>' . $output;
+    $output .= '<?php $output = ob_get_clean();';
+    $output .= 'print json_encode($output)';
+    $output .= '?>';
+    $output = "'" . $name ."': $output";
+
+    if($this->node->getAttribute("addcomma") == "true") {
+      $output .= ",";
     }
-    $file = array();
-    foreach($childrenList as $child) {
-      $content .= $this->node->ownerDocument->saveXml($child);
-      $this->node->removeChild($child);
-    }
-    
-    
-    return "'" . $name ."': " . json_encode($content);
+    return $output;
   }
   public function isPhpEnabled()
   {

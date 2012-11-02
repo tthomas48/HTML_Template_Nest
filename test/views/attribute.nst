@@ -1,0 +1,11 @@
+<div xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard">
+    <c:attribute name="class" trim="true">
+        <c:foreach items="list" var="classNum">
+            classname${classNum}
+        </c:foreach>
+    </c:attribute>
+    This is just some stuff inside the div  <b> with some nested</b> tags.
+    <div>And stuff</div>
+    <div v="'quoted'">Test</div>
+    <div v='"quoted"'>Test</div>
+</div>

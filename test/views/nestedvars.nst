@@ -1,0 +1,10 @@
+<div xmlns:test="urn:nsttl:TestPackage_TestTaglib">
+    <test:tabindexa>
+        <test:tabindexb />
+        <test:tabindexb />
+        <test:tabindexb />
+        <test:tabindexb />
+        <test:tabindexb />
+        <test:tabindexb />
+    </test:tabindexa>
+</div>

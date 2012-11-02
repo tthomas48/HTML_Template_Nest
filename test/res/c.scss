@@ -1,0 +1,10 @@
+$black: #000000;
+$white: #ffffff;
+
+body {
+  color: $black;
+  .header {
+    background-color: $black;
+    color: $white;
+  }
+}

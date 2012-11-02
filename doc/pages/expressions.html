@@ -1,0 +1,91 @@
+<html>
+<head>
+<title>Using the Nest Expression Language</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="Stylesheet" rev="Stylesheet" href="../css/documentation.css"
+    type="text/css" media="All" charset="iso-8859-1">
+</head>
+<body>
+<h1>Expressions</h1>
+<p>The Nest expression language used the jstl expression language as a jumping off
+point, but tries to be as PHP as possible. Since php has methods like __get and
+__set there didn't seem to be any point to using bean introspection like java.</p>
+<p>Expressions can be between the token tags ${}, or in tag attributes without
+the tags. The syntax is just like PHP except that attributes are specified
+without the leading $.</p>
+<p>You can specify html text that shouldn't be escaped with #{}. Be aware that
+doing so can potentially leave you exposed to XSS attacks. Be sure you cleanse
+the data you're presenting this way.</p>
+
+<h2>Simple Variables</h2>
+<p>The simplest form of the expression language are simply outputting variables 
+as we've prevously introduced. The name will be the key when adding the attribute
+to the view.</p>
+<pre>
+$view->addAttribute("myVariable", "myValue");
+${myVariable}
+Output: myValue
+</pre> 
+<h2>Array Variables</h2>
+<p>Arrays are accessed just like in php.</p>
+<fieldset>
+<legend>Indexed</legend>
+<pre>
+$view->addAttribute("myArray", Array("apples", "bananas", "oranges"));
+${myArray[1]}
+Output: bananas
+</pre> 
+</fieldset>
+<br />
+<fieldset>
+<legend>Associative</legend>
+<pre>
+$view->addAttribute("myArray", Array("a" => "apples", "b" => "bananas", "o" => "oranges"));
+${myArray["b"]}
+Output: bananas
+</pre> 
+</fieldset>
+<h2>Object Variables</h2>
+<p>Public object members and methods are accessed just like in php.</p>
+<fieldset>
+<legend>Member</legend>
+<pre>
+${myObject->name}
+${myObject->key}
+</pre>
+</fieldset>
+
+<fieldset>
+<legend>Method</legend>
+<pre>
+${myObject->getName()}
+${myObject->execute()}
+</pre>
+</fieldset>
+
+<fieldset>
+<legend>Nested</legend>
+<pre>
+${myObject->getParent()->execute()}
+</pre>
+</fieldset>
+
+<h2>Math</h2>
+<p>Mathematical expressions can be done just like in PHP.</p>
+<pre>
+${1 == 1}
+${1 == 0}
+${myVar % 5}
+${(1000 * 50) / myvar}
+${myvar->price * myvar->tax}
+</pre>
+
+<h2>Conditional</h2>
+<p>Conditional expressions can be evaluated just like in PHP.</p>
+<pre>
+${1 == 1 || myVar == 'bob'}
+${1 == myVar && access == 'admin'}
+${rowcount % 2 ? 'green' : 'red'}
+</pre>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<project name="Nest" description="test phing script to test Nest compile task" default="test">
+
+
+
+    <target name="test">
+        <includepath classpath=".:test:/usr/share/php" />
+
+        <phpunit printsummary="true" haltonerror="true" haltonfailure="true" bootstrap="test/bootstrap.php">
+            <batchtest>
+                <fileset dir="test">
+                    <include name="**/*Test.php" />
+                </fileset>
+            </batchtest>
+        </phpunit>
+    </target>
+
+    <target name="compile">
+        <includepath classpath=".:test:/usr/share/php" />
+
+        <taskdef name="compileNest" classname="HTML.Template.Nest.NestCompileTask" />
+        <compileNest>
+            <fileset dir="test">
+                <include name="**/*.nst" />
+            </fileset>
+        </compileNest>
+    </target>
+
+</project>

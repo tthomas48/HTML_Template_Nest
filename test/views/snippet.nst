@@ -1,0 +1,12 @@
+<nst:root xmlns:nst="http://nest.sourceforge.net/" xmlns:r="urn:nsttl:HTML_Template_Nest_Taglib_Resource">
+  <r:snippets name="test_snippets">
+      <r:snippet name="mysnippet">
+        <div class="myclass" id='foo'>
+            Some text {{foo}}
+        </div>
+      </r:snippet>
+      <r:snippet name="otherbit">
+          Just some text in here.
+      </r:snippet>
+    </r:snippets>      
+</nst:root>

@@ -1,0 +1,43 @@
+<div xmlns:test="urn:nsttl:TestPackage_TestTaglib">
+	<test:wrappableWithAttributes attribute1="1">
+		<test:wrappableWithAttributes attribute1="1a">
+			${attribute1}
+		</test:wrappableWithAttributes>
+		<test:wrappableWithAttributes attribute1="1b">
+            <test:wrappableWithAttributes attribute1="1b1">
+                ${attribute1}
+            </test:wrappableWithAttributes>
+			${attribute1}
+		</test:wrappableWithAttributes>
+		${attribute1}
+	</test:wrappableWithAttributes>
+	<test:wrappableWithAttributes attribute1="2">
+		<test:wrappableWithAttributes attribute1="2a">
+			${attribute1}
+		</test:wrappableWithAttributes>
+		<test:wrappableWithAttributes attribute1="2b">
+            <test:wrappableWithAttributes attribute1="2b1">
+                <test:wrappableWithAttributes attribute1="2b1a">
+                    ${attribute1}
+                </test:wrappableWithAttributes>
+
+                ${attribute1}
+				<test:bodyAndAttributes name="foo">
+					We can use variables from inner and outer tags:
+					${name}=${attribute1}
+				</test:bodyAndAttributes>
+                <test:wrappableWithAttributes attribute1="2b1b">
+                    ${attribute1}
+                </test:wrappableWithAttributes>
+                <test:wrappableWithAttributes attribute1="2b1c">
+                    ${attribute1}
+                </test:wrappableWithAttributes>
+            </test:wrappableWithAttributes>
+            <test:wrappableWithAttributes attribute1="2b2">
+                ${attribute1}
+            </test:wrappableWithAttributes>
+			${attribute1}
+		</test:wrappableWithAttributes>
+		${attribute1}
+	</test:wrappableWithAttributes>
+</div>

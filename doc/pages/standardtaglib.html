@@ -1,0 +1,167 @@
+<html>
+<head>
+<title>Introducing the standard tag library</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="Stylesheet" rev="Stylesheet" href="../css/documentation.css"
+    type="text/css" media="All" charset="iso-8859-1">
+</head>
+<body>
+<h1>Introducing the standard tag library</h1>
+<p>At this point you're probably wondering how to add conditional logic. Outputting
+values to the page is interesting, but how do we do so conditionally? That is 
+after all what makes dynamic web pages, well <i>dynamic</i>.</p>
+
+<h2>Adding the tag library</h2>
+<p>To add the tag library, we specify it's xml namespace and the class name. This can
+be done at any level of the HTML document before you attempt to use the tag, but
+it's simplest to add it to your &lt;html&gt; tag.</p>
+<pre>
+&lt;html xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard"&gt;
+</pre>
+<p>That says that I'll prefix all of my standard tag library tags with the letter 'c'.
+"urn:nsttl" says it's a local nest tag library that's in the include path, and
+the class is HTML_Template_Nest_Taglib_Standard.</p>
+<p>Tag libraries follow PEAR naming conventions, so it will look for the file 
+"HTML/Template/Nest/Taglib/Standard.php".</p>
+<p>Once you've added that namespace declaration to the top of your file you
+can start using the standard tags.</p>
+<h2>&lt;c:if&gt;</h2>
+The simplest conditional is the if tag. The if tag takes one attribute "test". The
+test attribute is a nest expression, but doesn't require the ${} token tags. Note that
+unlike JSP you don't wrap your conditional structures in a "choose" tag.
+<pre>
+&lt;c:if test="isAdmin"&gt;
+   &lt;a href="admin.html"&gt;Admin Interface&lt;a&gt;
+&lt;/c:if&gt;
+</pre> 
+<h2>&lt;c:elseif&gt;</h2>
+The elseif works exactly like the if. It <b>must</b> be preceeded by an if tag, 
+however. It also takes the test attribute.
+<pre>
+&lt;c:if test="isAdmin"&gt;
+    &lt;a href="admin.html"&gt;Admin Interface&lt;a&gt;
+&lt;/c:if&gt;
+&lt;c:elseif test="isPowerUser"&gt;
+    &lt;a href="power.html"&gt;Power Interface&lt;a&gt;
+&lt;/c:elseif&gt;
+</pre>
+<h2>&lt;c:else&gt;</h2>
+Else is the final part of a conditional. It <b>must</b> be preceeded by either
+an if tag or elseif tag. It does not have any attributes.
+<pre>
+&lt;c:if test="isAdmin"&gt;
+    &lt;a href="admin.html"&gt;Admin Interface&lt;a&gt;
+&lt;/c:if&gt;
+&lt;c:elseif test="isPowerUser"&gt;
+    &lt;a href="power.html"&gt;Power Interface&lt;a&gt;
+&lt;/c:elseif&gt;
+&lt;c:else&gt;
+    &lt;a href="profile.html"&gt;User Profile&lt;a&gt;
+&lt;/c:else&gt;    
+</pre>
+<h2>&lt;c:foreach&gt;</h2>
+Foreach lets you iterate over an array. You can iterate over indexed arrays or
+associate arrays.
+<h3>Indexed Arrays</h3>
+<p>Add an indexed array to your view:</p>
+<pre>
+$view->addAttribute("groceryList", Array("Bananas", "Milk", "Ground Beef"));
+</pre>
+<p>Your array is specified in the &lt;foreach&gt; tag using the items attribute.
+The value of var will be the local variable that wil contain the individual array
+element.</p>
+<pre>
+&lt;h3&gt;Shopping List&lt;/h3&gt;
+&lt;ul&gt;
+    &lt;c:foreach items="groceryList" var="shoppingListItem"&gt;
+        &lt;li&gt;${shoppingListItem}&lt;/li&gt;
+    &lt;/c:foreach&gt;
+&lt;/ul&gt;
+</pre>
+<h3>Associative Arrays</h3>
+<p>Add an indexed array to your view:</p>
+<pre>
+$view->addAttribute("groceryReceipt", Array("Bananas" => ".75", "Milk" => "3.59", "Ground Beef" => "1.99"));
+</pre>
+<p>Your array and local variable for value are specified the same was an indexed array. Associate arrays add a 
+key attribute for pulling out the array's key.</p>
+<pre>
+&lt;h3&gt;Shopping Receipt&lt;/h3&gt;
+&lt;table&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Item&lt;/th&gt;
+        &lt;th&gt;Price&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;c:foreach items="groceryReceipt" var="itemPrice" key="itemName"&gt;
+        &lt;tr&gt;
+            &lt;td&gt;${itemName}&lt;/td&gt;
+            &lt;td&gt;${itemPrice}&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/c:foreach&gt;
+&lt;/table&gt;
+</pre>
+<h3>Row Count</h3>
+<p></p>Knowing the numeric index of the current item can be useful for many reasons. One common use is to alternate colors every other row. You
+can get that value by assigning a local variable name to the rowcount attribute. Let's alternate css classes in our previous example:
+
+<pre>
+&lt;h3&gt;Shopping Receipt&lt;/h3&gt;
+&lt;table&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Item&lt;/th&gt;
+        &lt;th&gt;Price&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;c:foreach items="groceryReceipt" var="itemPrice" key="itemName" <b>rowcount="i"</b>&gt;
+        &lt;tr <b>class="row${(i % 2 == 0 ? 'A' : 'B')}"</b>&gt;
+            &lt;td&gt;${itemName}&lt;/td&gt;
+            &lt;td&gt;${itemPrice}&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/c:foreach&gt;
+&lt;/table&gt;
+</pre>
+<p>This will alternate between the css class 'rowA' and 'rowB'</p>
+
+<h2>&lt;c:for&gt;</h2>
+<pre>
+&lt;c:for var="i" test="i &lt; 10"&gt;
+    Should print 10 times.
+&lt;/c:for&gt;
+</pre>
+<pre>
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.	
+    Should print 10 times.
+    Should print 10 times.
+    Should print 10 times.									
+</pre>
+
+<h2>&lt;c:attribute&gt;</h2>
+<pre>
+&lt;div&gt;
+	&lt;c:attribute name="class" trim="true"&gt;
+	   	&lt;c:for var="i" test="i &lt; 10"&gt;
+            class${i}
+        &lt;/c:for&gt;
+	&lt;/c:attribute&gt;
+&lt;/div&gt;
+</pre>
+<pre>
+	&lt;div class="class0 class1 class2 class3 class4 class5 class6 class7 class8 class9"&gt;
+		
+	&lt;/div&gt;
+</pre>
+
+<h2>&lt;c:set&gt;</h2>
+<pre>
+&lt;c:set var="mylocalvar" value="${bulletClass}"&gt;
+    ${mylocalvar}
+&lt;/c:set&gt;
+</pre>
+
+</body>
+</html>

@@ -368,5 +368,19 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
         $output = $parser->parse('${(production->isNew() ? \'Create\' : \'Save\')} Production');
         $this->assertEquals("<?php /* {(production->isNew() ? 'Create' : 'Save')} */ echo htmlentities((\$_o(\$p, 'production')->isNew() ? 'Create' : 'Save'))?> Production", $output);
     }
+    public function testNewClass()
+    {
+        $parser = new HTML_Template_Nest_Parser();
+        $output = $parser->parse('${new stdClass()}', false);
+        $this->assertEquals('new stdClass()', $output);
+        
+        $output = $parser->parse('${new stdClass("a", "b")}', false);
+        $this->assertEquals('new stdClass("a", "b")', $output);
+        
+        $output = $parser->parse('${new \stdClass("a", "b")}', false);
+        $this->assertEquals('new \stdClass("a", "b")', $output);
+        
+        
+    }
     
 }

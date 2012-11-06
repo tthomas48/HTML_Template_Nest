@@ -279,6 +279,15 @@ class HTML_Template_Nest_Parser
                         }
                         $buffer .= $char;
                         break;
+                    case "n":
+                        if(substr($expression, $pos, 4) == 'new ') {
+                            // we technically need to make sure that this is followed by an actual class name
+                            $buffer .= substr($expression, $pos, 4);
+                            $pos = $pos + 3;
+                            break;
+                        }
+                        $buffer .= $char;
+                        break;
                     case "+":
                     case " ":
                         if(preg_match("/^" . $VAR_PATTERN . "$/", $buffer)) {

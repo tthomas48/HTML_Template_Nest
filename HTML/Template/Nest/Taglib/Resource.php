@@ -73,7 +73,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         if(empty($localfile)) {
           $localfile = $file;
         }
-	$new_name = str_replace(".scss", ".css", $name);
+	    $new_name = str_replace(".scss", ".css", $name);
         $new_filename = str_replace(".scss", ".css", $localfile);
 
 

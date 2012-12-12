@@ -154,12 +154,14 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
       $this->node->removeChild($child);
     }
     
-    
-    $min_file_exists = file_exists(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name);
-    if(HTML_Template_Nest_View::$CACHE == false || !$min_file_exists) {
-
+    $min_md5_exists = file_exists(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5");
+    $output_md5 = "";
+    if(HTML_Template_Nest_View::$CACHE == false || !$min_md5_exists) {
       $compile = true;
-      if($min_file_exists) {
+      if($min_md5_exists) {
+        $output_md5 = file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5");
+      }
+      if($min_md5_exists) {
         $compile = false;
         // check the md5s to see if we need to recompile
 
@@ -210,7 +212,9 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
             file_put_contents($md5_file, md5_file(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file));
           }
         }
-        file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name, $output);
+        $output_md5 = md5($output);
+        file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5", $output_md5);
+        file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . "." . $output_md5, $output);
       }
     }
 
@@ -218,6 +222,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
     foreach($children as $child) {
       $this->node->removeChild($child);
     }
+    return $name . "." . $output_md5;
   }
 }
 
@@ -235,7 +240,7 @@ class HTML_Template_Nest_Taglib_Resource_Javascript extends HTML_Template_Nest_T
     );
     $localfile = $this->getOptionalAttribute("localfile", $name);
 
-    $this->minify($localfile, "jsfile", array('JSMin', 'minify'));
+    $name = $this->minify($localfile, "jsfile", array('JSMin', 'minify'));
     return "<script type=\"text/javascript\" src=\"$name\"></script>";
   }
 }
@@ -265,7 +270,7 @@ class HTML_Template_Nest_Taglib_Resource_Css extends HTML_Template_Nest_Taglib_R
     $localfile = $this->getOptionalAttribute("localfile", $name);
     
     $this->scss($localfile);
-    $this->minify($localfile, "cssfile", array("CssMin", 'minify'));
+    $name = $this->minify($localfile, "cssfile", array("CssMin", 'minify'));
     return "<link rel=\"stylesheet\" href=\"$name\" />";
   }
 }
@@ -293,7 +298,7 @@ class HTML_Template_Nest_Taglib_Resource_ScssFile extends HTML_Template_Nest_Tag
     
     $output_name = str_replace(".scss", ".css", $localfile);
     $this->scss($localfile);
-    $this->minify($output_name, "scssfile", array("CssMin", 'minify'));
+    $name = $this->minify($output_name, "scssfile", array("CssMin", 'minify'));
     return "<link rel=\"stylesheet\" href=\"$name\" />";
   }
 }

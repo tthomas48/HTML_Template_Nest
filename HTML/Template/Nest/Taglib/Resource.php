@@ -156,11 +156,11 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
     
     $min_md5_exists = file_exists(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5");
     $output_md5 = "";
+    $compile = false;
+    if($min_md5_exists) {
+      $output_md5 = file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5");
+    }
     if(HTML_Template_Nest_View::$CACHE == false || !$min_md5_exists) {
-      $compile = true;
-      if($min_md5_exists) {
-        $output_md5 = file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5");
-      }
       if($min_md5_exists) {
         $compile = false;
         // check the md5s to see if we need to recompile
@@ -190,7 +190,8 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         }
       }
 
-      if($compile) {
+    }
+    if($compile) {
         $output = "";
         foreach($files as $file) {
           $is_url = strstr($file, '://') !== FALSE;
@@ -215,8 +216,8 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         $output_md5 = md5($output);
         file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5", $output_md5);
         file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . "." . $output_md5, $output);
-      }
     }
+
 
 
     foreach($children as $child) {

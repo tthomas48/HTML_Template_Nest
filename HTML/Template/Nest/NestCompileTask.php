@@ -25,9 +25,6 @@
  * @since     File available since Release 1.0
  */
 
-require_once 'phing/Task.php';
-require_once 'Compiler.php';
-
 /**
  * Phing task to compiles .nst files into .php files
  *

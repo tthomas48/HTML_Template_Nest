@@ -161,6 +161,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
       $output_md5 = file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5");
     }
     if(HTML_Template_Nest_View::$CACHE == false || !$min_md5_exists) {
+      $compile = true;
       if($min_md5_exists) {
         $compile = false;
         // check the md5s to see if we need to recompile

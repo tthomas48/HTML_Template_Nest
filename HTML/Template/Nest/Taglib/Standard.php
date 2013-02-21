@@ -55,6 +55,7 @@ class HTML_Template_Nest_Taglib_Standard extends HTML_Template_Nest_Taglib
         "foreach" => "HTML_Template_Nest_Taglib_Standard_ForeachTag",
         "set" => "HTML_Template_Nest_Taglib_Standard_SetTag",
         "attribute" => "HTML_Template_Nest_Taglib_Standard_AttributeTag",
+        "include" => "HTML_Template_Nest_Taglib_Standard_IncludeTag",
     );        
 }
 
@@ -427,4 +428,21 @@ class HTML_Template_Nest_Taglib_Standard_AttributeTag extends HTML_Template_Nest
         $this->node->parentNode->setAttribute($prefix . $name, $output);
         return "";
     }
+}
+class HTML_Template_Nest_Taglib_Standard_IncludeTag extends HTML_Template_Nest_Tag
+{
+  public function start()
+  {
+    $file = $this->getRequiredAttribute("name");
+    $viewPath = NULL;
+    foreach(HTML_Template_Nest_View::$INCLUDE_PATHS as $path) {
+     if(file_exists($path  . "/" . $file . ".nst")) {
+      $viewPath = $path . "/" . $file . ".nst";
+     }
+    }
+    if($viewPath == NULL) {
+     throw new HTML_Template_Nest_TagException("Unable to find include $file in path.", $this->node);
+    }
+    return $this->compiler->compile($viewPath);
+  }
 }

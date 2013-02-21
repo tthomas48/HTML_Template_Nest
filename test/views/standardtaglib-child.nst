@@ -1,0 +1,3 @@
+<nst:root xmlns:nst="http://nest.sourceforge.net/">
+	<section>${childvar}</section>
+</nst:root>

@@ -89,4 +89,20 @@ class HTML_Template_Nest_StandardTaglibTest extends PHPUnit_Framework_TestCase
             trim(file_get_contents($filename))
         );        
     }
+    public function testInclude()
+    {
+        HTML_Template_Nest_View::$CACHE = false;
+        HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
+
+        $view = new HTML_Template_Nest_View("standardtaglib-include");
+
+        $view->addAttribute("headervar", "Header");
+        $view->addAttribute("footervar", "Footer");
+        $view->addAttribute("childvar", "Child");
+        $filename = dirname(__FILE__) . "/viewoutput/standardtaglib-include.html";
+        $this->assertEquals(
+            trim($view->render()), 
+            trim(file_get_contents($filename))
+        );        
+    }
 }

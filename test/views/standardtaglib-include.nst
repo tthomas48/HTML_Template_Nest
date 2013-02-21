@@ -1,0 +1,6 @@
+<nst:root xmlns:nst="http://nest.sourceforge.net/"
+          xmlns:c="urn:nsttl:HTML_Template_Nest_Taglib_Standard">
+<header>${headervar}</header>
+<c:include name="standardtaglib-child" />
+<footer>${footervar}</footer>
+</nst:root>

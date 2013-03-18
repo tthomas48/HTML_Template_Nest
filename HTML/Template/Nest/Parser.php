@@ -82,7 +82,7 @@ class HTML_Template_Nest_Parser
         if (isset($this->_localVariables[$namespace][$key])) {
             $this->_localVariables[$namespace][$key]--;
         }
-        if ($this->_localVariables[$namespace][$key] < 0) {
+        if (isset($this->_localVariables[$namespace][$key]) && $this->_localVariables[$namespace][$key] < 0) {
             $this->_localVariables[$namespace][$key] = 0;
         }
     }

@@ -443,6 +443,7 @@ class HTML_Template_Nest_Taglib_Standard_IncludeTag extends HTML_Template_Nest_T
     if($viewPath == NULL) {
      throw new HTML_Template_Nest_TagException("Unable to find include $file in path.", $this->node);
     }
-    return $this->compiler->compile($viewPath);
+    $compiler = new HTML_Template_Nest_Compiler();
+    return $compiler->compile($viewPath);
   }
 }

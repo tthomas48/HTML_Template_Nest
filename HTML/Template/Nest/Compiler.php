@@ -54,6 +54,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 	
 	public function __construct() {
 	   stream_filter_register("nst.filter", "HTML_Template_Nest_Compiler");
+           $this->parser = new HTML_Template_Nest_Parser();
 	}
 	
     function filter($in, $out, &$consumed, $closing) {
@@ -100,7 +101,6 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 
 		$output = "";
 		try {
-			$this->parser = new HTML_Template_Nest_Parser();
 			if($contents == NULL) {
 			    $contents = file_get_contents($filename);
 			}

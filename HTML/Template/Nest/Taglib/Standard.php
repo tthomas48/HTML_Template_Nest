@@ -431,6 +431,7 @@ class HTML_Template_Nest_Taglib_Standard_AttributeTag extends HTML_Template_Nest
 }
 class HTML_Template_Nest_Taglib_Standard_IncludeTag extends HTML_Template_Nest_Tag
 {
+  private $newCompiler;
   public function start()
   {
     $file = $this->getRequiredAttribute("name");
@@ -443,7 +444,27 @@ class HTML_Template_Nest_Taglib_Standard_IncludeTag extends HTML_Template_Nest_T
     if($viewPath == NULL) {
      throw new HTML_Template_Nest_TagException("Unable to find include $file in path.", $this->node);
     }
-    $compiler = new HTML_Template_Nest_Compiler();
-    return $compiler->compile($viewPath);
+
+    $output = "<?php ";
+    $this->newCompiler = new HTML_Template_Nest_Compiler();
+    foreach($this->attributes as $key => $value) {
+      if($key == 'name') {
+        continue;
+      }
+      $this->newCompiler->parser->registerVariable($this->id, $key);
+
+      $value = $this->compiler->parser->parse($value, false, "\"");
+      $output .= "\$" . $this->newCompiler->parser->getLocalVariableName($key) . " = \"" . $value . "\";\n";
+    }
+    $output .= "?>";
+    return $output . $this->newCompiler->compile($viewPath);
+  }
+  public function end() {
+    foreach($this->attributes as $key => $value) {
+      if($key == 'name') {
+        continue;
+      }
+      $this->newCompiler->parser->unregisterVariable($this->id, $key);
+    }
   }
 }

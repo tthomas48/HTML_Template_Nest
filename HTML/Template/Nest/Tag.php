@@ -54,7 +54,7 @@ class HTML_Template_Nest_Tag
     protected $attributes;
     protected $declaredAttributes = array();
     protected $attributeTypes = array();
-    private $id;
+    protected $id;
 
     /**
      * Constructor

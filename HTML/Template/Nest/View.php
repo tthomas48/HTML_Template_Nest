@@ -118,7 +118,7 @@ class HTML_Template_Nest_View
     public function render()
     {
       $this->output = $this->loadContent();
-      $this->renderContent($this->output);
+      return $this->renderContent($this->output);
     }
     public function renderContent($output = "") 
     {

@@ -370,28 +370,6 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 
 		$className = $taglib;
 		$isDefault = false;
-		/*
-		try {
-			if(HTML_Template_Nest_Compiler::file_exists_ip($taglibFile)) {
-				set_error_handler(array($this,'errorHandler'));
-				include_once $taglibFile;
-				restore_error_handler();
-				$className = $taglib;
-			} else {
-				$isDefault = true;
-				$className = "HTML_Template_Nest_Taglib";
-			}
-		} catch(Exception $e) {
-			throw new HTML_Template_Nest_CompilerException($e->getMessage(), $node);
-		}
-
-		if (strpos($className, "/") !== false) {
-			$className = substr($className, strrpos($className, "/") + 1);
-		}
-		if(!class_exists($className, false)) {
-			throw new HTML_Template_Nest_CompilerException("Unable to find tag class " . $className, $node);
-		}
-		*/
 		if(!class_exists($className, true)) {
 			$isDefault = true;
 			$className = "HTML_Template_Nest_Taglib";

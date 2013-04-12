@@ -64,7 +64,7 @@ class HTML_Template_Nest_View
      *
      * @return HTML_Template_Nest_View instance
      */
-    public function __construct($name)
+    public function __construct($name = "")
     {
         $this->_name = $name;
     }
@@ -117,7 +117,13 @@ class HTML_Template_Nest_View
      */
     public function render()
     {
-        $this->output = $this->loadContent();
+      $this->output = $this->loadContent();
+      $this->renderContent($this->output);
+    }
+    public function renderContent($output = "") 
+    {
+      $this->output = $output;
+        
         ob_start();
         $p = $this->_attributes;
         $_o = create_function('$p, $key', '$value = array_key_exists($key, $p) ? $p[$key] : null; return $value;');

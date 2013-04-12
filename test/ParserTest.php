@@ -297,10 +297,6 @@ class HTML_Template_Nest_ParserTest extends PHPUnit_Framework_TestCase
             'strpos($col, \'<img\') >= 0 ? \'centeredImg\' : \'\'',
             $output
         );
-        
-    
-        
-        
     }
     
    /**

@@ -149,12 +149,14 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 		if($doctype) {
 			$output .= "<!DOCTYPE " . $doctype->name . " PUBLIC \"" . $doctype->publicId . "\" \"" . $doctype->systemId . "\">\n";
 		}
+    $this->initChildren($document);
 		$output .= $this->processChildren($document);
 		return $output;
 	}
 
 	public function compileNode($node)
 	{
+    $this->initChildren($node);
 		return $this->processChildren($node);
 	}
 
@@ -173,6 +175,65 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 		}
 		return $taglib;
 	}
+
+	/**
+	 * Initialize all tags. Called recursively.
+	 *
+	 * @param DomNode $node node to process
+	 */
+	protected function initChildren($node)
+	{
+
+		$taglib = $this->getNamespace($node);
+
+		$tag = null;
+		$rootTag = false;
+		if (strpos($taglib, "urn:nsttl:") !== false) {
+			$tag = $this->loadTag($node);
+      $tag->init();
+			$this->tagStack[] = Array($tag);
+		}
+		elseif ($taglib == "http://nest.sourceforge.net/" && trim($node->localName) == 'root') {
+			$rootTag = true;
+		}
+
+		// just a text node, parse it for variables and return it
+		if ($node->nodeType == XML_TEXT_NODE) {
+      return;
+		}
+
+		// self-contained tag. just return it
+		if (!$rootTag && strlen($node->localName) && $tag == null && !$node->hasChildNodes()) {
+			return;
+		}
+
+		// process tags or children
+		if ($tag != null) {
+			$nodeChildren = $tag->getNodeChildren();
+
+			$childrenList = array();
+			foreach ($nodeChildren as $child) {
+				$childrenList[] = $child;
+			}
+			foreach ($childrenList as $child) {
+				$this->initChildren($child);
+			}
+		} elseif ($node->hasChildNodes()) {
+			$nodeChildren = $node->childNodes;
+
+			// we have to copy off the current children list in
+			// case one of the children modifies the dom and
+			// confuses the parser
+			$childrenList = array();
+			foreach ($nodeChildren as $child) {
+				$childrenList[] = $child;
+			}
+			foreach ($childrenList as $child) {
+				$this->initChildren($child);
+			}
+		}
+	}
+
 
 	/**
 	 * Process a node and all its children. Called recursively.

@@ -160,6 +160,16 @@ class HTML_Template_Nest_Tag
     }
 
     /**
+     * Evaluated before any rendering.
+     *
+     */
+    public function init()
+    {
+
+    }
+
+
+    /**
      * Evaluated before the content of the tag.
      *
      * @return string content to add to php file

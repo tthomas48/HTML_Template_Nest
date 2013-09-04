@@ -243,7 +243,7 @@ class HTML_Template_Nest_Taglib_Resource_Javascript extends HTML_Template_Nest_T
     $localfile = $this->getOptionalAttribute("localfile", $name);
 
     $name = $this->minify($localfile, "jsfile", array('JSMin', 'minify'));
-    return "<script type=\"text/javascript\" src=\"$name\"></script>";
+    return "<script type=\"text/javascript\" src=\"$name\">\n</script>";
   }
 }
 
@@ -254,7 +254,7 @@ class HTML_Template_Nest_Taglib_Resource_JavascriptFile extends HTML_Template_Ne
     $name = $this->compiler->parser->parse(
         $this->getRequiredAttribute("name")
     );
-    return "<script type=\"text/javascript\" src=\"$name\"></script>";
+    return "<script type=\"text/javascript\" src=\"$name\">\n</script>";
   }
 
 }

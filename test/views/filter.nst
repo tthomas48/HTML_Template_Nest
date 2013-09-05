@@ -4,6 +4,5 @@
 	</r:css>
 	<r:js name="res/js.filter.min.js">
 		<r:jsfile name="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" />
-		<r:jsfile name="php://filter/read=nst.filter/resource=file:///home/tthomas/git/HTML_Template_Nest/test/views/snippet.nst" />
 	</r:js>
 </nst:root>

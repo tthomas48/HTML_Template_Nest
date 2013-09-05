@@ -57,15 +57,46 @@ class HTML_Template_Nest_Taglib_Resource extends HTML_Template_Nest_Taglib
 
 abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template_Nest_Tag {
 
-  public function scss($name) {
+  private $childrenList = array();
+  private $minFiles = array();
 
+  public function init() {
     $children = $this->getNodeChildren();
     $childrenList = array();
     foreach ($children as $child) {
-      $childrenList[] = $child;
+      $this->childrenList[] = $child;
     }
+    foreach($this->childrenList as $child) {
+      /*
+      if($child->localName == "scssfile") {
+
+        $name = $this->node->getAttribute("localfile");
+
+        $localfile = $child->getAttribute("localfile");
+        $file = $child->getAttribute("name");
+        if(empty($localfile)) {
+          $localfile = $file;
+        }
+	      $new_name = str_replace(".scss", ".css", $name);
+        $new_filename = str_replace(".scss", ".css", $localfile);
+        $new_child = new DomElement("cssfile", "", "urn:nsttl:HTML_Template_Nest_Taglib_Resource");
+         
+        #$this->node->insertBefore($new_child, $child);
+        #$new_child->setAttribute("name", $new_name);
+        #$new_child->setAttribute("localfile", $new_filename);
+      }
+      */
+
+
+      $this->node->removeChild($child);
+    }
+  }
+
+
+  public function scss($name) {
+
     $files = array();
-    foreach($childrenList as $child) {
+    foreach($this->childrenList as $child) {
       if($child->localName == "scssfile") {
 
         $localfile = $child->getAttribute("localfile");
@@ -73,21 +104,21 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         if(empty($localfile)) {
           $localfile = $file;
         }
-	    $new_name = str_replace(".scss", ".css", $name);
+	      $new_name = str_replace(".scss", ".css", $name);
         $new_filename = str_replace(".scss", ".css", $localfile);
 
 
         $files[] = 
         array("before" => $localfile,
         "after" => $new_filename);
-        $new_child = new DomElement("cssfile", "", "urn:nsttl:HTML_Template_Nest_Taglib_Resource");
+        #$new_child = new DomElement("cssfile", "", "urn:nsttl:HTML_Template_Nest_Taglib_Resource");
          
-        $this->node->insertBefore($new_child, $child);
-        $new_child->setAttribute("name", $new_name);
-        $new_child->setAttribute("localfile", $new_filename);
+        #$this->node->insertBefore($new_child, $child);
+        #$new_child->setAttribute("name", $new_name);
+        #$new_child->setAttribute("localfile", $new_filename);
 
         
-        $this->node->removeChild($child);
+        #$this->node->removeChild($child);
       }
     }
     foreach($files as $file_components) {
@@ -114,16 +145,19 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         $compile = true;
       }
 
+      $this->minFiles[] = $file_components["after"];
+
+      $after = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file_components["after"];
+      if($is_url) {
+        $after = $file_components["after"];
+      }
+
       if($compile) {
         $before = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file;
         if($is_url) {
           $before = $file_components["before"];
         }
         
-        $after = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file_components["after"];
-        if($is_url) {
-            $after = $file_components["after"];
-        }
         exec(HTML_Template_Nest_Taglib_Resource::$SASS_BINARY . " --update -f $before:$after"); 
         if(file_exists("$after.md5")) {
           unlink("$after.md5");
@@ -136,13 +170,21 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
  
   public function minify($name, $child_tag, $min_function) {
 
-    $children = $this->getNodeChildren();
-    $childrenList = array();
-    foreach ($children as $child) {
-      $childrenList[] = $child;
-    }
-    $files = array();
-    foreach($childrenList as $child) {
+    $files = $this->minFiles;
+    foreach($this->childrenList as $child) {
+      /*
+      if($child->localName == "scssfile") {
+        $localfile = $child->getAttribute("localfile");
+        $file = $child->getAttribute("name");
+        if(empty($localfile)) {
+          $localfile = $file;
+        }
+	      $new_name = str_replace(".scss", ".css", $name);
+        $new_filename = str_replace(".scss", ".css", $localfile);
+        $files[] = $new_filename;
+      }
+      */
+
       if($child->localName == $child_tag) {
         $localfile = $child->getAttribute("localfile");
         if(empty($localfile)) {
@@ -151,7 +193,6 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         $files[] = $localfile;
          
       }
-      $this->node->removeChild($child);
     }
     
     $min_md5_exists = file_exists(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5");
@@ -217,12 +258,6 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         $output_md5 = md5($output);
         file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5", $output_md5);
         file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . "." . $output_md5, $output);
-    }
-
-
-
-    foreach($children as $child) {
-      $this->node->removeChild($child);
     }
     return $name . "." . $output_md5;
   }

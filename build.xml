@@ -5,7 +5,7 @@
 
 
     <target name="test">
-        <includepath classpath=".:test:/usr/share/php" />
+        <includepath classpath=".:test" />
 
         <phpunit printsummary="true" haltonerror="true" haltonfailure="true" bootstrap="test/bootstrap.php">
             <batchtest>
@@ -17,7 +17,7 @@
     </target>
 
     <target name="compile">
-        <includepath classpath=".:test:/usr/share/php" />
+        <includepath classpath=".:test" />
 
         <taskdef name="compileNest" classname="HTML.Template.Nest.NestCompileTask" />
         <compileNest>

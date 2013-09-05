@@ -54,7 +54,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 	
 	public function __construct() {
 	   stream_filter_register("nst.filter", "HTML_Template_Nest_Compiler");
-           $this->parser = new HTML_Template_Nest_Parser();
+     $this->parser = new HTML_Template_Nest_Parser();
 	}
 	
     function filter($in, $out, &$consumed, $closing) {
@@ -68,6 +68,10 @@ class HTML_Template_Nest_Compiler extends php_user_filter
       }
       //$bucket = stream_bucket_new($out, "a" . $input . "b");
       if($lastBucket != NULL) {
+        if($this->parser == NULL) {
+          $this->parser = new HTML_Template_Nest_Parser();
+        }
+
         $lastBucket->data = $this->compile("filter.data", $input);
         stream_bucket_append($out, $lastBucket);
       }
@@ -128,6 +132,8 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 			throw new HTML_Template_Nest_CompilerException("In file $filename\n" . $e->getMessage());
 		} catch(DomException $e) {
 			restore_error_handler();
+print $e;
+print $content;
 			$message= "Unable to parse: $filename; " . $e->getMessage();
 			throw new HTML_Template_Nest_CompilerException($message);
 		}
@@ -149,15 +155,15 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 		if($doctype) {
 			$output .= "<!DOCTYPE " . $doctype->name . " PUBLIC \"" . $doctype->publicId . "\" \"" . $doctype->systemId . "\">\n";
 		}
-    $this->initChildren($document);
-		$output .= $this->processChildren($document);
+    $renderStack = $this->initChildren($document);
+		$output .= $this->processChildren($renderStack);
 		return $output;
 	}
 
 	public function compileNode($node)
 	{
-    $this->initChildren($node);
-		return $this->processChildren($node);
+    $renderStack = $this->initChildren($node);
+		return $this->processChildren($renderStack);
 	}
 
 	private function getNamespace($node) {
@@ -184,6 +190,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 	protected function initChildren($node)
 	{
 
+    $renderStack = array();
 		$taglib = $this->getNamespace($node);
 
 		$tag = null;
@@ -191,7 +198,6 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 		if (strpos($taglib, "urn:nsttl:") !== false) {
 			$tag = $this->loadTag($node);
       $tag->init();
-			$this->tagStack[] = Array($tag);
 		}
 		elseif ($taglib == "http://nest.sourceforge.net/" && trim($node->localName) == 'root') {
 			$rootTag = true;
@@ -199,12 +205,14 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 
 		// just a text node, parse it for variables and return it
 		if ($node->nodeType == XML_TEXT_NODE) {
-      return;
+      $renderStack[] = new HTML_Template_Nest_RenderNode($node);
+			return $renderStack;
 		}
 
 		// self-contained tag. just return it
 		if (!$rootTag && strlen($node->localName) && $tag == null && !$node->hasChildNodes()) {
-			return;
+      $renderStack[] = new HTML_Template_Nest_RenderNode($node);
+			return $renderStack;
 		}
 
 		// process tags or children
@@ -215,9 +223,12 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 			foreach ($nodeChildren as $child) {
 				$childrenList[] = $child;
 			}
+      $tagRenderStack = array();
 			foreach ($childrenList as $child) {
-				$this->initChildren($child);
-			}
+				$tagRenderStack[] = $this->initChildren($child);
+		  }	
+      $renderStack[] = new HTML_Template_Nest_RenderNode($tag, $tagRenderStack);
+
 		} elseif ($node->hasChildNodes()) {
 			$nodeChildren = $node->childNodes;
 
@@ -228,10 +239,14 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 			foreach ($nodeChildren as $child) {
 				$childrenList[] = $child;
 			}
-			foreach ($childrenList as $child) {
-				$this->initChildren($child);
-			}
-		}
+
+      $nodeRenderStack = array();
+      foreach ($childrenList as $child) {
+        $nodeRenderStack[] = $this->initChildren($child);
+      } 
+      $renderStack[] = new HTML_Template_Nest_RenderNode($node, $nodeRenderStack);
+    }
+    return $renderStack;
 	}
 
 
@@ -242,63 +257,58 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 	 *
 	 * @return string php output after compiling nodes
 	 */
-	protected function processChildren($node)
+	protected function processChildren($renderStack)
 	{
 
 		$output = "";
-		$taglib = $this->getNamespace($node);
+    foreach($renderStack as $renderNode) {
+
+    $item = $renderNode->parent;
+
+    $rootTag = false;
+
+    if(is_a($item, '\DOMNode')) {
+  		$taglib = $this->getNamespace($item);
+	  	if ($taglib == "http://nest.sourceforge.net/" && trim($item->localName) == 'root') {
+  			$rootTag = true;
+	  	}
+    }
 
 		$tag = null;
-		$rootTag = false;
-		if (strpos($taglib, "urn:nsttl:") !== false) {
-			$tag = $this->loadTag($node);
+		if (is_a($item, '\HTML_Template_Nest_Tag')) {
+			$tag = $item;
 			$this->tagStack[] = Array($tag);
 			$output .= $tag->getAttributeDeclarations();
 		}
-		elseif ($taglib == "http://nest.sourceforge.net/" && trim($node->localName) == 'root') {
-			$rootTag = true;
-		}
 
 		// just a text node, parse it for variables and return it
-		if ($node->nodeType == XML_TEXT_NODE) {
-			$output = $this->parser->parse($node->nodeValue);
-			return $output;
+		if (is_a($item, '\DOMNode') && $item->nodeType == XML_TEXT_NODE) {
+			$output .= $this->parser->parse($item->nodeValue);
+      continue;
 		}
 
 		// self-contained tag. just return it
-		if (!$rootTag && strlen($node->localName) && $tag == null && !$node->hasChildNodes()) {
-			$output = "<" . $node->nodeName . $this->addAttributes($node) . $this->processNamespace($node) . "/>";
-			return $output;
+		if (!$rootTag && is_a($item, '\DOMNode') && strlen($item->localName) && $tag == null && !$item->hasChildNodes()) {
+			$output .= "<" . $item->nodeName . $this->addAttributes($item) . $this->processNamespace($item) . "/>";
+      continue;
 		}
+ 
 
 		// process tags or children
 		if ($tag != null) {
-		    if($tag->isPhpEnabled()) {
+      $node = $tag->getNode();
+		  if($tag->isPhpEnabled()) {
 			   $output .= "<?php /*<" . $node->tagName . ">*/?>";
 			}
 			$output .= $tag->start();
-			$nodeChildren = $tag->getNodeChildren();
-
-			$childrenList = array();
-			foreach ($nodeChildren as $child) {
-				$childrenList[] = $child;
-			}
-			foreach ($childrenList as $child) {
-				$output .= $this->processChildren($child);
-			}
-		} elseif ($node->hasChildNodes()) {
-			$nodeChildren = $node->childNodes;
-
-			// we have to copy off the current children list in
-			// case one of the children modifies the dom and
-			// confuses the parser
-			$childrenList = array();
-			foreach ($nodeChildren as $child) {
-				$childrenList[] = $child;
-			}
-			foreach ($childrenList as $child) {
-				$output .= $this->processChildren($child);
-			}
+     
+      foreach($renderNode->children as $child) {
+         $output .= $this->processChildren($child);
+      } 
+		} elseif (is_a($item, '\DOMNode') && $item->hasChildNodes()) {
+      foreach($renderNode->children as $child) {
+         $output .= $this->processChildren($child);
+      } 
 		}
 
 		if($tag != null) {
@@ -307,21 +317,23 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 
 		// process opening tags, and append the parsed children, doing this
 		// at this point allows us to have children modify parent attributes
-		if (!$rootTag && strlen($node->localName) && $tag == null) {
+		if (!$rootTag && is_a($item, '\DOMNode') && strlen($item->localName) && $tag == null) {
 
-			$output = "<" . $node->nodeName  . $this->addAttributes($node) . $this->processNamespace($node) .  ">" . $output;
+			$output = "<" . $item->nodeName  . $this->addAttributes($item) . $this->processNamespace($item) .  ">" . $output;
 		}
 
 		// process closing tags
+
 		if ($tag != null) {
 			$output .= $tag->end();
 			$output .= $tag->getAttributeUnsets();
 			if($tag->isPhpEnabled()) {
-  		        $output .= "<?php /*</" . $node->tagName . ">*/?>";
+  		        $output .= "<?php /*</" . $tag->getNode()->tagName . ">*/?>";
   		    }
-		} elseif (!$rootTag && strlen($node->localName)) {
-			$output .= "</" . $node->nodeName . ">";
-		}
+		} elseif (!$rootTag && is_a($item, '\DOMNode') && strlen($item->localName)) {
+			$output .= "</" . $item->nodeName . ">";
+    }
+    }
 		return $output;
 	}
 

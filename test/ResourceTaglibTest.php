@@ -83,11 +83,16 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
 
 
         $view = new HTML_Template_Nest_View("snippet");
-        $this->assertEquals('var test_snippets = {\'mysnippet\': "\n        <div class=\"myclass\" id=\"foo\">\n            Some text {{foo}}\n        <\/div>\n      ",\'otherbit\': "\n          Just some text in here.\n      "};',
+        $this->assertEquals('var test_snippets = {       \'mysnippet\': "        <div class=\"myclass\" id=\"foo\">\n            Some text {{foo}}\n        <\/div>\n      ",
+      \'otherbit\': "          Just some text in here.\n      "     };',
         trim($view->render()));
     }
     public function testFilter() {
-    
+
+      foreach (glob(dirname(__FILE__) . "/res/*.md5") as $filename) {
+        unlink($filename);
+      }
+
         HTML_Template_Nest_View::$CACHE = false;
         HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
         HTML_Template_Nest_View::$HTML_ERRORS = false;
@@ -96,19 +101,17 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
         $view = new HTML_Template_Nest_View("filter");
         $output = $view->render();
         $this->assertEquals(
-        "<link rel=\"stylesheet\" href=\"res/scss.min.css\" />\t<script type=\"text/javascript\" src=\"res/js.filter.min.js\"></script>",
+        '<link rel="stylesheet" href="res/scss.min.css.5e29db497fddc2ba6e588878c4af5f03" />' . "\t" . '<script type="text/javascript" src="res/js.filter.min.js.64fcd8bc28984aac21adc6248ac43441">'."\n".'</script>',
         
         trim($output));
-        
         $this->assertEquals(
             file_get_contents(dirname(__FILE__) . "/viewoutput/js.filter.min.js"),
-            file_get_contents(dirname(__FILE__) . "/res/js.filter.min.js")
+            file_get_contents(dirname(__FILE__) . "/res/js.filter.min.js.64fcd8bc28984aac21adc6248ac43441")
         );
         $this->assertEquals(
             file_get_contents(dirname(__FILE__) . "/viewoutput/c.css"),
-            file_get_contents(dirname(__FILE__) . "/res/c.css")
+            file_get_contents(dirname(__FILE__) . "/res/scss.min.css.5e29db497fddc2ba6e588878c4af5f03")
         );
-        
     }
 
    

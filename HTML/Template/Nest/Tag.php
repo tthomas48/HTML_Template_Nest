@@ -279,4 +279,16 @@ class HTML_Template_Nest_Tag
     {
         return true;
     }
+    public function addDeclaredAttribute($name) {
+      $this->declaredAttributes[] = $name;
+    }
+    public function addAttribute($name, $value) {
+      $this->attributes[$name] = $value;
+    }
+    public function addAttributeType($name, $value) {
+      $this->attributeTypes[$name] = $value;
+    }
+    public function getNode() {
+      return $this->node;
+    }
 }

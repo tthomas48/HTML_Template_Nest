@@ -68,14 +68,14 @@ class HTML_Template_Nest_Taglib
      * Looks up a tag by friendly name in the tag library and returns
      * an instance.
      * 
-     * @param HTML_Template_Nest_Compiler $compiler   the current compiler
+     * @param HTML_Template_Nest_Node_IRender $renderer   the current renderer
      * @param DomNode                     $node       the current node
      * @param Array                       $attributes the current attributes
      * 
      * @throws HTML_Template_Nest_TaglibException
      * @return HTML_Template_Nest_Tag tag instance
      */
-    public function getTagByName($compiler, $node, $attributes)
+    public function getTagByName(HTML_Template_Nest_Node_IRender $renderer, $node, $attributes)
     {
         $libraryDirectory = strtolower($this->libraryDirectory);
         if(get_class() != get_class($this)) {
@@ -88,7 +88,7 @@ class HTML_Template_Nest_Taglib
 	          foreach(HTML_Template_Nest_View::$INCLUDE_PATHS as $path) {
 	        	$filename = $path . "/templates/" . $libraryDirectory . "/" . $name . ".tmpl";
                 if(file_exists($filename)) {
-                    return new HTML_Template_Nest_TagFile($compiler, $node, $attributes, $filename);
+                    return new HTML_Template_Nest_TagFile($renderer, $node, $attributes, $filename);
                 }
             }	    
             throw new HTML_Template_Nest_TaglibException(
@@ -96,6 +96,6 @@ class HTML_Template_Nest_Taglib
             );
         }
         $className = $this->tags[$name];
-        return new $className($compiler, $node, $attributes);
+        return new $className($renderer, $node, $attributes);
     }
 }

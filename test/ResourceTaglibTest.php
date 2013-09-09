@@ -97,7 +97,7 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
         HTML_Template_Nest_View::addIncludePath(dirname(__FILE__) . "/views");
         HTML_Template_Nest_View::$HTML_ERRORS = false;
         HTML_Template_Nest_Taglib_Resource::$BASE_PATH = dirname(__FILE__) . "/";
-        
+
         $view = new HTML_Template_Nest_View("filter");
         $output = $view->render();
         $this->assertEquals(

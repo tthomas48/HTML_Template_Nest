@@ -50,7 +50,8 @@ require_once 'ParseException.php';
 class HTML_Template_Nest_Tag
 {
     protected $node;
-    protected $compiler;
+    protected $renderer;
+    protected $parser;
     protected $attributes;
     protected $declaredAttributes = array();
     protected $attributeTypes = array();
@@ -59,15 +60,16 @@ class HTML_Template_Nest_Tag
     /**
      * Constructor
      *
-     * @param HTML_Template_Nest_Compiler $compiler   current compiler
+     * @param HTML_Template_Nest_Node_IRender   $renderer   current renderer
      * @param DomNode                     $node       current node
      * @param Array                       $attributes current attributes
      *
      * @return HTML_Template_Nest_Tag instance
      */
-    public function __construct($compiler, $node, $attributes)
+    public function __construct(HTML_Template_Nest_Node_IRender &$renderer, $node, $attributes)
     {
-        $this->compiler = $compiler;
+        $this->renderer = $renderer;
+        $this->parser = $renderer->getParser();
         $this->node = $node;
         $this->attributes = $attributes;
         $this->id = $node->tagName . uniqid(get_class($this));
@@ -89,7 +91,7 @@ class HTML_Template_Nest_Tag
             switch($type) {
                 case 'string':
                     if(array_key_exists($key, $this->attributes)) {
-                        $value = $this->compiler->parser->parse($this->attributes[$key], false, "\"");
+                        $value = $this->parser->parse($this->attributes[$key], false, "\"");
                     }
                     $this->registerVariable($key);
 
@@ -99,7 +101,7 @@ class HTML_Template_Nest_Tag
                 default:
 
                     if(array_key_exists($key, $this->attributes)) {
-                        $value = $this->compiler->parser->parse($this->attributes[$key], false, "");
+                        $value = $this->parser->parse($this->attributes[$key], false, "");
                     }
                     $this->registerVariable($key);
   
@@ -138,7 +140,7 @@ class HTML_Template_Nest_Tag
      */
     protected function registerVariable($key)
     {
-        $this->compiler->parser->registerVariable($this->id, $key);
+        $this->parser->registerVariable($this->id, $key);
     }
 
     /**
@@ -151,12 +153,12 @@ class HTML_Template_Nest_Tag
      */
     protected function unregisterVariable($key)
     {
-        $this->compiler->parser->unregisterVariable($this->id, $key);
+        $this->parser->unregisterVariable($this->id, $key);
     }
 
     protected function getVariableName($key)
     {
-        return $this->compiler->parser->getLocalVariableName($key);
+        return $this->parser->getLocalVariableName($key);
     }
 
     /**
@@ -165,7 +167,7 @@ class HTML_Template_Nest_Tag
      */
     public function init()
     {
-
+      return true;
     }
 
 

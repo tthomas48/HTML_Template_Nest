@@ -47,199 +47,262 @@ require_once 'TagException.php';
  */
 class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
 {
-    public $filename;
-    protected $compiler;
-    protected $document;
-    protected $startDocument = null;
-    protected $endDocument = null;
-    protected $childNodes = array();
+  public $filename;
+  protected $document;
+  protected $startDocument = null;
+  protected $endDocument = null;
+  protected $childNodes = array();
+  private $initialized = false;
 
-    /**
-     * Constructor
-     *
-     * @param HTML_Template_Nest_Compiler $compiler   current compiler
-     * @param DomNode                     $node       current node
-     * @param Array                       $attributes current attributes 
-     *
-     * @throws HTML_Template_Nest_TagException
-     * @return HTML_Template_Nest_TagFile instance
-     */
-    public function __construct($compiler, $node, $attributes, $filename = "")
-    {
+  /**
+   * Constructor
+   *
+   * @param HTML_Template_Nest_Node_IRender   $renderer     current renderer
+   * @param DomNode                     $node       current node
+   * @param Array                       $attributes current attributes
+   *
+   * @throws HTML_Template_Nest_TagException
+   * @return HTML_Template_Nest_TagFile instance
+   */
+  public function __construct(HTML_Template_Nest_Node_IRender &$renderer, $node, $attributes, $filename = "")
+  {
+    parent::__construct($renderer, $node, $attributes);
+    $this->initialized = false;
+    $this->filename = $filename;
+  }
 
-        $fullFilename = "";
-        if(!empty($filename)) {
-            $this->filename = $filename;
-        } 
-
-        $foundFile = false;
-        if(file_exists($this->getTagFilename())) {
-            $fullFilename = $this->getTagFilename();
-        	$foundFile = true;
-        }
-        if(!$foundFile) {
-            foreach(HTML_Template_Nest_View::$INCLUDE_PATHS as $path) {
-            	if (file_exists($path . "/" . $this->getTagFilename())) {
-            		$fullFilename = $path . "/" . $this->getTagFilename();
-            		$foundFile = true;
-            	}
-            }
-        }
-        if (!$foundFile) {
-            throw new HTML_Template_Nest_TagException(
-                "Unable to find file " . $this->getTagFilename() . " for " . $node->tagName,
-                $node
-            );
-        }
-        parent::__construct($compiler, $node, $attributes);
-        $children = new DomNodeList();
-        if ($node->hasChildNodes()) {
-            $children = $node->childNodes;
-        }
-
-        $newChild = $node->ownerDocument->createDocumentFragment();
-        try {
-            if(!$newChild->appendXML(file_get_contents($fullFilename))) {
-            	$message = "Error appending tagfile: " .
-                	$this->getTagFilename();
-            	throw new HTML_Template_Nest_TagException($message, $node);
-            }
-        } catch(Exception $e) {
-            $message = "Error parsing tagfile: " .
-                $this->getTagFilename() . "; " . $e->getMessage();
-            throw new HTML_Template_Nest_TagException($message, $node);
-        }
-        $childrenList = array();
-        foreach ($children as $child) {
-            $childrenList[] = $child;
-        }
-        foreach ($childrenList as $child) {
-            $node->removeChild($child);
-        }
-        $node->appendChild($newChild);
-        
-        $this->_processBodyToken($node, $childrenList);
-
-        
-        // now we need to take all the node's children, append them to the
-        // parent at the same position
-        
-        $parentNode = $node->parentNode;
-        $children = $node->childNodes;
-        $oldNodes = array(); 
-        $childrenList = array();
-        foreach ($children as $child) {
-            $childrenList[] = $child;
-        }
-        
-        foreach ($childrenList as $child) {
-            $this->childNodes[] = $parentNode->insertBefore(
-                $node->removeChild($child), 
-                $node
-            );
-        }
-        $node->parentNode->removeChild($node);
+  public function init() {
+    if($this->initialized) {
+      return true;
     }
+    $node = $this->node;
 
-    /**
-     * Recursively looks for the <nst:processBody /> tag. It removes the tag
-     * and appends the original node's children to the parent of the tag.
-     *
-     * @param DomNode     $node     the current node to inspect
-     * @param DomNodeList $children the children of the the original tag
-     *
-     * @return null
-     */
-    private function _processBodyToken($node, $bodyChildren)
-    {
-        if ($node->hasChildNodes()) {
-            $currentChildren = array();
-            foreach ($node->childNodes as $child) {
-                $currentChildren[] = $child;
-            }
-            foreach ($currentChildren as $child) {
-                if ($child->hasAttributes()
-                    && $child->getAttribute("_replace") == "true"
-                ) {
-                    $replacedNodes = false;
-                    $toUnset = array();
-                    for($i = 0; $i < count($bodyChildren); $i++) {
-                        $nestedChild = $bodyChildren[$i];
-                        if($nestedChild->nodeName == $child->nodeName) {
-                            $replacedNodes = true;
-                            $node->insertBefore($nestedChild, $child);    
-                            $toUnset[] = $nestedChild;
-                        }
-                    }
-                    foreach($toUnset as $nestedChild) {
-                        $index = array_search($nestedChild, $bodyChildren);
-                        array_splice($bodyChildren, $index, 1);
-                    }
-                    if($replacedNodes) {
-                        $node->removeChild($child);
-                    }
-                }
-                if ($child->lookupNamespaceURI($child->prefix) == "http://nest.sourceforge.net/") {
-                    if (trim($child->localName) == 'processBody') {
-                        foreach ($bodyChildren as $nestedChild) {
-                            $node->insertBefore($nestedChild, $child);
-                        }
-                        $node->removeChild($child);                        
-                    }
-                    elseif (trim($child->localName) == 'attribute') {
-                        if($child->hasAttribute("name")) {
-                            $this->declaredAttributes[] = $child->getAttribute("name");
-                            if($child->hasAttribute("defaultValue")) {
-                                $this->attributes[$child->getAttribute("name")] = $child->getAttribute("defaultValue");
-                            }
-                            if($child->hasAttribute("type")) {
-                                $this->attributeTypes[$child->getAttribute("name")] = $child->getAttribute("type"); 
-                            }
-                            $node->removeChild($child);
-                        }
-                    }
-                }
-                if ($child->hasChildNodes()) {
-                    $bodyChildren = $this->_processBodyToken($child, $bodyChildren);
-                }
-            }
+    $fullFilename = "";
+    
+    $foundFile = false;
+    if(file_exists($this->getTagFilename())) {
+      $fullFilename = $this->getTagFilename();
+      $foundFile = true;
+    }
+    if(!$foundFile) {
+      foreach(HTML_Template_Nest_View::$INCLUDE_PATHS as $path) {
+        if (file_exists($path . "/" . $this->getTagFilename())) {
+          $fullFilename = $path . "/" . $this->getTagFilename();
+          $foundFile = true;
         }
-        return $bodyChildren;
+      }
+    }
+    if (!$foundFile) {
+      throw new HTML_Template_Nest_TagException(
+          "Unable to find file " . $this->getTagFilename() . " for " . $node->tagName,
+          $node
+      );
+    }
+    $oldChildren = $this->renderer->getChildren();
+
+    $newChild = $node->ownerDocument->createDocumentFragment();
+    try {
+      if(!$newChild->appendXML(file_get_contents($fullFilename))) {
+        $message = "Error appending tagfile: " .
+            $this->getTagFilename();
+        throw new HTML_Template_Nest_TagException($message, $node);
+      }
+    } catch(Exception $e) {
+      $message = "Error parsing tagfile: " .
+          $this->getTagFilename() . "; " . $e->getMessage();
+      throw new HTML_Template_Nest_TagException($message, $node);
     }
     
-    public function getTagFilename() {
-        return $this->filename;
+    foreach($oldChildren as $child) {
+      $this->renderer->removeChild($child);
+    }
+    $this->renderer->appendXML($newChild);
+    
+    $this->_processBodyToken($this->renderer, $oldChildren);
+
+
+    // now we need to take all the node's children, append them to the
+    // parent at the same position
+
+    /*
+    $parentNode = $node->parentNode;
+    $children = $node->childNodes;
+    $oldNodes = array();
+    $childrenList = array();
+    foreach ($children as $child) {
+      $childrenList[] = $child;
     }
 
-    /**
-     * Evaluated before the content of the tag.
-     *
-     * @return string content to add to php file
-     * 
-     * @see HTML_Template_Nest_Tag::start()
-     */   
-    public function start()
-    {
+    foreach ($childrenList as $child) {
+      $this->childNodes[] = $parentNode->insertBefore(
+          $node->removeChild($child),
+          $node
+      );
     }
+    $node->parentNode->removeChild($node);
+    */
+    $this->initialized = true;
+    return false;
+  }
 
-    /**
-     * Evaluated after the content of the tag.
-     *
-     * @return string content to add to php file
-     * 
-     * @see HTML_Template_Nest_Tag::end()
-     */   
-    public function end()
-    {
+  /**
+   * Recursively looks for the <nst:processBody /> tag. It removes the tag
+   * and appends the original node's children to the parent of the tag.
+   *
+   * @param HTML_Template_Nest_Node_IRender     $renderer     the current renderer to inspect
+   * @param DomNodeList $children the children of the the original tag
+   *
+   * @return null
+   */
+  private function _processBodyToken(&$renderer, &$bodyChildren)
+  {
+    if($renderer->hasChildren()) {
+      $rendererChildren = $renderer->getChildren();
+      foreach($rendererChildren as $child) {
+        if ($child->hasAttribute("_replace") && $child->getAttribute("_replace") == "true") {
+          $replacedNodes = false;
+          $toUnset = array();
+          for($i = 0; $i < count($bodyChildren); $i++) {
+            $nestedChild = $bodyChildren[$i];
+            if($nestedChild->getName() == $child->getName()) {
+              $replacedNodes = true;
+              
+              $renderer->insertBefore($child, $nestedChild);
+              $toUnset[] = $nestedChild;
+            }
+          }
+          foreach($toUnset as $nestedChild) {
+            $index = -1;
+            for($i = 0; $i < count($bodyChildren); $i++) {
+              if($bodyChildren[$i] === $nestedChild) {
+                $index = $i;
+              }
+            }
+            //$index = array_search($nestedChild, $bodyChildren);
+            if($index >= 0) {
+              array_splice($bodyChildren, $index, 1);
+            }
+          }
+          if($replacedNodes) {
+            $renderer->removeChild($child);
+          }
+        }
+        elseif ($child->getNamespaceUri() == "http://nest.sourceforge.net/") {
+          if (trim($child->getLocalName()) == 'processBody') {
+            foreach ($bodyChildren as $nestedChild) {
+              $renderer->insertBefore($child, $nestedChild);
+            }
+            $renderer->removeChild($child);
+          }
+          elseif (trim($child->getLocalName()) == 'attribute') {
+            if($child->hasAttribute("name")) {
+              $this->declaredAttributes[] = $child->getAttribute("name");
+              if($child->hasAttribute("defaultValue")) {
+                $this->attributes[$child->getAttribute("name")] = $child->getAttribute("defaultValue");
+              }
+              if($child->hasAttribute("type")) {
+                $this->attributeTypes[$child->getAttribute("name")] = $child->getAttribute("type");
+              }
+              $renderer->removeChild($child);
+            }
+          }
+        }
+        if (count($child->getChildren()) > 0) {
+          $this->_processBodyToken($child, $bodyChildren);
+        }
+      }
     }
+    
+    /*
+    if ($node->hasChildNodes()) {
+      $currentChildren = array();
+      foreach ($node->childNodes as $child) {
+        $currentChildren[] = $child;
+      }
+      foreach ($currentChildren as $child) {
+        if ($child->hasAttributes()
+        && $child->getAttribute("_replace") == "true"
+            ) {
+          $replacedNodes = false;
+          $toUnset = array();
+          for($i = 0; $i < count($bodyChildren); $i++) {
+            $nestedChild = $bodyChildren[$i];
+            if($nestedChild->nodeName == $child->nodeName) {
+              $replacedNodes = true;
+              $node->insertBefore($nestedChild, $child);
+              $toUnset[] = $nestedChild;
+            }
+          }
+          foreach($toUnset as $nestedChild) {
+            $index = array_search($nestedChild, $bodyChildren);
+            array_splice($bodyChildren, $index, 1);
+          }
+          if($replacedNodes) {
+            $node->removeChild($child);
+          }
+        }
+        if ($child->lookupNamespaceURI($child->prefix) == "http://nest.sourceforge.net/") {
+          if (trim($child->localName) == 'processBody') {
+            foreach ($bodyChildren as $nestedChild) {
+              $node->insertBefore($nestedChild, $child);
+            }
+            $node->removeChild($child);
+          }
+          elseif (trim($child->localName) == 'attribute') {
+            if($child->hasAttribute("name")) {
+              $this->declaredAttributes[] = $child->getAttribute("name");
+              if($child->hasAttribute("defaultValue")) {
+                $this->attributes[$child->getAttribute("name")] = $child->getAttribute("defaultValue");
+              }
+              if($child->hasAttribute("type")) {
+                $this->attributeTypes[$child->getAttribute("name")] = $child->getAttribute("type");
+              }
+              $node->removeChild($child);
+            }
+          }
+        }
+        if ($child->hasChildNodes()) {
+          $bodyChildren = $this->_processBodyToken($child, $bodyChildren);
+        }
+      }
+    }
+    return $bodyChildren;
+    */
+  }
 
-    /**
-     * Returns the current node's children
-     * 
-     * @return Array current node children
-     */
-    public function getNodeChildren()
-    {
-        return $this->childNodes;
-    }    
+  public function getTagFilename() {
+    return $this->filename;
+  }
+
+  /**
+   * Evaluated before the content of the tag.
+   *
+   * @return string content to add to php file
+   *
+   * @see HTML_Template_Nest_Tag::start()
+   */
+  public function start()
+  {
+  }
+
+  /**
+   * Evaluated after the content of the tag.
+   *
+   * @return string content to add to php file
+   *
+   * @see HTML_Template_Nest_Tag::end()
+   */
+  public function end()
+  {
+  }
+
+  /**
+   * Returns the current node's children
+   *
+   * @return Array current node children
+   */
+  public function getNodeChildren()
+  {
+    return $this->childNodes;
+  }
 }

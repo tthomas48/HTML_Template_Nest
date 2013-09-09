@@ -59,37 +59,19 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
 
   private $childrenList = array();
   private $minFiles = array();
+  private $initialized = false;
 
   public function init() {
-    $children = $this->getNodeChildren();
-    $childrenList = array();
-    foreach ($children as $child) {
-      $this->childrenList[] = $child;
+    if($this->initialized) {
+      return true;
     }
+    
+    $this->childrenList = $this->renderer->getChildren();
     foreach($this->childrenList as $child) {
-      /*
-      if($child->localName == "scssfile") {
-
-        $name = $this->node->getAttribute("localfile");
-
-        $localfile = $child->getAttribute("localfile");
-        $file = $child->getAttribute("name");
-        if(empty($localfile)) {
-          $localfile = $file;
-        }
-	      $new_name = str_replace(".scss", ".css", $name);
-        $new_filename = str_replace(".scss", ".css", $localfile);
-        $new_child = new DomElement("cssfile", "", "urn:nsttl:HTML_Template_Nest_Taglib_Resource");
-         
-        #$this->node->insertBefore($new_child, $child);
-        #$new_child->setAttribute("name", $new_name);
-        #$new_child->setAttribute("localfile", $new_filename);
-      }
-      */
-
-
-      $this->node->removeChild($child);
+      $this->renderer->removeChild($child);
     }
+    $this->initialized = true;
+    return false;
   }
 
 
@@ -97,7 +79,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
 
     $files = array();
     foreach($this->childrenList as $child) {
-      if($child->localName == "scssfile") {
+      if($child->getLocalName() == "scssfile") {
 
         $localfile = $child->getAttribute("localfile");
         $file = $child->getAttribute("name");
@@ -172,20 +154,8 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
 
     $files = $this->minFiles;
     foreach($this->childrenList as $child) {
-      /*
-      if($child->localName == "scssfile") {
-        $localfile = $child->getAttribute("localfile");
-        $file = $child->getAttribute("name");
-        if(empty($localfile)) {
-          $localfile = $file;
-        }
-	      $new_name = str_replace(".scss", ".css", $name);
-        $new_filename = str_replace(".scss", ".css", $localfile);
-        $files[] = $new_filename;
-      }
-      */
 
-      if($child->localName == $child_tag) {
+      if($child->getLocalName() == $child_tag) {
         $localfile = $child->getAttribute("localfile");
         if(empty($localfile)) {
           $localfile = $child->getAttribute("name");
@@ -272,7 +242,7 @@ class HTML_Template_Nest_Taglib_Resource_Javascript extends HTML_Template_Nest_T
       return "";
     }
 
-    $name = $this->compiler->parser->parse(
+    $name = $this->parser->parse(
         $this->getRequiredAttribute("name")
     );
     $localfile = $this->getOptionalAttribute("localfile", $name);
@@ -286,7 +256,7 @@ class HTML_Template_Nest_Taglib_Resource_JavascriptFile extends HTML_Template_Ne
   protected $declaredAttributes = array("name");
 
   public function start() {
-    $name = $this->compiler->parser->parse(
+    $name = $this->parser->parse(
         $this->getRequiredAttribute("name")
     );
     return "<script type=\"text/javascript\" src=\"$name\">\n</script>";
@@ -301,7 +271,7 @@ class HTML_Template_Nest_Taglib_Resource_Css extends HTML_Template_Nest_Taglib_R
     if(isset($_REQUEST["nocache"]) && $_REQUEST["nocache"] == "true") {
       return "";
     }
-    $name = $this->compiler->parser->parse(
+    $name = $this->parser->parse(
         $this->getRequiredAttribute("name")
     );
     $localfile = $this->getOptionalAttribute("localfile", $name);
@@ -316,7 +286,7 @@ class HTML_Template_Nest_Taglib_Resource_CssFile extends HTML_Template_Nest_Tag 
   protected $declaredAttributes = array("name");
 
   public function start() {
-    $name = $this->compiler->parser->parse(
+    $name = $this->parser->parse(
         $this->getRequiredAttribute("name")
     );
     return "<link rel=\"stylesheet\" href=\"$name\" />";
@@ -327,7 +297,7 @@ class HTML_Template_Nest_Taglib_Resource_ScssFile extends HTML_Template_Nest_Tag
   protected $declaredAttributes = array("name");
 
   public function start() {
-    $name = $this->compiler->parser->parse(
+    $name = $this->parser->parse(
         $this->getRequiredAttribute("name")
     );
     $localfile = $this->getOptionalAttribute("localfile", $name);

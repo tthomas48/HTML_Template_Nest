@@ -84,7 +84,7 @@ class HTML_Template_Nest_Taglib_Standard_IfTag extends HTML_Template_Nest_Tag
      */   
     public function start() 
     {
-        $test = $this->compiler->parser->parseExpression(
+        $test = $this->parser->parseExpression(
             $this->getRequiredAttribute("test")
         );
         return "<?php if($test) {?>";
@@ -134,7 +134,7 @@ class HTML_Template_Nest_Taglib_Standard_ElseIfTag extends HTML_Template_Nest_Ta
      */   
     public function start() 
     {
-        $test = $this->compiler->parser->parseExpression(
+        $test = $this->parser->parseExpression(
             $this->getRequiredAttribute("test")
         );
         return "<?php } elseif($test) {?>";
@@ -227,7 +227,7 @@ class HTML_Template_Nest_Taglib_Standard_ForeachTag extends HTML_Template_Nest_T
      */   
     public function start() 
     {
-        $items = $this->compiler->parser->parseExpression(
+        $items = $this->parser->parseExpression(
             $this->getRequiredAttribute("items")
         );
         $var = $this->getRequiredAttribute("var");
@@ -304,7 +304,7 @@ class HTML_Template_Nest_Taglib_Standard_SetTag extends HTML_Template_Nest_Tag
     {
         $var = $this->getRequiredAttribute("var");        
         $input = $this->getRequiredAttribute("value"); 
-        $value = $this->compiler->parser->parse(
+        $value = $this->parser->parse(
             $input, false
         );
         
@@ -365,7 +365,7 @@ class HTML_Template_Nest_Taglib_Standard_ForTag extends HTML_Template_Nest_Tag
         $var = $this->getRequiredAttribute("var");
         $this->registerVariable($var);
         
-        $test = $this->compiler->parser->parseExpression(
+        $test = $this->parser->parseExpression(
             $this->getRequiredAttribute("test")
         );
         
@@ -374,7 +374,7 @@ class HTML_Template_Nest_Taglib_Standard_ForTag extends HTML_Template_Nest_Tag
         if (empty($increment)) {
             $increment = 1;
         }
-        $start = $this->compiler->parser->parseExpression(
+        $start = $this->parser->parseExpression(
             $this->getOptionalAttribute("start")
         );
         if (empty($start)) {
@@ -425,7 +425,10 @@ class HTML_Template_Nest_Taglib_Standard_AttributeTag extends HTML_Template_Nest
         }
 
         $output .= '?>';
-        $this->node->parentNode->setAttribute($prefix . $name, $output);
+        $parent = $this->renderer->getParent();
+        if($parent != NULL) {
+          $parent->setAttribute($prefix . $name, $output);
+        }
         return "";
     }
 }

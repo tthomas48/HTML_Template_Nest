@@ -5,6 +5,7 @@ interface HTML_Template_Nest_Node_IRender {
   public function render();
   public function getChildren();
   public function hasChildren();
+  public function appendChild(HTML_Template_Nest_Node_IRender $child);
   public function removeChild(HTML_Template_Nest_Node_IRender $child);
   public function appendXML(DomNode $xml);
   public function getParser();

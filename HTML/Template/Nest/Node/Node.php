@@ -194,6 +194,10 @@ abstract class HTML_Template_Nest_Node_Node implements HTML_Template_Nest_Node_I
     $this->children[] = $this->convertNode($this->parser, $xml);
   }
   
+  public function appendChild(HTML_Template_Nest_Node_IRender $child) {
+    $this->children[] = $child;
+  }
+  
   public function getParent() {
     
     return $this->parent;

@@ -120,27 +120,6 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
     
     $this->_processBodyToken($this->renderer, $oldChildren);
 
-
-    // now we need to take all the node's children, append them to the
-    // parent at the same position
-
-    /*
-    $parentNode = $node->parentNode;
-    $children = $node->childNodes;
-    $oldNodes = array();
-    $childrenList = array();
-    foreach ($children as $child) {
-      $childrenList[] = $child;
-    }
-
-    foreach ($childrenList as $child) {
-      $this->childNodes[] = $parentNode->insertBefore(
-          $node->removeChild($child),
-          $node
-      );
-    }
-    $node->parentNode->removeChild($node);
-    */
     $this->initialized = true;
     return false;
   }

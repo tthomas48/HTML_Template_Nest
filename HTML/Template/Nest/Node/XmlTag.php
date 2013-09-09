@@ -4,7 +4,10 @@ class HTML_Template_Nest_Node_XmlTag extends HTML_Template_Nest_Node_Node {
   public function render() {
     $node = $this->node;
     
-    if($node instanceof DomDocument || $node instanceof DOMDocumentFragment || $node instanceof DOMDocumentType) {
+    if($node instanceof DomDocument || 
+        $node instanceof DOMDocumentFragment || 
+        $node instanceof DOMComment ||
+        $node instanceof DOMDocumentType) {
       return $this->renderChildren();
     }
     

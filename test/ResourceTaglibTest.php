@@ -65,13 +65,12 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
         );       
         $this->assertEquals(
             file_get_contents(dirname(__FILE__) . "/viewoutput/css.min.css"),
-            file_get_contents(dirname(__FILE__) . "/res/css.min.css")
-        ); 
+            file_get_contents(dirname(__FILE__) . "/res/css.min.css.db45bda72b702e346f91f3adbe1345da")
+        );
         $this->assertEquals(
             file_get_contents(dirname(__FILE__) . "/viewoutput/js.min.js"),
-            file_get_contents(dirname(__FILE__) . "/res/js.min.js")
-        ); 
-
+            file_get_contents(dirname(__FILE__) . "/res/js.min.js.83bf736035367a0b493361f094f7ef5f")
+        );
     }
     
     public function testSnippet() {

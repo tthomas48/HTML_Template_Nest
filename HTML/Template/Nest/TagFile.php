@@ -191,62 +191,6 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
         }
       }
     }
-    
-    /*
-    if ($node->hasChildNodes()) {
-      $currentChildren = array();
-      foreach ($node->childNodes as $child) {
-        $currentChildren[] = $child;
-      }
-      foreach ($currentChildren as $child) {
-        if ($child->hasAttributes()
-        && $child->getAttribute("_replace") == "true"
-            ) {
-          $replacedNodes = false;
-          $toUnset = array();
-          for($i = 0; $i < count($bodyChildren); $i++) {
-            $nestedChild = $bodyChildren[$i];
-            if($nestedChild->nodeName == $child->nodeName) {
-              $replacedNodes = true;
-              $node->insertBefore($nestedChild, $child);
-              $toUnset[] = $nestedChild;
-            }
-          }
-          foreach($toUnset as $nestedChild) {
-            $index = array_search($nestedChild, $bodyChildren);
-            array_splice($bodyChildren, $index, 1);
-          }
-          if($replacedNodes) {
-            $node->removeChild($child);
-          }
-        }
-        if ($child->lookupNamespaceURI($child->prefix) == "http://nest.sourceforge.net/") {
-          if (trim($child->localName) == 'processBody') {
-            foreach ($bodyChildren as $nestedChild) {
-              $node->insertBefore($nestedChild, $child);
-            }
-            $node->removeChild($child);
-          }
-          elseif (trim($child->localName) == 'attribute') {
-            if($child->hasAttribute("name")) {
-              $this->declaredAttributes[] = $child->getAttribute("name");
-              if($child->hasAttribute("defaultValue")) {
-                $this->attributes[$child->getAttribute("name")] = $child->getAttribute("defaultValue");
-              }
-              if($child->hasAttribute("type")) {
-                $this->attributeTypes[$child->getAttribute("name")] = $child->getAttribute("type");
-              }
-              $node->removeChild($child);
-            }
-          }
-        }
-        if ($child->hasChildNodes()) {
-          $bodyChildren = $this->_processBodyToken($child, $bodyChildren);
-        }
-      }
-    }
-    return $bodyChildren;
-    */
   }
 
   public function getTagFilename() {

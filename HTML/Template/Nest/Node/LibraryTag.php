@@ -3,11 +3,13 @@ class HTML_Template_Nest_Node_LibraryTag extends HTML_Template_Nest_Node_Node {
   
   private $renderable;
   private $tag;
+  private $type;
   
   public function __construct(HTML_Template_Nest_Parser &$parser, DOMNode $node, HTML_Template_Nest_Node_IRender &$parent = NULL) {
     parent::__construct($parser, $node, $parent);
     $this->renderable = false;
     $this->tag = $this->loadTag($node);
+    $this->type = get_class($this->tag);
   }
 
   public function init() {
@@ -76,6 +78,11 @@ class HTML_Template_Nest_Node_LibraryTag extends HTML_Template_Nest_Node_Node {
     return $tag;
   }
   
+  public function getTagType() {
+    return $this->type;
+  }
   
-  
+  public function getTag() {
+    return $this->tag;
+  }
 }

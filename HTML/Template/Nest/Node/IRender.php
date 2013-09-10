@@ -17,4 +17,5 @@ interface HTML_Template_Nest_Node_IRender {
   public function getLocalName();
   public function getName();
   public function setAttribute($name, $value);
+  public function getParentRendererByTag($tag);
 }

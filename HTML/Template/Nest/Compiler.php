@@ -50,7 +50,6 @@ require_once "CompilerException.php";
 class HTML_Template_Nest_Compiler extends php_user_filter
 {
   public $parser;
-  public $tagStack = array();
 
   public function __construct() {
     stream_filter_register("nst.filter", "HTML_Template_Nest_Compiler");
@@ -175,18 +174,6 @@ class HTML_Template_Nest_Compiler extends php_user_filter
     return $document->render();
   }
 
-
-  public function getParentByType($type) {
-    for($i = count($this->tagStack) - 1; $i >= 0; $i--) {
-      $stack = $this->tagStack[$i];
-      foreach($stack as $tag) {
-        if(is_a($tag, $type)) {
-          return $tag;
-        }
-      }
-    }
-    return null;
-  }
 
   /**
    * Error handler for xml parsing

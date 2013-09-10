@@ -78,6 +78,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
   public function scss($name) {
 
     $files = array();
+    $position = 0;
     foreach($this->childrenList as $child) {
       if($child->getLocalName() == "scssfile") {
 
@@ -92,7 +93,9 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
 
         $files[] = 
         array("before" => $localfile,
-        "after" => $new_filename);
+        "after" => $new_filename,
+        "position" => $position,
+        );
         #$new_child = new DomElement("cssfile", "", "urn:nsttl:HTML_Template_Nest_Taglib_Resource");
          
         #$this->node->insertBefore($new_child, $child);
@@ -101,10 +104,16 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
 
         
         #$this->node->removeChild($child);
+        $position++;
       }
+      if($child->getLocalName() == "cssfile") {
+        $position++;
+      }
+      
     }
     foreach($files as $file_components) {
       $file = $file_components["before"];
+      
       $compile = false;
       
       $is_url = strstr($file, '://') !== FALSE;
@@ -127,7 +136,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         $compile = true;
       }
 
-      $this->minFiles[] = $file_components["after"];
+      $this->minFiles[$file_components["position"]] = $file_components["after"];
 
       $after = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file_components["after"];
       if($is_url) {
@@ -152,9 +161,9 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
  
   public function minify($name, $child_tag, $min_function) {
 
-    $files = $this->minFiles;
+    //$this->minFiles;
+    $files = array();
     foreach($this->childrenList as $child) {
-
       if($child->getLocalName() == $child_tag) {
         $localfile = $child->getAttribute("localfile");
         if(empty($localfile)) {
@@ -164,6 +173,13 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
          
       }
     }
+    
+    foreach($this->minFiles as $position => $file) {
+      $tmpFiles = array_slice($files, 0, $position, true);
+      $tmpFiles[] = $file;
+      $files = array_merge($tmpFiles, array_slice($files, $position, count($files), true));
+    }
+    
     
     $min_md5_exists = file_exists(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5");
     $output_md5 = "";
@@ -206,6 +222,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
     if($compile) {
         $output = "";
         foreach($files as $file) {
+          
           $is_url = strstr($file, '://') !== FALSE;
           $contents = "";
           if($is_url) {

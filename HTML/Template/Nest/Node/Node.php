@@ -259,5 +259,17 @@ abstract class HTML_Template_Nest_Node_Node implements HTML_Template_Nest_Node_I
       return ;
     }
     return $this->node->nodeName;
-  }  
+  }
+
+  public function getParentRendererByTag($tag) {
+    $renderer = $this;
+    $parent = $renderer->getParent();
+    while($parent != NULL) {
+      if(is_a($parent, "HTML_Template_Nest_Node_LibraryTag") && $parent->getTagType() == $tag) {
+        return $parent;
+      }
+      $parent = $parent->getParent();
+    }
+    return NULL;
+  }
 }

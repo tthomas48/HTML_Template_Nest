@@ -456,7 +456,7 @@ class HTML_Template_Nest_Taglib_Standard_IncludeTag extends HTML_Template_Nest_T
       }
       $this->newCompiler->parser->registerVariable($this->id, $key);
 
-      $value = $this->compiler->parser->parse($value, false, "\"");
+      $value = $this->parser->parse($value, false, "\"");
       $output .= "\$" . $this->newCompiler->parser->getLocalVariableName($key) . " = \"" . $value . "\";\n";
     }
     $output .= "?>";

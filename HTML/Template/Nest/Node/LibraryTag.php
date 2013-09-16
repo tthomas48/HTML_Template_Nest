@@ -85,4 +85,9 @@ class HTML_Template_Nest_Node_LibraryTag extends HTML_Template_Nest_Node_Node {
   public function getTag() {
     return $this->tag;
   }
+  
+  public function setAttribute($name, $value) {
+    $this->tag->addAttribute($name, $value);
+    parent::setAttribute($name, $value);
+  }
 }

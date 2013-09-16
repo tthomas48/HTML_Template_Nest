@@ -95,6 +95,9 @@ abstract class HTML_Template_Nest_Node_Node implements HTML_Template_Nest_Node_I
         }
       }
     }
+    if($taglib == NULL && $node->namespaceURI != NULL) {
+      return $node->namespaceURI;
+    }
     return $taglib;
   }
 
@@ -259,6 +262,13 @@ abstract class HTML_Template_Nest_Node_Node implements HTML_Template_Nest_Node_I
       return ;
     }
     return $this->node->nodeName;
+  }
+
+  public function getTextContent() {
+    if($this->node == NULL) {
+      return ;
+    }
+    return $this->node->textContent;
   }
 
   public function getParentRendererByTag($tag) {

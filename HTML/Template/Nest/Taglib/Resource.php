@@ -96,14 +96,6 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         "after" => $new_filename,
         "position" => $position,
         );
-        #$new_child = new DomElement("cssfile", "", "urn:nsttl:HTML_Template_Nest_Taglib_Resource");
-         
-        #$this->node->insertBefore($new_child, $child);
-        #$new_child->setAttribute("name", $new_name);
-        #$new_child->setAttribute("localfile", $new_filename);
-
-        
-        #$this->node->removeChild($child);
         $position++;
       }
       if($child->getLocalName() == "cssfile") {
@@ -157,7 +149,6 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
       }
     }
   }
-
  
   public function minify($name, $child_tag, $min_function) {
 
@@ -219,6 +210,13 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
       }
 
     }
+    $output_filename = $name . "." . $output_md5;
+    if (substr($name, -3) === ".js") {
+        $output_filename = str_replace(".js", "." . $output_md5 . ".js", $name);
+    }
+    else if(substr($name, -4) === ".css") {
+        $output_filename = str_replace(".css", "." . $output_md5 . ".css", $name);
+    }
     if($compile) {
         $output = "";
         foreach($files as $file) {
@@ -244,9 +242,16 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         }
         $output_md5 = md5($output);
         file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . ".md5", $output_md5);
-        file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name . "." . $output_md5, $output);
+
+        if (substr($name, -3) === ".js") {
+          $output_filename = str_replace(".js", "." . $output_md5 . ".js", $name);
+        }
+        else if(substr($name, -4) === ".css") {
+          $output_filename = str_replace(".css", "." . $output_md5 . ".css", $name);
+        }
+        file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $output_filename, $output);
     }
-    return $name . "." . $output_md5;
+    return $output_filename;
   }
 }
 
@@ -342,6 +347,26 @@ class HTML_Template_Nest_Taglib_Resource_ScssFile extends HTML_Template_Nest_Tag
     return "<link rel=\"stylesheet\" href=\"" . $basepath . "$name\" />";
   }
 }
+
+class HTML_Template_Nest_Taglib_Resource_JsxFile extends HTML_Template_Nest_Taglib_Resource_Minifier {
+    protected $declaredAttributes = array("name");
+
+    public function start() {
+        $name = $this->parser->parse(
+            $this->getRequiredAttribute("name")
+        );
+        $localfile = $this->getOptionalAttribute("localfile", $name);
+        $basepath = $this->parser->parse(
+            $this->getOptionalAttribute("basepath", "")
+        );
+
+        $output_name = str_replace(".jsx", ".js", $localfile);
+        $this->jsx($localfile);
+        $name = $this->minify($output_name, "jsxfile", array("JSMin", 'minify'));
+        return "<link rel=\"stylesheet\" href=\"" . $basepath . "$name\" />";
+    }
+}
+
 
 class HTML_Template_Nest_Taglib_Resource_Snippets extends HTML_Template_Nest_Tag {
 

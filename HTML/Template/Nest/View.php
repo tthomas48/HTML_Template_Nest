@@ -139,7 +139,7 @@ class HTML_Template_Nest_View
     	  }
         $uncompiledFilename = $viewPath . "/" . $this->_name . ".nst";
         $compiledFilename = $viewPath . "/" . $this->_name . ".php";
-        $className = "nestView_" . str_replace('/', '_', $viewPath) . str_replace('-', '_', $this->_name);
+        $className = "nestView_" . preg_replace('/[^a-z0-9]/', '', $viewPath) . '_' . preg_replace('/[^a-z0-9]/', '', $this->_name);
 
         $stat = stat($uncompiledFilename);
         $lastModified = $stat[9];
@@ -149,7 +149,6 @@ class HTML_Template_Nest_View
         if (file_exists($compiledFilename)) {
           require $compiledFilename;
           $viewInstance = new $className();
-// TODO: uncomment this once compilation is working
           $compile = $viewInstance->lastModified != $lastModified;
           if (!$compile) {
             return $viewInstance;
@@ -210,20 +209,6 @@ class HTML_Template_Nest_View
         $viewInstance = new $className();
 
         return $viewInstance;
-
-/*
-        $output = "";
-        if (HTML_Template_Nest_View::$CACHE && file_exists($compiledFilename)) {
-            $output = file_get_contents($compiledFilename);
-        } else {
-            $compiler = new HTML_Template_Nest_Compiler();
-            $output = $compiler->compile($uncompiledFilename);
-            if(HTML_Template_Nest_View::$CACHE) {
-                file_put_contents($compiledFilename, $output);
-            }
-        }
-        return $output;
-*/
     }
 
     public function fatal_template_error() {

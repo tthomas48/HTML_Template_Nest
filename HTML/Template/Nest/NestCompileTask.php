@@ -126,7 +126,7 @@ class NestCompileTask extends Task
             foreach ($this->filesets as $fs) {
                 $ds = $fs->getDirectoryScanner($project);
                 $files = $ds->getIncludedFiles();
-                $dir = $fs->getDir($project)->getAbsolutePath();
+                $dir = $fs->getDir($project)->getPath();
                 foreach ($files as $file) {
                     $this->compile($dir, $file);
                 }

@@ -24,8 +24,6 @@
  * @see       HTML_Template_Nest_Taglib_Standard
  * @since     File available since Release 1.0
  */
-require_once 'HTML/Template/Nest/View.php';
-require_once 'PHPUnit/Framework/TestCase.php';
 /**
  * Tests the preservation of DocTypes
  *

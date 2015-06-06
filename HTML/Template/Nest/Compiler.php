@@ -100,7 +100,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
    */
   public function compile($filename, $contents = NULL)
   {
-    set_error_handler(array($this,'errorHandler'));
+    set_error_handler(array($this,'errorHandler'), E_ALL);
 
     $output = "";
     try {
@@ -116,7 +116,9 @@ class HTML_Template_Nest_Compiler extends php_user_filter
 
       $document = new DomDocument();
       try {
-        $document->loadXml($contents, LIBXML_NOCDATA);
+        if(!$document->loadXml($contents, LIBXML_NOCDATA)) {
+            throw new Exception("Parsing error: " . implode("\n", libxml_get_errors()));
+        }
       } catch(Exception $e) {
         restore_error_handler();
         $message= "Unable to parse: $filename; " . $e->getMessage();
@@ -129,10 +131,13 @@ class HTML_Template_Nest_Compiler extends php_user_filter
       throw new HTML_Template_Nest_CompilerException("In file $filename\n" . $e->getMessage());
     } catch(HTML_Template_Nest_CompilerException $e) {
       throw new HTML_Template_Nest_CompilerException("In file $filename\n" . $e->getMessage());
+    } catch(HTML_Template_Nest_TagException $e) {
+      throw $e;
     } catch(DomException $e) {
       restore_error_handler();
       $message= "Unable to parse: $filename; " . $e->getMessage();
       throw new HTML_Template_Nest_CompilerException($message);
+    } catch(Exception $e) {
     }
     restore_error_handler();
     return $output;
@@ -197,7 +202,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
       throw new DOMException($errstr);
     } elseif ($errno==E_WARNING)
     {
-      throw new Exception($errstr);
+      throw new DomException($errstr);
     } else {
       return false;
     }

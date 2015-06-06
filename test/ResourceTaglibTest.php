@@ -24,10 +24,6 @@
  * @see       HTML_Template_Nest_Taglib_Standard
  * @since     File available since Release 1.0
  */
-require_once 'HTML/Template/Nest/View.php';
-require_once 'HTML/Template/Nest/Taglib/Resource.php';
-require_once 'PHPUnit/Framework/TestCase.php';
-require_once dirname(__FILE__) . "/../vendor/autoload.php";
 /**
  * Tests the resource tag library
  *
@@ -65,11 +61,11 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
         );       
         $this->assertEquals(
             file_get_contents(dirname(__FILE__) . "/viewoutput/css.min.css"),
-            file_get_contents(dirname(__FILE__) . "/res/css.min.css.db45bda72b702e346f91f3adbe1345da")
+            file_get_contents(dirname(__FILE__) . "/res/css.min.db45bda72b702e346f91f3adbe1345da.css")
         );
         $this->assertEquals(
             file_get_contents(dirname(__FILE__) . "/viewoutput/js.min.js"),
-            file_get_contents(dirname(__FILE__) . "/res/js.min.js.83bf736035367a0b493361f094f7ef5f")
+            file_get_contents(dirname(__FILE__) . "/res/js.min.83bf736035367a0b493361f094f7ef5f.js")
         );
     }
     
@@ -100,7 +96,7 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
         $view = new HTML_Template_Nest_View("filter");
         $output = $view->render();
         $this->assertEquals(
-        '<link rel="stylesheet" href="res/scss.min.css.5e29db497fddc2ba6e588878c4af5f03" />' . "\t" . '<script type="text/javascript" src="res/js.filter.min.js.64fcd8bc28984aac21adc6248ac43441">'."\n".'</script>',
+        '<link rel="stylesheet" href="res/scss.min.17ab4a24de5b8c3af1de3c700e080ba1.css" />' . "\t" . '<script type="text/javascript" src="res/js.filter.min.0b6ecf17e30037994d3ffee51b525914.js">'."\n".'</script>',
         
         trim($output));
         $this->assertEquals(

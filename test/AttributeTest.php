@@ -24,8 +24,7 @@
  * @see       HTML_Template_Nest_Taglib_Standard
  * @since     File available since Release 1.0
  */
-require_once 'HTML/Template/Nest/View.php';
-require_once 'PHPUnit/Framework/TestCase.php';
+
 /**
  * Tests the standard tag library
  *
@@ -72,12 +71,14 @@ class HTML_Template_Nest_AttributeTest extends PHPUnit_Framework_TestCase
 
         $prices = array();
         $price = new stdClass();
+        $price->UID = "abc";
         $price->DEFAULT = 'false';
         $price->NAME = 'General Admission';
         $price->PRICE = '15.00';
         $prices[] = $price;
 
         $price2 = new stdClass();
+        $price2->UID = "def";
         $price2->DEFAULT = 'True';
         $price2->NAME = 'Students';
         $price2->PRICE = '12.00';

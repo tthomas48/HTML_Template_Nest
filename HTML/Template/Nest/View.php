@@ -27,9 +27,13 @@
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     File available since Release 1.0
  */
-require_once 'Compiler.php';
-require_once 'EvalException.php';
-require_once 'ViewException.php';
+use Memio\Memio\Config\Build;
+use Memio\Model\File;
+use Memio\Model\Object;
+use Memio\Model\Property;
+use Memio\Model\Method;
+use Memio\Model\Argument;
+
 /**
  * View class for Nest templates
  *
@@ -55,7 +59,7 @@ class HTML_Template_Nest_View
     public static $INCLUDE_PATHS = array("views");
     public static $CACHE = true;
     public static $HTML_ERRORS = true;
-    private $output;
+    private $viewInstance;
 
     /**
      * Constructor
@@ -117,33 +121,12 @@ class HTML_Template_Nest_View
      */
     public function render()
     {
-      $this->output = $this->loadContent();
-      return $this->renderContent($this->output);
+      $this->viewInstance = $this->loadContent();
+      return $this->renderContent($this->viewInstance);
     }
-    public function renderContent($output = "") 
+    public function renderContent($viewInstance = "") 
     {
-      $this->output = $output;
-        
-        ob_start();
-        $p = $this->_attributes;
-        $_o = create_function('$p, $key', '$value = array_key_exists($key, $p) ? $p[$key] : null; return $value;');
-        $errorHandler = create_function('$errno, $errstr, $errfile, $errline', 'if(($errno === E_ERROR) || ($errno === E_USER_ERROR) || ($errno === E_PARSE)) { throw new HTML_Template_Nest_EvalException($errno, $errstr, $errfile, $errline); }');
-        register_shutdown_function(array($this, 'fatal_template_error'));
-        
-        $initialReporting = error_reporting();
-        try {
-            error_reporting(E_ERROR | E_USER_ERROR | E_PARSE);
-            eval("\nset_error_handler(\$errorHandler);?>" . $this->output);
-        } catch(HTML_Template_Nest_EvalException $e) {
-            ob_clean();
-            error_reporting($initialReporting);
-            throw new HTML_Template_Nest_ViewException($e, $this->output);
-        }
-        error_reporting($initialReporting);
-        $contents = ob_get_contents();
-        ob_end_clean();
-        
-        return $contents;
+        return $viewInstance->render($this->_attributes);
     }
 
     private function loadContent() {
@@ -156,8 +139,79 @@ class HTML_Template_Nest_View
     	  }
         $uncompiledFilename = $viewPath . "/" . $this->_name . ".nst";
         $compiledFilename = $viewPath . "/" . $this->_name . ".php";
+        $className = "nestView_" . str_replace('/', '_', $viewPath) . str_replace('-', '_', $this->_name);
+
+        $stat = stat($uncompiledFilename);
+        $lastModified = $stat[9];
+
+        $viewInstance = null;
+        $compile = true;
+        if (file_exists($compiledFilename)) {
+          require $compiledFilename;
+          $viewInstance = new $className();
+// TODO: uncomment this once compilation is working
+          $compile = $viewInstance->lastModified != $lastModified;
+          if (!$compile) {
+            return $viewInstance;
+          }
+        }
+
+        $compiler = new HTML_Template_Nest_Compiler();
+        $output = $compiler->compile($uncompiledFilename);
+
+        $lastModifiedProperty =  new Property('lastModified');
+        $lastModifiedProperty->makePublic();
+        $lastModifiedProperty->setDefaultValue($lastModified);
+
+            $methodBody = '
+        $_o = function($params, $key) { return array_key_exists($key, $params) ? $params[$key] : null; };
+        ob_start();
+        register_shutdown_function(array($this, \'fatal_template_error\'));
+        
+        $initialReporting = error_reporting();
+        try {
+            error_reporting(E_ERROR | E_USER_ERROR | E_PARSE);
+            set_error_handler(function($errno, $errstr, $errfile, $errline) {
+              if(($errno === E_ERROR) || ($errno === E_USER_ERROR) || ($errno === E_PARSE)) { 
+                throw new HTML_Template_Nest_EvalException($errno, $errstr, $errfile, $errline); 
+              }
+            });
+            ?>' 
+            . $output .
+            '<?php
+        } catch(HTML_Template_Nest_EvalException $e) {
+            ob_clean();
+            error_reporting($initialReporting);
+            throw new HTML_Template_Nest_ViewException($e, $this->output);
+        }
+        error_reporting($initialReporting);
+        $contents = ob_get_contents();
+        ob_end_clean();
+        return $contents;
+';
 
 
+        $renderMethod = Method::make('render')
+          ->addArgument(new Argument('Array', 'p'))
+          ->setBody($methodBody);
+
+
+        $file = File::make($compiledFilename)
+         ->setStructure(
+              Object::make($className)
+          ->addProperty($lastModifiedProperty)
+          ->addMethod($renderMethod)
+        );
+
+        $prettyPrinter = Build::prettyPrinter();
+        file_put_contents($compiledFilename, $prettyPrinter->generateCode($file));
+
+        require $compiledFilename;
+        $viewInstance = new $className();
+
+        return $viewInstance;
+
+/*
         $output = "";
         if (HTML_Template_Nest_View::$CACHE && file_exists($compiledFilename)) {
             $output = file_get_contents($compiledFilename);
@@ -169,6 +223,7 @@ class HTML_Template_Nest_View
             }
         }
         return $output;
+*/
     }
 
     public function fatal_template_error() {

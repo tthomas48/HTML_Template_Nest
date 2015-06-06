@@ -24,10 +24,6 @@
  * @see       HTML_Template_Nest_View
  * @since     File available since Release 1.0
  */
-require_once 'HTML/Template/Nest/View.php';
-require_once 'HTML/Template/Nest/TagException.php';
-require_once 'HTML/Template/Nest/CompilerException.php';
-require_once 'PHPUnit/Framework/TestCase.php';
 /**
  * Runs all tests
  *
@@ -63,19 +59,19 @@ class HTML_Template_Nest_ErrorTest extends PHPUnit_Framework_TestCase
      * 
      * @return null
      */
-    public function testBadTagFile()
-    {
+     public function testBadTagFile()
+     {
 
-        $view = new HTML_Template_Nest_View("badxml");
+         $view = new HTML_Template_Nest_View("badxml");
 
-        $caughtException = false;
-        try {
-            $view->render();
-        } catch (HTML_Template_Nest_TagException $e) {
-            $caughtException = true;
-        }
-        $this->assertTrue($caughtException);
-    }
+         $caughtException = false;
+         try {
+             $view->render();
+         } catch (HTML_Template_Nest_TagException $e) {
+             $caughtException = true;
+         }
+         $this->assertTrue($caughtException);
+     }
 
     /**
      * Test an unparsable template file
@@ -90,7 +86,7 @@ class HTML_Template_Nest_ErrorTest extends PHPUnit_Framework_TestCase
         $caughtException = false;
         try {
             $view->render();
-        } catch (HTML_Template_Nest_CompilerException $e) {
+        } catch (\HTML_Template_Nest_CompilerException $e) {
             $caughtException = true;
         }
         $this->assertTrue($caughtException);

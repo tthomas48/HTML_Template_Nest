@@ -24,8 +24,6 @@
  * @see       HTML_Template_Nest_Parser
  * @since     File available since Release 1.0
  */
-require_once 'HTML/Template/Nest/Parser.php';
-require_once 'PHPUnit/Framework/TestCase.php';
 /**
  * Tests expression parsing functionality.
  *

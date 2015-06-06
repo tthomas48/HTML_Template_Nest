@@ -120,15 +120,15 @@ class NestCompileTask extends Task
         }
 
         if ($this->file instanceof PhingFile) {
-            $this->compile($this->file->getPath());
+            $this->compile($this->file->getParent(), $this->file->getName());
         } else { // process filesets
             $project = $this->getProject();
             foreach ($this->filesets as $fs) {
                 $ds = $fs->getDirectoryScanner($project);
                 $files = $ds->getIncludedFiles();
-                $dir = $fs->getDir($this->project)->getPath();
+                $dir = $fs->getDir($project)->getAbsolutePath();
                 foreach ($files as $file) {
-                    $this->compile($dir.DIRECTORY_SEPARATOR.$file);
+                    $this->compile($dir, $file);
                 }
             }
         }
@@ -148,13 +148,15 @@ class NestCompileTask extends Task
      * 
      * @return void
      */
-    protected function compile($file)
+    protected function compile($dir, $file)
     {
+        $filename = basename($dir. DIRECTORY_SEPARATOR . $file);
+        $directoryName = str_replace($filename, '', $dir . DIRECTORY_SEPARATOR . $file); 
         
-        if (file_exists($file)) {
-            if (is_readable($file)) {
+        if (file_exists($dir.DIRECTORY_SEPARATOR.$file)) {
+            if (is_readable($dir.DIRECTORY_SEPARATOR.$file)) {
                 try {
-                    $this->compiler->compileAndCache($file);
+                    $this->compiler->compileAndCache($directoryName, $filename);
                 } catch(Exception $e) {
                     if ($this->errorProperty) {
                         $this->project->setProperty(
@@ -163,7 +165,7 @@ class NestCompileTask extends Task
                         );
                     }
                     $this->log($e->getMessage(), Project::MSG_ERR);
-                    $this->_badFiles[] = $file;
+                    $this->_badFiles[] = $dir.DIRECTORY_SEPARATOR.$file;
                     $this->hasErrors = true;
                     return;
                 }

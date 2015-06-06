@@ -28,8 +28,12 @@
 * @see       HTML_Template_Nest_View
 * @since     File available since Release 1.0
 */
-require_once "Parser.php";
-require_once "CompilerException.php";
+use Memio\Memio\Config\Build;
+use Memio\Model\File;
+use Memio\Model\Object;
+use Memio\Model\Property;
+use Memio\Model\Method;
+use Memio\Model\Argument;
 /**
  * Compiles .nst files into .php files
  *
@@ -82,12 +86,87 @@ class HTML_Template_Nest_Compiler extends php_user_filter
    *
    * @param string $filename path to file to compile
    *
-   * @return null
+   * @return ViewInstance
    */
-  public function compileAndCache($filename)
+  public function compileAndCache($viewPath, $viewName)
   {
-    $outputFilename = str_replace(".nst", ".php", $filename);
-    file_put_contents($outputFilename, $this->compile($filename));
+
+        $viewName = basename($viewName, ".nst");
+        $uncompiledFilename = $viewPath . "/" . $viewName . ".nst";
+        $compiledFilename = $viewPath . "/" . $viewName . ".php";
+        $className = "nestView_" . preg_replace('/[^a-z0-9]/', '', $viewPath) . '_' . preg_replace('/[^a-z0-9]/', '', $viewName);
+
+        $stat = stat($uncompiledFilename);
+        $lastModified = $stat[9];
+
+        $viewInstance = null;
+        $compile = true;
+        if (file_exists($compiledFilename)) {
+          require $compiledFilename;
+          try {
+            $viewInstance = new $className();
+            $compile = $viewInstance->lastModified != $lastModified;
+            if (!$compile) {
+              return $viewInstance;
+            }
+          } catch(\Exception $e) {
+          }
+        }
+
+        $compiler = new HTML_Template_Nest_Compiler();
+        $output = $compiler->compile($uncompiledFilename);
+
+        $lastModifiedProperty =  new Property('lastModified');
+        $lastModifiedProperty->makePublic();
+        $lastModifiedProperty->setDefaultValue($lastModified);
+
+            $methodBody = '
+        $_o = function($params, $key) { return array_key_exists($key, $params) ? $params[$key] : null; };
+        ob_start();
+        register_shutdown_function(array($this, \'fatal_template_error\'));
+        
+        $initialReporting = error_reporting();
+        try {
+            error_reporting(E_ERROR | E_USER_ERROR | E_PARSE);
+            set_error_handler(function($errno, $errstr, $errfile, $errline) {
+              if(($errno === E_ERROR) || ($errno === E_USER_ERROR) || ($errno === E_PARSE)) { 
+                throw new HTML_Template_Nest_EvalException($errno, $errstr, $errfile, $errline); 
+              }
+            });
+            ?>' 
+            . $output .
+            '<?php
+        } catch(HTML_Template_Nest_EvalException $e) {
+            ob_clean();
+            error_reporting($initialReporting);
+            throw new HTML_Template_Nest_ViewException($e, $this->output);
+        }
+        error_reporting($initialReporting);
+        $contents = ob_get_contents();
+        ob_end_clean();
+        return $contents;
+';
+
+
+        $renderMethod = Method::make('render')
+          ->addArgument(new Argument('Array', 'p'))
+          ->setBody($methodBody);
+
+
+        $file = File::make($compiledFilename)
+         ->setStructure(
+              Object::make($className)
+          ->addProperty($lastModifiedProperty)
+          ->addMethod($renderMethod)
+        );
+
+        $prettyPrinter = Build::prettyPrinter();
+        file_put_contents($compiledFilename, $prettyPrinter->generateCode($file));
+
+        require $compiledFilename;
+        $viewInstance = new $className();
+
+        return $viewInstance;
   }
 
   /**
@@ -175,7 +254,6 @@ class HTML_Template_Nest_Compiler extends php_user_filter
     while(!$document->isRenderable()) {
       $document->init();
     }
-    //die($document->render());
     return $document->render();
   }
 

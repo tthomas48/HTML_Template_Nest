@@ -27,12 +27,6 @@
  * @link      http://pear.php.net/package/HTML_Template_Nest
  * @since     File available since Release 1.0
  */
-use Memio\Memio\Config\Build;
-use Memio\Model\File;
-use Memio\Model\Object;
-use Memio\Model\Property;
-use Memio\Model\Method;
-use Memio\Model\Argument;
 
 /**
  * View class for Nest templates
@@ -121,7 +115,16 @@ class HTML_Template_Nest_View
      */
     public function render()
     {
-      $this->viewInstance = $this->loadContent();
+
+   	  $viewPath = "";
+   	  foreach(HTML_Template_Nest_View::$INCLUDE_PATHS as $path) {
+   	  	if(file_exists($path  . "/" . $this->_name . ".nst")) {
+   	  		$viewPath = $path;
+   	  	}
+   	  }
+
+      $compiler = new HTML_Template_Nest_Compiler();
+      $this->viewInstance = $compiler->compileAndCache($viewPath, $this->_name);
       return $this->renderContent($this->viewInstance);
     }
     public function renderContent($viewInstance = "") 

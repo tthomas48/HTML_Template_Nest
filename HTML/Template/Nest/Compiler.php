@@ -94,7 +94,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
         $viewName = basename($viewName, ".nst");
         $uncompiledFilename = $viewPath . "/" . $viewName . ".nst";
         $compiledFilename = $viewPath . "/" . $viewName . ".php";
-        $className = "nestView_" . preg_replace('/[^a-z0-9]/', '', $viewPath) . '_' . preg_replace('/[^a-z0-9]/', '', $viewName);
+        $className = "nestView_" . preg_replace('/[^a-z0-9]/', '', $viewName);
 
         $stat = stat($uncompiledFilename);
         $lastModified = $stat[9];

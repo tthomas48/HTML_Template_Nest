@@ -102,7 +102,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
         $viewInstance = null;
         $compile = true;
         if (file_exists($compiledFilename)) {
-          require $compiledFilename;
+          require_once $compiledFilename;
           try {
             $viewInstance = new $className();
             $compile = $viewInstance->lastModified != $lastModified;

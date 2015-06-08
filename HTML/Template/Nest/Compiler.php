@@ -91,9 +91,11 @@ class HTML_Template_Nest_Compiler extends php_user_filter
   public function compileAndCache($viewPath, $viewName)
   {
 
-        $viewName = basename($viewName, ".nst");
-        $uncompiledFilename = $viewPath . "/" . $viewName . ".nst";
-        $compiledFilename = $viewPath . "/" . $viewName . ".php";
+        $viewPath = $viewPath . "/" . $viewName;
+        $viewName = basename($viewPath, ".nst");
+        $fullPath = str_replace($viewName, '', $viewPath . "/" . $viewName);
+        $uncompiledFilename = $fullPath . "/" . $viewName . ".nst";
+        $compiledFilename = $fullPath . "/" . $viewName . ".php";
         $className = "nestView_" . preg_replace('/[^a-z0-9]/', '', $viewName);
 
         $stat = stat($uncompiledFilename);
@@ -123,8 +125,6 @@ class HTML_Template_Nest_Compiler extends php_user_filter
             $methodBody = '
         $_o = function($params, $key) { return array_key_exists($key, $params) ? $params[$key] : null; };
         ob_start();
-        register_shutdown_function(array($this, \'fatal_template_error\'));
-        
         $initialReporting = error_reporting();
         try {
             error_reporting(E_ERROR | E_USER_ERROR | E_PARSE);

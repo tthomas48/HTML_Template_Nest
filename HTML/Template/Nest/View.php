@@ -129,6 +129,7 @@ class HTML_Template_Nest_View
     }
     public function renderContent($viewInstance = "") 
     {
+        register_shutdown_function(array($this, 'fatal_template_error'));
         return $viewInstance->render($this->_attributes);
     }
 

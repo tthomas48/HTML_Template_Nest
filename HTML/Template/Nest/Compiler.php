@@ -99,8 +99,8 @@ class HTML_Template_Nest_Compiler extends php_user_filter
     public function compileAndCache($viewPath, $viewName)
     {
         $viewPath = $viewPath . "/" . $viewName;
+        $fullPath = dirname($viewPath);
         $viewName = basename($viewPath, ".nst");
-        $fullPath = str_replace($viewName, '', $viewPath . "/" . $viewName);
         $uncompiledFilename = $fullPath . "/" . $viewName . ".nst";
         $compiledFilename = $fullPath . "/" . $viewName . ".php";
         $className = "nestView_" . preg_replace('/[^a-z0-9]/', '', $viewName);
@@ -110,8 +110,10 @@ class HTML_Template_Nest_Compiler extends php_user_filter
         
         $viewInstance = null;
         $compile = true;
-        if (file_exists($compiledFilename) && class_exists($className)) {
-            require_once $compiledFilename;
+        if (file_exists($compiledFilename)) {
+            if (!class_exists($className)) {
+              require_once $compiledFilename;
+            }
             try {
                 $viewInstance = new $className();
                 $compile = $viewInstance->lastModified != $lastModified;

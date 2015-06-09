@@ -152,7 +152,7 @@ class NestCompileTask extends Task
     {
         $filename = basename($dir. DIRECTORY_SEPARATOR . $file);
         $directoryName = str_replace($filename, '', $dir . DIRECTORY_SEPARATOR . $file); 
-        
+
         if (file_exists($dir.DIRECTORY_SEPARATOR.$file)) {
             if (is_readable($dir.DIRECTORY_SEPARATOR.$file)) {
                 try {

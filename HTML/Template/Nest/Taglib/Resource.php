@@ -43,9 +43,11 @@ class HTML_Template_Nest_Taglib_Resource extends HTML_Template_Nest_Taglib
   
   public static $BASE_PATH = "./";
   public static $SASS_BINARY = "/usr/bin/sass";
+  public static $JSX_BINARY = "/usr/local/bin/jsx";
 
   protected $tags = array(
       "js" => "HTML_Template_Nest_Taglib_Resource_Javascript",
+      "jsxfile" => "HTML_Template_Nest_Taglib_Resource_JsxFile",
       "jsfile" => "HTML_Template_Nest_Taglib_Resource_JavascriptFile",
       "css" => "HTML_Template_Nest_Taglib_Resource_Css",
       "cssfile" => "HTML_Template_Nest_Taglib_Resource_CssFile",
@@ -253,6 +255,83 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
     }
     return $output_filename;
   }
+
+  public function jsx($name) {
+
+    $files = array();
+    $position = 0;
+    foreach($this->childrenList as $child) {
+      if($child->getLocalName() == "jsxfile") {
+
+        $localfile = $child->getAttribute("localfile");
+        $file = $child->getAttribute("name");
+        if(empty($localfile)) {
+          $localfile = $file;
+        }
+	      $new_name = str_replace(".jsx", "-jsx.js", $name);
+        $new_filename = str_replace(".jsx", "-jsx.js", $localfile);
+
+
+        $files[] = 
+        array("before" => $localfile,
+        "after" => $new_filename,
+        "position" => $position,
+        );
+        $position++;
+      }
+      if($child->getLocalName() == "jsfile") {
+        $position++;
+      }
+      
+    }
+    foreach($files as $file_components) {
+      $file = $file_components["before"];
+      
+      $compile = false;
+      
+      $is_url = strstr($file, '://') !== FALSE;
+      
+      $md5_file = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file . ".md5";
+      if($is_url) {
+          $md5_file = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . md5($file) . ".md5";
+      }
+      $old_md5 = NULL;
+      if(file_exists($md5_file)) {
+        $old_md5 = file_get_contents($md5_file);
+      }
+      if($is_url) {
+        //TODO: this needs to do some time based caching for http
+        $new_md5 = md5(file_get_contents($file));
+      } else {
+        $new_md5 = md5_file(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file);
+      }
+      if($old_md5 != $new_md5) {
+        $compile = true;
+      }
+
+      $this->minFiles[$file_components["position"]] = $file_components["after"];
+
+      $after = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file_components["after"];
+      if($is_url) {
+        $after = $file_components["after"];
+      }
+
+      if($compile) {
+        $before = HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file;
+        if($is_url) {
+          $before = $file_components["before"];
+        }
+        
+        exec(HTML_Template_Nest_Taglib_Resource::$JSX_BINARY . " $before", $output);
+        file_put_contents($after, $output);
+
+        if(file_exists("$after.md5")) {
+          unlink("$after.md5");
+        }
+        file_put_contents($md5_file, $new_md5);
+      }
+    }
+  }
 }
 
 class HTML_Template_Nest_Taglib_Resource_Javascript extends HTML_Template_Nest_Taglib_Resource_Minifier {
@@ -272,6 +351,7 @@ class HTML_Template_Nest_Taglib_Resource_Javascript extends HTML_Template_Nest_T
         $this->getOptionalAttribute("basepath", "")
     );
 
+    $this->jsx($localfile);
     $name = $this->minify($localfile, "jsfile", array('JSMin', 'minify'));
     return "<script type=\"text/javascript\" src=\"" . $basepath . "$name\">\n</script>";
   }
@@ -352,18 +432,17 @@ class HTML_Template_Nest_Taglib_Resource_JsxFile extends HTML_Template_Nest_Tagl
     protected $declaredAttributes = array("name");
 
     public function start() {
-        $name = $this->parser->parse(
-            $this->getRequiredAttribute("name")
-        );
-        $localfile = $this->getOptionalAttribute("localfile", $name);
-        $basepath = $this->parser->parse(
-            $this->getOptionalAttribute("basepath", "")
-        );
+      $name = $this->parser->parse(
+          $this->getRequiredAttribute("name")
+      );
+      $localfile = $this->getOptionalAttribute("localfile", $name);
+      $basepath = $this->parser->parse(
+          $this->getOptionalAttribute("basepath", "")
+      );
 
-        $output_name = str_replace(".jsx", ".js", $localfile);
-        $this->jsx($localfile);
-        $name = $this->minify($output_name, "jsxfile", array("JSMin", 'minify'));
-        return "<link rel=\"stylesheet\" href=\"" . $basepath . "$name\" />";
+      $this->jsx($localfile);
+      $name = $this->minify($localfile, "jsfile", array('JSMin', 'minify'));
+      return "<script type=\"text/javascript\" src=\"" . $basepath . "$name\">\n</script>";
     }
 }
 

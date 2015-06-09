@@ -1,0 +1,7 @@
+<nst:root xmlns:nst="http://nest.sourceforge.net/" xmlns:r="urn:nsttl:HTML_Template_Nest_Taglib_Resource">
+
+  <r:js name="res/jsx.min.js">
+    <r:jsfile name="res/a.js" />
+    <r:jsxfile name="res/a.jsx" />
+  </r:js>
+</nst:root>

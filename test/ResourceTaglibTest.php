@@ -61,7 +61,6 @@ class HTML_Template_Nest_ResourceTest extends PHPUnit_Framework_TestCase
         $this->assertRegExp('/<link rel="stylesheet" href="res\/css.min.\d+.css" \/>\s+<script type="text\/javascript" src="res\/js.min.\d+.js">\s+<\/script>/ms', $rendered); 
         $jsFile = preg_replace('/.*src="(res\/js.min.\d+.js)".*/ms', '$1', $rendered);
         $cssFile = preg_replace('/.*href="(res\/css.min.\d+.css)".*/ms', '$1', $rendered);
-        print $cssFile . "\n";
         
         $this->assertEquals(file_get_contents(dirname(__FILE__) . "/viewoutput/css.min.css"), file_get_contents(dirname(__FILE__) . "/" . $cssFile));
         $this->assertEquals(file_get_contents(dirname(__FILE__) . "/viewoutput/js.min.js"), file_get_contents(dirname(__FILE__) . "/" . $jsFile));

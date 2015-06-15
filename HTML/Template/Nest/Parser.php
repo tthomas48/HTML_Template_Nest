@@ -372,6 +372,6 @@ class HTML_Template_Nest_Parser
         $stat = stat($path);
         $lastModified = $stat[9];
     
-        $this->dependencies[$path] = $lastModified;
+        $this->dependencies[realpath($path)] = $lastModified;
     }    
 }

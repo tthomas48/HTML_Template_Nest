@@ -97,7 +97,9 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
                 }
                 $new_name = str_replace(".scss", ".css", $name);
                 $new_filename = str_replace(".scss", ".css", $localfile);
-                
+
+                $this->parser->addFileDependency(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $localfile);
+
                 $files[] = array(
                     "before" => $localfile,
                     "after" => $new_filename,
@@ -113,10 +115,6 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
             $file = $file_components["before"];
             
             $is_url = strstr($file, '://') !== FALSE;
-            
-            if (!$is_url) {
-                $this->parser->addFileDependency(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file);
-            }
             
             $this->minFiles[$file_components["position"]] = $file_components["after"];
             
@@ -144,6 +142,8 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
                 if (empty($localfile)) {
                     $localfile = $child->getAttribute("name");
                 }
+
+                $this->parser->addFileDependency(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $localfile);
                 $files[] = $localfile;
             }
         }
@@ -159,10 +159,6 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
             
             
             $is_url = strstr($file, '://') !== FALSE;
-            
-            if (!$is_url) {
-                $this->parser->addFileDependency(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file);
-            }
             
             $contents = "";
             if ($is_url) {
@@ -198,6 +194,8 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
                 }
                 $new_name = str_replace(".jsx", "-jsx.js", $name);
                 $new_filename = str_replace(".jsx", "-jsx.js", $localfile);
+
+                $this->parser->addFileDependency(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $localfile);
                 
                 $files[] = array(
                     "before" => $localfile,
@@ -214,10 +212,6 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
             $file = $file_components["before"];
             
             $is_url = strstr($file, '://') !== false;
-            if (!$is_url) {
-                $this->parser->addFileDependency(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $file);
-            }
-            
             
             $this->minFiles[$file_components["position"]] = $file_components["after"];
             

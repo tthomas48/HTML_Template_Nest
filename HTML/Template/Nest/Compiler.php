@@ -123,7 +123,6 @@ class HTML_Template_Nest_Compiler extends php_user_filter
                 if (! $compile) {
                     return $viewInstance;
                 }
-                print "Modified " . $compiledFilename;
             } catch (\Exception $e) {}
         }
         
@@ -184,7 +183,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
         $modifiedMethodBody = "";
         foreach ($this->parser->dependencies as $filename => $lastModified) {
             $modifiedMethodBody .= '
-                $stat = @stat(\'' . $filename . '\');
+                $stat = stat(\'' . $filename . '\');
                 $lastModified = $stat[9];
                 if ($lastModified !== ' . $lastModified . ') {
                   return true;

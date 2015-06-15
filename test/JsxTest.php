@@ -1,3 +1,4 @@
+
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
@@ -19,13 +20,14 @@ class HTML_Template_Nest_JsxTest extends PHPUnit_Framework_TestCase
         $view = new HTML_Template_Nest_View("jsx");
         $view->addAttribute("outval", "Output Me!");
         $filename = dirname(__FILE__) . "/viewoutput/jsx.html";
-        $this->assertEquals(
-            trim($view->render()), 
-            trim(file_get_contents($filename))
-        );        
+
+        $rendered = trim($view->render());
+        $this->assertRegExp('/<script type="text\/javascript" src="res\/jsx.min.\d+.js">\s<\/script>/ms', trim($rendered));
+        $file = preg_replace('/.*src="(res\/jsx.min.\d+.js)".*/ms', '$1', $rendered);
+        
         $this->assertEquals(
             file_get_contents(dirname(__FILE__) . "/viewoutput/jsx.min.js"),
-            file_get_contents(dirname(__FILE__) . "/res/jsx.min.047b16bb88bb6313e905f30e2f7e86bf.js")
+            file_get_contents(dirname(__FILE__) . "/" . $file)
         );
 
     }

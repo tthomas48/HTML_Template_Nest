@@ -1,1 +1,0 @@
-function alertNow(msg){alert(msg);}var a=100;

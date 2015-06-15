@@ -3,6 +3,7 @@
 
 /**
  * Compiles .
+ *
  * nst files into .php files
  *
  * The HTML_Template_Nest_Compiler takes .nst input files and converts them into
@@ -39,6 +40,7 @@ use Memio\Model\Argument;
 
 /**
  * Compiles .
+ *
  * nst files into .php files
  *
  * The HTML_Template_Nest_Compiler takes .nst input files and converts them into
@@ -96,7 +98,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
      *            
      * @return ViewInstance
      */
-    public function compileAndCache($viewPath, $viewName)
+    public function compileAndCache($viewPath, $viewName, $cache = true)
     {
         $viewPath = $viewPath . "/" . $viewName;
         $fullPath = dirname($viewPath);
@@ -105,41 +107,56 @@ class HTML_Template_Nest_Compiler extends php_user_filter
         $compiledFilename = $fullPath . "/" . $viewName . ".php";
         $className = "nestView_" . preg_replace('/[^a-z0-9]/', '', $viewName);
         
-        $stat = stat($uncompiledFilename);
-        $lastModified = $stat[9];
-        
         $viewInstance = null;
         $compile = true;
         if (file_exists($compiledFilename)) {
-            if (!class_exists($className)) {
-              require_once $compiledFilename;
+            if (! class_exists($className)) {
+                require_once $compiledFilename;
             }
             try {
                 $viewInstance = new $className();
-                $compile = $viewInstance->lastModified != $lastModified;
+                if ($cache === true) {
+                    return $viewInstance;
+                }
+                
+                $compile = $viewInstance->isModified();
                 if (! $compile) {
                     return $viewInstance;
                 }
+                print "Modified " . $compiledFilename;
             } catch (\Exception $e) {}
         }
         
         $compiler = new HTML_Template_Nest_Compiler();
+        $compiler->parser->addFileDependency($uncompiledFilename);
         $output = $compiler->compile($uncompiledFilename);
-        $code = $this->getTemplateCode($className, $lastModified, $output);
+        $code = $compiler->getTemplateCode($className, $output);
         file_put_contents($compiledFilename, '<' . "?php\n" . $code);
         
-        require_once $compiledFilename;
-        $viewInstance = new $className();
+        if (class_exists($className)) {
+            $tempName = tempnam("/tmp/", "tmpView");
+            try {
+                $tmpClassname = $className . "_tmp";
+                $code = $compiler->getTemplateCode($className . "_tmp", $output);
+                file_put_contents($tempName, '<' . "?php\n" . $code);
+                
+                require_once $tempName;
+                $viewInstance = new $tmpClassname();
+            } finally {
+                if (file_exists($tempName)) {
+                    unlink($tempName);
+                }
+            }
+        } else {
+            require_once $compiledFilename;
+            $viewInstance = new $className();
+        }
         
         return $viewInstance;
     }
 
-    public function getTemplateCode($className, $lastModified, $output)
+    public function getTemplateCode($className, $output)
     {
-        $lastModifiedProperty = new Property('lastModified');
-        $lastModifiedProperty->makePublic();
-        $lastModifiedProperty->setDefaultValue($lastModified);
-        
         $methodBody = '
         $_o = function($params, $key) { return array_key_exists($key, $params) ? $params[$key] : null; };
         ob_start();
@@ -162,10 +179,21 @@ class HTML_Template_Nest_Compiler extends php_user_filter
         ob_end_clean();
         return $contents;
 ';
-        
         $renderMethod = Method::make('render')->addArgument(new Argument('Array', 'p'))->setBody($methodBody);
         
-        $obj = Object::make($className)->addProperty($lastModifiedProperty)->addMethod($renderMethod);
+        $modifiedMethodBody = "";
+        foreach ($this->parser->dependencies as $filename => $lastModified) {
+            $modifiedMethodBody .= '
+                $stat = @stat(\'' . $filename . '\');
+                $lastModified = $stat[9];
+                if ($lastModified !== ' . $lastModified . ') {
+                  return true;
+                }';
+        }
+        $modifiedMethodBody .= "\nreturn false;";
+        $modifiedMethod = Method::make('isModified')->setBody($modifiedMethodBody);
+        
+        $obj = Object::make($className)->addMethod($renderMethod)->addMethod($modifiedMethod);
         
         $prettyPrinter = Build::prettyPrinter();
         return $prettyPrinter->generateCode($obj);
@@ -189,7 +217,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
         
         $output = "";
         try {
-            if ($contents == NULL) {
+            if ($contents == null) {
                 $contents = file_get_contents($filename);
             }
             

@@ -124,7 +124,7 @@ class HTML_Template_Nest_View
    	  }
 
       $compiler = new HTML_Template_Nest_Compiler();
-      $this->viewInstance = $compiler->compileAndCache($viewPath, $this->_name);
+      $this->viewInstance = $compiler->compileAndCache($viewPath, $this->_name, HTML_Template_Nest_View::$CACHE);
       return $this->renderContent($this->viewInstance);
     }
     public function renderContent($viewInstance = "") 

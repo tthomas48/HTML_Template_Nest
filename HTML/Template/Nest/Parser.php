@@ -49,7 +49,9 @@ require_once 'ParseException.php';
  */
 class HTML_Template_Nest_Parser
 {
-    private $_localVariables = array();
+    public $dependencies = [];
+    
+    private $_localVariables = [];
     /**
      * Registers a scoped variables. All unregistered variables are expected
      * to come out of the $p array.
@@ -363,4 +365,13 @@ class HTML_Template_Nest_Parser
         return $prefix . "\$_o(\$p, '" . $variable . "')" . $suffix;
 
     }
+    
+    public function addFileDependency($path)
+    {
+    
+        $stat = stat($path);
+        $lastModified = $stat[9];
+    
+        $this->dependencies[$path] = $lastModified;
+    }    
 }

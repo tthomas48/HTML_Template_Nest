@@ -1,3 +1,6 @@
 *.md5
 *.min.css
 *.min.js
+*min.[0-9]*.js
+*min.[0-9]*.css
+*min.[0-9]*.scss

@@ -98,6 +98,8 @@ class HTML_Template_Nest_TagFile extends HTML_Template_Nest_Tag
           $node
       );
     }
+    $this->parser->addFileDependency($fullFilename);
+    
     $oldChildren = $this->renderer->getChildren();
 
     $newChild = $node->ownerDocument->createDocumentFragment();

@@ -128,7 +128,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
                 $before = $file_components["before"];
             }
             
-            exec(HTML_Template_Nest_Taglib_Resource::$SASS_BINARY . " --update -f $before:$after");
+            exec(HTML_Template_Nest_Taglib_Resource::$SASS_BINARY . " --update -f " . escapeshellarg($before) . ":" . escapeshellarg($after));
         }
     }
 
@@ -192,8 +192,16 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
                 if (empty($localfile)) {
                     $localfile = $file;
                 }
-                $new_name = str_replace(".jsx", "-jsx.js", $name);
-                $new_filename = str_replace(".jsx", "-jsx.js", $localfile);
+
+                $new_filename = "";
+                if(strpos($name, ".jsx") !== false) {
+                  $new_name = str_replace(".jsx", "-jsx.js", $name);
+                  $new_filename = str_replace(".jsx", "-jsx.js", $localfile);
+                }
+                elseif(strpos($name, ".js") !== false) {
+                  $new_name = str_replace(".js", "-jsx.js", $name);
+                  $new_filename = str_replace(".js", "-jsx.js", $localfile);
+                }
 
                 $this->parser->addFileDependency(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $localfile);
                 
@@ -225,7 +233,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
                 $before = $file_components["before"];
             }
             
-            exec(HTML_Template_Nest_Taglib_Resource::$JSX_BINARY . " $before", $output);
+            exec(HTML_Template_Nest_Taglib_Resource::$JSX_BINARY . " " . escapeshellarg($before), $output);
             file_put_contents($after, $output);
         }
     }

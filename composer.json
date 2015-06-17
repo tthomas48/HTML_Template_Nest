@@ -1,6 +1,6 @@
 {
     "name": "buyplaytix/nest",
-    "version": "1.6.5",
+    "version": "1.6.6",
     "require": {
 	    "oyatel/minify": "dev-master",
     	"natxet/CssMin": "dev-master",

@@ -95,7 +95,6 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
                 if (empty($localfile)) {
                     $localfile = $file;
                 }
-                $new_name = str_replace(".scss", ".css", $name);
                 $new_filename = str_replace(".scss", ".css", $localfile);
 
                 $this->parser->addFileDependency(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $localfile);
@@ -143,7 +142,10 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
                     $localfile = $child->getAttribute("name");
                 }
 
-                $this->parser->addFileDependency(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $localfile);
+                $is_url = strstr($localfile, '://') !== FALSE;
+                if (!$is_url) {
+                  $this->parser->addFileDependency(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $localfile);
+                }
                 $files[] = $localfile;
             }
         }
@@ -194,12 +196,10 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
                 }
 
                 $new_filename = "";
-                if(strpos($name, ".jsx") !== false) {
-                  $new_name = str_replace(".jsx", "-jsx.js", $name);
+                if(strpos($localfile, ".jsx") !== false) {
                   $new_filename = str_replace(".jsx", "-jsx.js", $localfile);
                 }
-                elseif(strpos($name, ".js") !== false) {
-                  $new_name = str_replace(".js", "-jsx.js", $name);
+                elseif(strpos($localfile, ".js") !== false) {
                   $new_filename = str_replace(".js", "-jsx.js", $localfile);
                 }
 
@@ -232,8 +232,8 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
             if ($is_url) {
                 $before = $file_components["before"];
             }
-            
-            exec(HTML_Template_Nest_Taglib_Resource::$JSX_BINARY . " " . escapeshellarg($before), $output);
+            $cmd = HTML_Template_Nest_Taglib_Resource::$JSX_BINARY . " " . escapeshellarg($before);
+            $output = `$cmd`;
             file_put_contents($after, $output);
         }
     }

@@ -5,7 +5,7 @@
 	    "oyatel/minify": "dev-master",
     	"natxet/CssMin": "dev-master",
       "memio/memio": "~1.0",
-      "phpunit/phpunit": "~4.4"
+      "phpunit/phpunit": "~5.4"
     },
     "autoload": {
       "psr-0": {"HTML": "./"}

@@ -33,7 +33,7 @@
  */
 use Memio\Memio\Config\Build;
 use Memio\Model\File;
-use Memio\Model\Object;
+use Memio\Model\Objekt;
 use Memio\Model\Property;
 use Memio\Model\Method;
 use Memio\Model\Argument;
@@ -192,7 +192,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
         $modifiedMethodBody .= "\nreturn false;";
         $modifiedMethod = Method::make('isModified')->setBody($modifiedMethodBody);
         
-        $obj = Object::make($className)->addMethod($renderMethod)->addMethod($modifiedMethod);
+        $obj = Objekt::make($className)->addMethod($renderMethod)->addMethod($modifiedMethod);
         
         $prettyPrinter = Build::prettyPrinter();
         return $prettyPrinter->generateCode($obj);

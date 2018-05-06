@@ -162,7 +162,7 @@ class HTML_Template_Nest_Parser
         
         preg_match_all('/[$#]\{[^}]+\}/', $text, $tokens);
         foreach ($tokens[0] as $token) {
-            if (count($token) > 0) {
+            if (strlen($token) > 0) {
                 $escape = true;
                 if(substr($token, 0, 1) == "#") {
                     $escape = false;

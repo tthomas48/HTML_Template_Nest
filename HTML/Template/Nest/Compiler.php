@@ -34,7 +34,6 @@
 use Memio\Memio\Config\Build;
 use Memio\Model\File;
 use Memio\Model\Objekt;
-use Memio\Model\Property;
 use Memio\Model\Method;
 use Memio\Model\Argument;
 
@@ -130,14 +129,14 @@ class HTML_Template_Nest_Compiler extends php_user_filter
         $compiler->parser->addFileDependency($uncompiledFilename);
         $output = $compiler->compile($uncompiledFilename);
         $code = $compiler->getTemplateCode($className, $output);
-        file_put_contents($compiledFilename, '<' . "?php\n" . $code);
+        file_put_contents($compiledFilename, $code);
         
         if (class_exists($className)) {
             $tempName = tempnam("/tmp/", "tmpView");
             try {
                 $tmpClassname = $className . "_tmp";
                 $code = $compiler->getTemplateCode($className . "_tmp", $output);
-                file_put_contents($tempName, '<' . "?php\n" . $code);
+                file_put_contents($tempName, $code);
                 
                 require_once $tempName;
                 $viewInstance = new $tmpClassname();
@@ -178,7 +177,8 @@ class HTML_Template_Nest_Compiler extends php_user_filter
         ob_end_clean();
         return $contents;
 ';
-        $renderMethod = Method::make('render')->addArgument(new Argument('Array', 'p'))->setBody($methodBody);
+
+        $renderMethod = (new Method('render'))->addArgument(new Argument('Array', 'p'))->setBody($methodBody);
         
         $modifiedMethodBody = "";
         foreach ($this->parser->dependencies as $filename => $lastModified) {
@@ -190,12 +190,13 @@ class HTML_Template_Nest_Compiler extends php_user_filter
                 }';
         }
         $modifiedMethodBody .= "\nreturn false;";
-        $modifiedMethod = Method::make('isModified')->setBody($modifiedMethodBody);
+        $modifiedMethod = (new Method('isModified'))->setBody($modifiedMethodBody);
         
-        $obj = Objekt::make($className)->addMethod($renderMethod)->addMethod($modifiedMethod);
+        $obj = (new Objekt($className))->addMethod($renderMethod)->addMethod($modifiedMethod);
+        $file = (new File($className . ".php"))->setStructure($obj);
         
         $prettyPrinter = Build::prettyPrinter();
-        return $prettyPrinter->generateCode($obj);
+        return $prettyPrinter->generateCode($file);
     }
 
     /**
@@ -334,7 +335,7 @@ class HTML_Template_Nest_Compiler extends php_user_filter
         }
         
         if (false !== strpos($include_path, PATH_SEPARATOR)) {
-            if (false !== ($temp = explode(PATH_SEPARATOR, $include_path)) && count($temp) > 0) {
+            if (false !== ($temp = explode(PATH_SEPARATOR, $include_path)) && (is_array($temp) && count($temp) > 0)) {
                 for ($n = 0; $n < count($temp); $n ++) {
                     if (false !== @file_exists($temp[$n] . "/" . $filename)) {
                         return true;

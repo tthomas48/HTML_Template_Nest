@@ -95,7 +95,10 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
                 if (empty($localfile)) {
                     $localfile = $file;
                 }
-                $new_filename = str_replace(".scss", ".css", $localfile);
+                $new_filename = $child->getAttribute("genfile");
+                if (empty($new_filename)) {
+                  $new_filename = str_replace(".scss", ".css", $localfile);
+                }
 
                 $this->parser->addFileDependency(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $localfile);
 
@@ -232,7 +235,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
             if ($is_url) {
                 $before = $file_components["before"];
             }
-            $cmd = HTML_Template_Nest_Taglib_Resource::$JSX_BINARY . " " . escapeshellarg($before);
+            $cmd = HTML_Template_Nest_Taglib_Resource::$JSX_BINARY . " " . realpath($before);
             $output = `$cmd`;
             file_put_contents($after, $output);
         }

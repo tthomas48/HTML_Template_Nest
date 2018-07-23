@@ -177,9 +177,9 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
         }
         
         if (substr($name, - 3) === ".js") {
-            $output_filename = str_replace(".js", "." . time() . ".js", $name);
+            $output_filename = str_replace(".js", "." . hash("crc32b", $output) . ".js", $name);
         } elseif (substr($name, - 4) === ".css") {
-                $output_filename = str_replace(".css", "." . time() . ".css", $name);
+                $output_filename = str_replace(".css", "." . hash("crc32b", $output) . ".css", $name);
         }
         file_put_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $output_filename, $output);
         return $output_filename;

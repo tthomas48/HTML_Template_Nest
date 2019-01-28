@@ -235,7 +235,7 @@ abstract class HTML_Template_Nest_Taglib_Resource_Minifier extends HTML_Template
             if ($is_url) {
                 $before = $file_components["before"];
             }
-            $cmd = HTML_Template_Nest_Taglib_Resource::$JSX_BINARY . " " . realpath($before);
+            $cmd = HTML_Template_Nest_Taglib_Resource::$JSX_BINARY . " --harmony " . realpath($before);
             $output = `$cmd`;
             file_put_contents($after, $output);
         }

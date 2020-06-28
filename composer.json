@@ -1,10 +1,10 @@
 {
     "name": "buyplaytix/nest",
-    "version": "1.7.3",
+    "version": "1.7.4",
     "license": "MIT",
     "require": {
-	    "oyatel/minify": "dev-master",
-    	"natxet/CssMin": "^3.0.6",
+      "oyatel/minify": "dev-master",
+      "natxet/cssmin": "^3.0.6",
       "memio/memio": "^2.0"
     },
     "require-dev": {

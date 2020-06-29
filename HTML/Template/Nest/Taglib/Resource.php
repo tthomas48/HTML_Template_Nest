@@ -267,7 +267,7 @@ class HTML_Template_Nest_Taglib_Resource_Javascript extends HTML_Template_Nest_T
             'minify'
         ));
         if (HTML_Template_Nest_Taglib_Resource::$EMBED) {
-            $output = file_get_contents($localfile);
+            $output = file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name);
             return  "<script type=\"text/javascript\">" . $output . "</script>";
         }
         return "<script type=\"text/javascript\" src=\"" . $basepath . "$name\">\n</script>";
@@ -287,7 +287,7 @@ class HTML_Template_Nest_Taglib_Resource_JavascriptFile extends HTML_Template_Ne
         $basepath = $this->parser->parse($this->getOptionalAttribute("basepath", ""));
         
         if (HTML_Template_Nest_Taglib_Resource::$EMBED) {
-            $output = file_get_contents($basepath .$name);
+            $output = file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name);
             return  "<script type=\"text/javascript\">" . $output . "</script>";
         }
         return "<script type=\"text/javascript\" src=\"" . $basepath . "$name\">\n</script>";
@@ -316,7 +316,7 @@ class HTML_Template_Nest_Taglib_Resource_Css extends HTML_Template_Nest_Taglib_R
             'minify'
         ));
         if (HTML_Template_Nest_Taglib_Resource::$EMBED) {
-            $output = file_get_contents($localfile);
+            $output = file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH .  $name);
             return  "<style>" . $output . "</style>";
         }
         return "<link rel=\"stylesheet\" href=\"" . $basepath . "$name\" />";
@@ -335,7 +335,7 @@ class HTML_Template_Nest_Taglib_Resource_CssFile extends HTML_Template_Nest_Tag
         $name = $this->parser->parse($this->getRequiredAttribute("name"));
         $basepath = $this->parser->parse($this->getOptionalAttribute("basepath", ""));
         if (HTML_Template_Nest_Taglib_Resource::$EMBED) {
-            $output = file_get_contents($basepath . $name);
+            $output = file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH .  $name);
             return  "<style>" . $output . "</style>";
         }
         return "<link rel=\"stylesheet\" href=\"" . $basepath . "$name\" />";
@@ -362,7 +362,7 @@ class HTML_Template_Nest_Taglib_Resource_ScssFile extends HTML_Template_Nest_Tag
             'minify'
         ));
         if (HTML_Template_Nest_Taglib_Resource::$EMBED) {
-            $output = file_get_contents($localfile);
+            $output = file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH . $name);
             return  "<style>" . $output . "</style>";
         }
         return "<link rel=\"stylesheet\" href=\"" . $basepath . "$name\" />";
@@ -388,7 +388,7 @@ class HTML_Template_Nest_Taglib_Resource_JsxFile extends HTML_Template_Nest_Tagl
             'minify'
         ));
         if (HTML_Template_Nest_Taglib_Resource::$EMBED) {
-            $output = file_get_contents($localfile);
+            $output = file_get_contents(HTML_Template_Nest_Taglib_Resource::$BASE_PATH .  $name);
             return  "<script type=\"text/javascript\">" . $output . "</script>";
         }
         return "<script type=\"text/javascript\" src=\"" . $basepath . "$name\">\n</script>";

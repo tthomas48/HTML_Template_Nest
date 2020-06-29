@@ -59,6 +59,7 @@ use Memio\Model\Argument;
 class HTML_Template_Nest_Compiler extends php_user_filter
 {
 
+    public static $COMPILED_PATH = null;
     public $parser;
 
     public function __construct()
@@ -100,10 +101,15 @@ class HTML_Template_Nest_Compiler extends php_user_filter
     public function compileAndCache($viewPath, $viewName, $cache = true)
     {
         $viewPath = $viewPath . "/" . $viewName;
-        $fullPath = dirname($viewPath);
+        $fullPath = dirname($viewPath);        
         $viewName = basename($viewPath, ".nst");
         $uncompiledFilename = $fullPath . "/" . $viewName . ".nst";
+
         $compiledFilename = $fullPath . "/" . $viewName . ".php";
+        if (\HTML_Template_Nest_Compiler::$COMPILED_PATH !== null) {
+            $compiledFilename = \HTML_Template_Nest_Compiler::$COMPILED_PATH . "/" . $viewName . ".php";
+        }
+        
         $className = "nestView_" . preg_replace('/[^a-z0-9]/', '', $viewName);
         
         $viewInstance = null;
